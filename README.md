@@ -1,6 +1,6 @@
 # Domira Spatial Studio
 
-深黑、薄边框、玻璃质感与薄荷绿／紫色 Ambient Glow 的 AR 室内设计 MVP。前端为原生 ES modules + Three.js，后端为可部署的 Cloudflare Worker。无需安装 npm 依赖，Three.js 0.170.0 已随项目提供（MIT）。
+深黑、薄边框、玻璃质感与薄荷绿／紫色 Ambient Glow 的 AR 室内设计 MVP。前端为原生 ES modules + Three.js，后端为可部署的 Cloudflare Worker。**执行时**无 npm 依赖，Three.js 0.170.0 已随项目提供（MIT）；只有打包 Worker 需要 `npm install`（esbuild，devDependency；部署工件仍是单一 Worker 文件）。
 
 ## 本地运行
 
