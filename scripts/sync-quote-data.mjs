@@ -13,7 +13,7 @@ import { fileURLToPath } from 'node:url';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..');
-const SRC = process.env.DOMIRA_SRC || 'C:/Users/20744/Documents/deepseek-harness/default-workspace/Domira/data';
+const SRC = process.env.DOMIRA_SRC || path.resolve(ROOT, '..', 'Domira', 'data');
 const OUT = path.join(ROOT, 'worker', 'data');
 
 const FILES = [

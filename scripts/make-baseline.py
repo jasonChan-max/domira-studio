@@ -10,12 +10,15 @@
 from __future__ import annotations
 
 import json
+import os
 import sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
-DOMIRA = Path(r"C:\Users\20744\Documents\deepseek-harness\default-workspace\Domira")
+# 預設假設兩個 repo 相鄰（<父目錄>/Domira 與 <父目錄>/domira-studio）；
+# 放在不同地方時用環境變數 DOMIRA_SRC 指向 Python 版的 data 目錄。
+DOMIRA = Path(os.environ.get("DOMIRA_SRC") or (ROOT.parent / "Domira"))
 sys.path.insert(0, str(DOMIRA))
 
 from core import hk_rules, pricing, schedule, schema  # noqa: E402
