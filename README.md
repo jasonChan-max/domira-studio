@@ -88,7 +88,7 @@ localStorage 属于当前 origin，同一浏览器的 localhost 与线上版本�
 
 ## 后端接口契约
 
-所有 API 同源、JSON；`/api/health` 为 GET，其余为 POST。无任意 Origin 的 CORS。请求体上限 80,000 字符；通过本地缩略帧减小重建请求，正式大图上传应改为私有对象存储和任务队列。
+原 Sites 部署 API 同源；独立 Cloudflare 前端通过 `api-config.js` 连接专用 Worker，CORS 只允许该前端 Origin。`/api/health` 与 `/api/render/capabilities` 为 GET，其余为 POST。普通请求体上限 80,000 字符；渲染为 7.5 MB。通过本地缩略帧减小重建请求，正式大图上传应改为私有对象存储和任务队列。
 
 | 路由 | 请求 | 成功／未配置行为 |
 | --- | --- | --- |
@@ -132,3 +132,18 @@ localStorage 属于当前 origin，同一浏览器的 localhost 与线上版本�
 新增验收：搜索品牌与类别能交叉筛选；2–3 件家具可开启比较；编辑得分和买家得分不混用；单件家具能替换而不改变原摆放；JSON 导出／导入保留型号与参考价来源；所有 28 个模型的顶点有限且宽深匹配保存尺寸；不支持 WebXR 的设备明确显示实际检测结果，摄像头叠加不称为空间追踪。
 
 自动化验证为 17 项：原有 9 项，新增产品数据／评分公式／JSON 资料／所有模型几何以及 XR 能力检测、失败清理、地面筛选与原尺度放置。浏览器已检查品牌比较、单件分项分析、加入、替换与 WebXR 不支持路径。当前测试电脑没有 immersive-ar 装置，真实手机 hit-test、DOM overlay、跟踪中断与 1:1 放置仍需实机验收。
+
+## 五角度 AI 渲染与消费限制
+
+- `public/furniture.js` 提高曲面细分、512px 程序纹理；`scene.js` 使用 Three.js RoomEnvironment/PMREM 环境反射、接触阴影和高分辨率截图。模型仍为可编辑的比例示意，并非品牌官方 CAD 或扫描重建网格。共享材质及可见缩略图延迟生成控制 GPU 消耗。
+- `src/render-domain.js` 定义唯一场景快照、五个不同相机、固定 1K（1280×720）输出和校验规则。`scene.captureFrame` 用同一场景生成参考图，最后恢复工作台视口及辅助元素。编辑坐标不受截图影响。
+- `public/render-studio.js` 负责五视角选择、水平/俯仰/距离调整、使用当前工作台相机、统一灯光与材质偏好。点击开始后冻结项目及相机并计算 SHA-256 指纹；编辑原项目后不混用旧批次。先生成一张确认，再手动继续剩余四张；顺序调用，无自动重试。
+- `public/render-client.js` 读取 NDJSON 心跳及真实结果；`render-store.js` 将快照、状态和完成图片存到当前浏览器 IndexedDB。刷新恢复已完成图片，将在途任务标为中断，不自行再次调用 AI。关闭页面会停止客户端连接；已提交的云端推理可能继续。
+- `worker/render.js` 校验访问码、场景指纹、五个不同角度与图片头；`worker/render-quota.js` 使用 D1 单条原子 SQL 在推理前占用名额。全站、所有访问码合计，每个台北自然日最多提交 5 张 1K；失败/中断和手动重试也计入。配额服务失败时关闭生图。相同批次/视角/尝试编号+相同请求哈希可返回已保存结果，不重复推理；内容变更返回 409。结果过大无法保存到 D1 时不会自动重生，客户应立即下载。
+- DeepSeek `deepseek-flash` 只负责每批最多一次材质文字整理，关闭 thinking、最多 240 输出 tokens，输入为家具材质与灯光数据；不将摄像头帧发送给 DeepSeek。失败时保留模板提示词，无自动重试。实际生图使用 Cloudflare Workers AI `@cf/black-forest-labs/flux-2-klein-4b`，以当前角度及鸟瞰两张 512×288 参考图执行图生图。结果可能偏离几何细节，需客户对照确认。
+- `/api/render/capabilities` 返回配置状态、模型、固定尺寸及 `{usage:{day,timeZone,limit,used,remaining}}`；`POST /api/render/shot` 接收 `{batchId,shotId,attempt,project,fingerprint,views,slotIndex,settings,reference,contextReference}`，以 Bearer 渲染访问码认证，返回 started/heartbeat/completed/failed。API 密钥只存 Cloudflare Secret，不打包到前端。
+- `render-archive.js` 导出原生 ZIP：五张 3D 参考/已完成 AI 图及 `design-manifest.json`（快照、相机、模型、实际尺寸、时间）；支持 PNG/JPEG/WebP 扩展名。没有真实 AI 结果时不会标成渲染完成。
+
+Cloudflare 配置：独立 API Worker 绑定 `AI` 和专用 D1 `RENDER_DB`，设置 Secret `RENDER_ACCESS_TOKEN`，可选 `DEEPSEEK_API_KEY`；运行 `node scripts/build-cloudflare.mjs --api-url https://<api-origin> --web-origin https://<frontend-origin>`，上传 `dist/cloudflare/assets/` 为静态前端，`domira-api.js` 为 API Worker。原 Sites 可设置 `RENDER_PROXY_ORIGIN` 指向该 API，共用同一配额。数据库首次请求自动建表。不需要 R2；当前没有跨设备渲染项目同步。Workers AI 的免费额度由 Cloudflare 账户共享，站点每天 5 张不代表任何账户账单的金额上限；本流程不升级付费套餐。
+
+新增验收：五个不同视角可以逐个调整，重复角度禁止提交；输出仅为 1K；首张完成后停止并等待客户继续；已完成图可独立或整套下载，刷新恢复；3D 参考与 AI 图明确区分；无访问码/错误访问码均不能调用服务；第六个新请求被 D1 拒绝；相同请求重复返回缓存，变更内容拒绝；失败占用名额且没有自动重试；数据库不可用时禁止推理；午夜按 Asia/Taipei 重置。自动检查共 26 项通过，包括所有家具几何、渲染请求、流式解码、ZIP CRC、恢复策略与真实 SQLite 上的配额 SQL。真实生图、摄像头及 WebXR 实机结果以现场验收记录为准。

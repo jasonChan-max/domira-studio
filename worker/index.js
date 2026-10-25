@@ -1,6 +1,10 @@
 import {generateLayout, validateRoom} from '../src/domain.js';
+import {handleRenderRequest,getRenderStatus} from './render.js';
 const json=(data,status=200)=>new Response(JSON.stringify(data),{status,headers:{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});const counts=new Map();
 export default {async fetch(request,env={}){const url=new URL(request.url);try{
+ if(env.RENDER_PROXY_ORIGIN&&['/api/render/capabilities','/api/render/shot'].includes(url.pathname)){const target=new URL(env.RENDER_PROXY_ORIGIN);if(target.protocol!=='https:')return json({error:'渲染服務設定不正確'},503);return fetch(target.origin+url.pathname,{method:request.method,headers:{'Content-Type':request.headers.get('Content-Type')||'application/json',...(request.headers.get('Authorization')?{Authorization:request.headers.get('Authorization')}:{})},...(request.method==='POST'?{body:request.body,duplex:'half'}:{}),signal:request.signal});}
+ if(url.pathname==='/api/render/capabilities')return json(await getRenderStatus(env));
+ if(url.pathname==='/api/render/shot')return handleRenderRequest(request,env);
  if(url.pathname==='/api/health')return json({ok:true,layout:env.LAYOUT_ENDPOINT?'remote':'local-rules',reconstruction:!!env.RECONSTRUCTION_ENDPOINT,contact:!!env.CONTACT_WEBHOOK_URL});
  if(url.pathname.startsWith('/api/')&&request.method!=='POST')return json({error:'Method not allowed'},405);
  if(url.pathname.startsWith('/api/')){const raw=await request.text();if(raw.length>80000)return json({error:'請求超過大小限制'},413);let body;try{body=JSON.parse(raw)}catch{return json({error:'無效的 JSON'},400)}
