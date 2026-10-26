@@ -1,0 +1,10 @@
+{
+  "name": "domira",
+  "account_id": "4a8e3512b858e251281cc21dc251bbd9",
+  "compatibility_date": "2026-10-25",
+  "keep_vars": true,
+  "workers_dev": true,
+  "assets": {
+    "directory": "../dist/cloudflare/assets"
+  }
+}

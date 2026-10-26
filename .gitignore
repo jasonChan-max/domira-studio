@@ -1,7 +1,17 @@
 dist/
-node_modules/
-.wrangler/
 site.tar.gz
 .env
 .env.local
 *.log
+
+.wrangler/
+
+# Local credentials and release artifacts
+.env.*
+!.env.example
+.dev.vars
+.dev.vars.*
+node_modules/
+*.zip
+*.tar.gz
+.DS_Store

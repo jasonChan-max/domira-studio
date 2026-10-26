@@ -1,0 +1,3 @@
+import fs from 'node:fs/promises';
+import assert from 'node:assert/strict';
+for(const file of ['dist/server/index.js','dist/cloudflare/domira-api.js']){const code=await fs.readFile(file,'utf8');const {default:worker}=await import('data:text/javascript;base64,'+Buffer.from(code).toString('base64'));const response=await worker.fetch(new Request('https://domira.test/api/agents'),{});assert.equal(response.status,200,file);assert.equal((await response.json()).agents.length,7,file);const bad=await worker.fetch(new Request('https://domira.test/api/plan',{method:'POST',body:'{}'}),{});assert.equal(bad.status,400,file);}console.log('Both v2 bundles include renovation routes.');

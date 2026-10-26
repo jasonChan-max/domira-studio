@@ -1,0 +1,24 @@
+{
+  "name": "domira-api",
+  "account_id": "4a8e3512b858e251281cc21dc251bbd9",
+  "main": "../dist/cloudflare/domira-api.js",
+  "compatibility_date": "2026-10-25",
+  "keep_vars": true,
+  "workers_dev": true,
+  "ai": {
+    "binding": "AI"
+  },
+  "d1_databases": [
+    {
+      "binding": "RENDER_DB",
+      "database_name": "domira-render-usage",
+      "database_id": "0d5451dd-903d-412b-9ba2-3fd5997427ed"
+    }
+  ],
+  "secrets": {
+    "required": [
+      "DEEPSEEK_API_KEY",
+      "RENDER_ACCESS_TOKEN"
+    ]
+  }
+}
