@@ -1,3 +1,7 @@
+# 自动部署入口
+
+日常更新请提交到 `v2.0`，由 [GitHub Actions 工作流](.github/workflows/cloudflare-sync.yml) 自动测试、发布并核验。配置与故障恢复见 [持续同步说明](docs/continuous-deployment.md)。以下是需要本地手动部署时的步骤。
+
 # Domira v2.0 部署
 
 ## 从源码构建

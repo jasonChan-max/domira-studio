@@ -1,0 +1,84 @@
+name: Sync website to Cloudflare
+
+on:
+  push:
+    branches: ["v2.0"]
+  pull_request:
+    branches: ["v2.0"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: domira-sync-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  test:
+    name: Test and validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+      - run: npm run validate
+      - run: npm run build:cloudflare
+      - run: node scripts/check-v2-bundles.mjs
+
+  deploy:
+    name: Deploy and verify production
+    needs: test
+    if: github.repository == 'jasonChan-max/domira-studio' && github.ref == 'refs/heads/v2.0' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment:
+      name: production
+      url: https://domira.jiaxun-chen1218.workers.dev/
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+      WRANGLER_SEND_METRICS: 'false'
+      CI: 'true'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '24'
+          cache: npm
+      - name: Check deployment configuration
+        shell: bash
+        run: |
+          test -n "$CLOUDFLARE_API_TOKEN" || { echo '::error::Add the repository Actions secret CLOUDFLARE_API_TOKEN.'; exit 1; }
+          test -n "$CLOUDFLARE_ACCOUNT_ID" || { echo '::error::Set the repository variable CLOUDFLARE_ACCOUNT_ID.'; exit 1; }
+      - run: npm ci
+      - run: npm run build
+      - run: npm run build:cloudflare
+      - name: Deploy API
+        run: npx --yes wrangler@4.152.0 deploy --config cloudflare/api.wrangler.jsonc --keep-vars
+      - name: Deploy website
+        run: npx --yes wrangler@4.152.0 deploy --config cloudflare/web.wrangler.jsonc --keep-vars
+      - name: Verify commit and all published assets
+        run: node scripts/verify-cloudflare.mjs --revision "$GITHUB_SHA"
+      - name: Record deployment
+        if: always()
+        shell: bash
+        run: |
+          printf '### Cloudflare synchronization
+
+Commit: `%s`
+
+Website: https://domira.jiaxun-chen1218.workers.dev/
+
+API: https://domira-api.jiaxun-chen1218.workers.dev
+' "$GITHUB_SHA" >> "$GITHUB_STEP_SUMMARY"

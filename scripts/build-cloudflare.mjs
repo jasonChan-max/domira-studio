@@ -1,3 +1,4 @@
+import {deploymentInfo,writeAssetDeploymentInfo} from './deployment-info.mjs';
 import {readFile,writeFile,mkdir,cp} from 'node:fs/promises';
 import {fileURLToPath} from 'node:url';
 import {build} from 'esbuild';
@@ -6,9 +7,11 @@ const apiURL=new URL(get('--api-url')),webURL=new URL(get('--web-origin'));
 if(apiURL.protocol!=='https:'||webURL.protocol!=='https:'||apiURL.pathname!=='/'||webURL.pathname!=='/')throw new Error('Expected exact HTTPS origins.');
 await mkdir(new URL('dist/cloudflare/',root),{recursive:true});
 const wrapper=`\nconst ALLOWED_WEB_ORIGIN=${JSON.stringify(webURL.origin)};\nexport default {async fetch(request,env,ctx){const origin=request.headers.get('Origin');const allowed=origin===ALLOWED_WEB_ORIGIN;if(origin&&!allowed)return new Response('Origin not allowed',{status:403});if(request.method==='OPTIONS')return new Response(null,{status:204,headers:{'Access-Control-Allow-Origin':ALLOWED_WEB_ORIGIN,'Access-Control-Allow-Methods':'GET, POST, OPTIONS','Access-Control-Allow-Headers':'Content-Type, Authorization','Access-Control-Max-Age':'86400','Vary':'Origin'}});const response=await appWorker.fetch(request,env,ctx);const headers=new Headers(response.headers);if(allowed)headers.set('Access-Control-Allow-Origin',origin);headers.set('Vary','Origin');return new Response(response.body,{status:response.status,headers});}};\n`;
-const result=await build({stdin:{contents:'import appWorker from "./worker/index.js";\n'+wrapper,resolveDir:fileURLToPath(root),sourcefile:'cloudflare-api-entry.js'},bundle:true,format:'esm',platform:'neutral',target:'es2022',write:false,logLevel:'silent'});
+const info=await deploymentInfo(root);
+const result=await build({banner:{js:'const DOMIRA_BUILD_INFO='+JSON.stringify(info)+';'},stdin:{contents:'import appWorker from "./worker/index.js";\n'+wrapper,resolveDir:fileURLToPath(root),sourcefile:'cloudflare-api-entry.js'},bundle:true,format:'esm',platform:'neutral',target:'es2022',write:false,logLevel:'silent'});
 await writeFile(new URL('dist/cloudflare/domira-api.js',root),result.outputFiles[0].text);
 await cp(new URL('public/',root),new URL('dist/cloudflare/assets/',root),{recursive:true});
 await writeFile(new URL('dist/cloudflare/assets/api-config.js',root),'export const API_BASE='+JSON.stringify(apiURL.origin)+';\n');
 await writeFile(new URL('dist/cloudflare/deployment.json',root),JSON.stringify({frontend:webURL.origin,api:apiURL.origin,apiScript:'domira-api.js',staticDirectory:'assets',requiredSecrets:['RENDER_ACCESS_TOKEN'],optionalSecrets:['DEEPSEEK_API_KEY','LLM_API_KEY'],bindings:{AI:'Workers AI',RENDER_DB:'D1 database'}},null,2));
+await writeAssetDeploymentInfo(new URL('dist/cloudflare/assets/',root),info);
 console.log('Prepared v2.0 Cloudflare API and static assets, including renovation quotation routes. No secrets included.');

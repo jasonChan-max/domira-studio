@@ -10,6 +10,7 @@ export default {async fetch(request,env={}){const url=new URL(request.url);try{
  if(url.pathname==='/api/floorplan/analyze')return handleFloorplan(request,env);
  if(url.pathname==='/api/render/capabilities')return json(await getRenderStatus(env));
  if(url.pathname==='/api/render/shot')return handleRenderRequest(request,env);
+ if(url.pathname==='/api/version')return json(typeof DOMIRA_BUILD_INFO==='undefined'?{version:null,sourceCommit:null,branch:null}:DOMIRA_BUILD_INFO);
  if(url.pathname==='/api/health')return json({ok:true,layout:env.LAYOUT_ENDPOINT||env.DEEPSEEK_API_KEY?'remote':'local-rules',reconstruction:!!env.RECONSTRUCTION_ENDPOINT,contact:!!env.CONTACT_WEBHOOK_URL});
  if(url.pathname==='/api/agents')return json(quoteApi.agents());
  if(url.pathname==='/api/knowledge')return json(quoteApi.knowledge());

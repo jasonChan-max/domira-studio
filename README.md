@@ -2,7 +2,7 @@
 
 支持AI空间布局、多房间模型、AR编辑、家具比较、港币报价与五视角渲染的室内设计网页应用。当前发布版本：**2.0.0**，日期：2026-10-26。
 
-- 开发分支：`v2.0`
+- 默认开发/自动发布分支：`v2.0`
 - 固定版本标签：`v2.0.0`
 - 发布说明：[CHANGELOG.md](CHANGELOG.md)
 - 已上线网站：https://domira.jiaxun-chen1218.workers.dev/
@@ -71,7 +71,7 @@ npm run dev
 |`CONTACT_WEBHOOK_URL` / `CONTACT_WEBHOOK_TOKEN`|可选联系邮件服务|
 |`RECONSTRUCTION_ENDPOINT` / `RECONSTRUCTION_API_KEY`|可选独立重建服务|
 
-本地编辑不会自动覆盖生产站，仓库也没有自动部署工作流。
+本地修改提交并推送到 `v2.0` 后，GitHub Actions会自动测试并发布前端/API，再验证提交SHA与全部资产哈希；详情见 [持续同步说明](docs/continuous-deployment.md)。部署需要一次性设置 `CLOUDFLARE_API_TOKEN` Secret。
 
 ## 数据和实际边界
 
