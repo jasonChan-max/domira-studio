@@ -5,6 +5,7 @@ import {toSceneItem} from './products.js';
 import {detectXR,xrErrorMessage} from './xr-support.js';
 import {API_BASE} from './api-config.js';
 import {createRenderStudio} from './render-studio.js';
+import {createQuotePanel} from './quote-panel.js';
 let renderStudio=null;
 let arAttempt=0;
 let library=null;
@@ -76,3 +77,5 @@ library=createFurnitureLibrary({getState:()=>state,getSelected:()=>state.items.f
 document.querySelector('#selected-details').onclick=()=>library.openSelected();
 renderStudio=createRenderStudio({scene,getState:()=>state,modal,closeModal,notify,icons});document.querySelector('#render-open').onclick=()=>renderStudio.open();document.querySelector('#render-nav').onclick=()=>renderStudio.open();
 sync();save();renderCatalog();fetch(API_BASE+'/api/health').then(r=>r.json()).then(data=>{capabilities=data;if(data.layout==='remote')$('#engine-label').textContent='AI 服務已連線 · 準備規劃你的空間';}).catch(()=>{});
+// 裝修報價面板：獨立模組，壞了也不影響 3D 編輯；服務未連線時由面板顯示原因。
+try{const quoteRoot=document.querySelector('#quote-panel');if(quoteRoot){quoteRoot.hidden=false;createQuotePanel({getState:()=>state,notify});}}catch(e){console.warn('報價面板未載入',e);}

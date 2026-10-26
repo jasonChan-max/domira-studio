@@ -1,0 +1,2348 @@
+{
+ "project": {
+  "_comment": "示例專案：45 年樓齡、380 平方呎、深水埗，與 72 歲行動不便長者同住。這是 Domira 的典型客群組合。",
+  "district": "深水埗",
+  "area_sqft": 380,
+  "building_age": 45,
+  "rooms": 2,
+  "budget_hkd": 500000,
+  "deadline_weeks": 8,
+  "occupants": [
+   {
+    "age": 72,
+    "mobility": "limited",
+    "relation": "母親"
+   },
+   {
+    "age": 35,
+    "mobility": "normal",
+    "relation": "業主"
+   }
+  ],
+  "pain_points": [
+   "廚廁漏水",
+   "無電梯",
+   "儲物不足",
+   "浴室濕滑"
+  ],
+  "goals": [
+   "方便長者起居，減少跌倒風險",
+   "盡快入住"
+  ],
+  "style": "簡約實用",
+  "floor_plan": null,
+  "photos": []
+ },
+ "standard": {
+  "lines": [
+   {
+    "code": "demolition",
+    "category": "基礎工程",
+    "name": "清拆、舊裝修拆除、泥頭清運",
+    "quantity": 380.0,
+    "unit": "sqft",
+    "unit_price": 55.0,
+    "list_price": 55.0,
+    "discount_factor": 1.0,
+    "amount": 20900,
+    "material_ratio": 0.42,
+    "materials": 8778,
+    "labour": 12122,
+    "note": "舊樓含僭建或大量瓷磚者偏高"
+   },
+   {
+    "code": "electrical",
+    "category": "基礎工程",
+    "name": "全屋電線重造（含電箱、插座、開關）",
+    "quantity": 380.0,
+    "unit": "sqft",
+    "unit_price": 190.0,
+    "list_price": 190.0,
+    "discount_factor": 1.0,
+    "amount": 72200,
+    "material_ratio": 0.42,
+    "materials": 30324,
+    "labour": 41876,
+    "note": "舊樓多為單相電，升三相須另計；須由註冊電工施工並出 WR1"
+   },
+   {
+    "code": "plumbing",
+    "category": "基礎工程",
+    "name": "全屋來水及去水重造",
+    "quantity": 380.0,
+    "unit": "sqft",
+    "unit_price": 170.0,
+    "list_price": 170.0,
+    "discount_factor": 1.0,
+    "amount": 64600,
+    "material_ratio": 0.42,
+    "materials": 27132,
+    "labour": 37468,
+    "note": "來水部分須持牌水喉匠；去水須出小型工程表格"
+   },
+   {
+    "code": "masonry",
+    "category": "泥水",
+    "name": "牆地面批盪、防水層、找平",
+    "quantity": 380.0,
+    "unit": "sqft",
+    "unit_price": 210.0,
+    "list_price": 210.0,
+    "discount_factor": 1.0,
+    "amount": 79800,
+    "material_ratio": 0.55,
+    "materials": 43890,
+    "labour": 35910,
+    "note": "浴室防水須做閉水測試"
+   },
+   {
+    "code": "flooring",
+    "category": "泥水",
+    "name": "地磚連工包料",
+    "quantity": 380.0,
+    "unit": "sqft",
+    "unit_price": 150.0,
+    "list_price": 150.0,
+    "discount_factor": 1.0,
+    "amount": 57000,
+    "material_ratio": 0.55,
+    "materials": 31350,
+    "labour": 25650,
+    "note": "木地板另計，約高 20%"
+   },
+   {
+    "code": "painting",
+    "category": "油漆",
+    "name": "全屋牆身及天花油漆",
+    "quantity": 380.0,
+    "unit": "sqft",
+    "unit_price": 65.0,
+    "list_price": 65.0,
+    "discount_factor": 1.0,
+    "amount": 24700,
+    "material_ratio": 0.35,
+    "materials": 8645,
+    "labour": 16055,
+    "note": "含批灰修補"
+   },
+   {
+    "code": "storage_platform",
+    "category": "木工",
+    "name": "儲物地台（連油壓床）",
+    "quantity": 209,
+    "unit": "sqft",
+    "unit_price": 420.0,
+    "list_price": 420.0,
+    "discount_factor": 1.0,
+    "amount": 87780,
+    "material_ratio": 0.6,
+    "materials": 52668,
+    "labour": 35112,
+    "note": "按地台覆蓋面積計"
+   },
+   {
+    "code": "kitchen_set",
+    "category": "廚廁",
+    "name": "廚房全套（20 呎內檯面、上下櫃、檯面石）",
+    "quantity": 1,
+    "unit": "set",
+    "unit_price": 60000.0,
+    "list_price": 60000.0,
+    "discount_factor": 1.0,
+    "amount": 60000,
+    "material_ratio": 0.62,
+    "materials": 37200,
+    "labour": 22800,
+    "note": "不含電器"
+   },
+   {
+    "code": "bathroom_set",
+    "category": "廚廁",
+    "name": "浴室全套（連防水、潔具、企缸）",
+    "quantity": 1,
+    "unit": "set",
+    "unit_price": 55000.0,
+    "list_price": 55000.0,
+    "discount_factor": 1.0,
+    "amount": 55000,
+    "material_ratio": 0.62,
+    "materials": 34100,
+    "labour": 20900,
+    "note": "改淋浴間與否影響不大"
+   },
+   {
+    "code": "built_in_wardrobe",
+    "category": "木工",
+    "name": "到頂衣櫃",
+    "quantity": 2,
+    "unit": "set",
+    "unit_price": 12000.0,
+    "list_price": 12000.0,
+    "discount_factor": 1.0,
+    "amount": 24000,
+    "material_ratio": 0.6,
+    "materials": 14400,
+    "labour": 9600,
+    "note": "按 1.8 m 寬估算"
+   },
+   {
+    "code": "door_room",
+    "category": "門窗",
+    "name": "房門連門框及五金",
+    "quantity": 2,
+    "unit": "set",
+    "unit_price": 3500.0,
+    "list_price": 3500.0,
+    "discount_factor": 1.0,
+    "amount": 7000,
+    "material_ratio": 0.58,
+    "materials": 4060,
+    "labour": 2940,
+    "note": "防火門另計且屬甲類不得改動"
+   },
+   {
+    "code": "aluminium_window",
+    "category": "門窗",
+    "name": "鋁窗（更換，每個）",
+    "quantity": 3,
+    "unit": "set",
+    "unit_price": 4800.0,
+    "list_price": 4800.0,
+    "discount_factor": 1.0,
+    "amount": 14400,
+    "material_ratio": 0.58,
+    "materials": 8352,
+    "labour": 6048,
+    "note": "須註冊小型工程承建商，出小型工程表格 1"
+   },
+   {
+    "code": "handrail_bath",
+    "category": "適老化",
+    "name": "浴室 L 型扶手（包膠面層，含安裝）",
+    "quantity": 2,
+    "unit": "set",
+    "unit_price": 680.0,
+    "list_price": 680.0,
+    "discount_factor": 1.0,
+    "amount": 1360,
+    "material_ratio": 0.5,
+    "materials": 680,
+    "labour": 680,
+    "note": "丙類，可自行加裝；管徑 32–50 mm"
+   },
+   {
+    "code": "handrail_corridor",
+    "category": "適老化",
+    "name": "走廊連續扶手（每米）",
+    "quantity": 6,
+    "unit": "m",
+    "unit_price": 320.0,
+    "list_price": 320.0,
+    "discount_factor": 1.0,
+    "amount": 1920,
+    "material_ratio": 0.5,
+    "materials": 960,
+    "labour": 960,
+    "note": "頂高 810–900 mm（長者友善建議值）"
+   },
+   {
+    "code": "toilet_grab_bar",
+    "category": "適老化",
+    "name": "坐廁扶手",
+    "quantity": 1,
+    "unit": "set",
+    "unit_price": 520.0,
+    "list_price": 520.0,
+    "discount_factor": 1.0,
+    "amount": 520,
+    "material_ratio": 0.5,
+    "materials": 260,
+    "labour": 260,
+    "note": "承重須 ≥1.3 kN"
+   },
+   {
+    "code": "shower_seat",
+    "category": "適老化",
+    "name": "淋浴摺合座椅",
+    "quantity": 1,
+    "unit": "set",
+    "unit_price": 1500.0,
+    "list_price": 1500.0,
+    "discount_factor": 1.0,
+    "amount": 1500,
+    "material_ratio": 0.5,
+    "materials": 750,
+    "labour": 750,
+    "note": "承重須達成人體重"
+   },
+   {
+    "code": "non_slip_tile",
+    "category": "適老化",
+    "name": "防滑地磚（浴室，連工包料）",
+    "quantity": 40,
+    "unit": "sqft",
+    "unit_price": 95.0,
+    "list_price": 95.0,
+    "discount_factor": 1.0,
+    "amount": 3800,
+    "material_ratio": 0.5,
+    "materials": 1900,
+    "labour": 1900,
+    "note": "2026 新規將防滑由建議升為強制"
+   },
+   {
+    "code": "night_light",
+    "category": "適老化",
+    "name": "感應式夜燈",
+    "quantity": 3,
+    "unit": "set",
+    "unit_price": 180.0,
+    "list_price": 180.0,
+    "discount_factor": 1.0,
+    "amount": 540,
+    "material_ratio": 0.5,
+    "materials": 270,
+    "labour": 270,
+    "note": "沿動線腳位高度安裝"
+   },
+   {
+    "code": "lever_tap",
+    "category": "適老化",
+    "name": "推桿式水龍頭（含安裝）",
+    "quantity": 3,
+    "unit": "set",
+    "unit_price": 450.0,
+    "list_price": 450.0,
+    "discount_factor": 1.0,
+    "amount": 1350,
+    "material_ratio": 0.5,
+    "materials": 675,
+    "labour": 675,
+    "note": "公屋租戶可申請房委會免費更換"
+   },
+   {
+    "code": "threshold_strip",
+    "category": "適老化",
+    "name": "門檻斜邊膠條",
+    "quantity": 2,
+    "unit": "set",
+    "unit_price": 150.0,
+    "list_price": 150.0,
+    "discount_factor": 1.0,
+    "amount": 300,
+    "material_ratio": 0.5,
+    "materials": 150,
+    "labour": 150,
+    "note": "門檻須 ≤20 mm 並倒斜邊"
+   }
+  ],
+  "category_totals": {
+   "基礎工程": 157700,
+   "泥水": 136800,
+   "油漆": 24700,
+   "木工": 111780,
+   "廚廁": 115000,
+   "門窗": 21400,
+   "適老化": 11290
+  },
+  "subtotal": 578670,
+  "material_total": 306544,
+  "labour_total": 272126,
+  "material_ratio_basis": "業界慣例估算，待供應商實報校準",
+  "fees": {
+   "設計費": 34720,
+   "工程監管費": 28934,
+   "前期及雜項": 28934,
+   "備用金（應對舊樓突發）": 46294
+  },
+  "total": 717552,
+  "budget": 500000.0,
+  "gap": 217552.0,
+  "within_budget": false,
+  "aging_subtotal": 11290,
+  "profile": "standard",
+  "profile_label": "全屋標準",
+  "profile_note": "範圍與材料都不變，原本的方案",
+  "excluded_items": [],
+  "additional_works": [],
+  "additional_total": 0,
+  "additional_note": ""
+ },
+ "economy": {
+  "lines": [
+   {
+    "code": "demolition",
+    "category": "基礎工程",
+    "name": "清拆、舊裝修拆除、泥頭清運",
+    "quantity": 380.0,
+    "unit": "sqft",
+    "unit_price": 55.0,
+    "list_price": 55.0,
+    "discount_factor": 1.0,
+    "amount": 20900,
+    "material_ratio": 0.42,
+    "materials": 8778,
+    "labour": 12122,
+    "note": "舊樓含僭建或大量瓷磚者偏高"
+   },
+   {
+    "code": "electrical",
+    "category": "基礎工程",
+    "name": "全屋電線重造（含電箱、插座、開關）",
+    "quantity": 380.0,
+    "unit": "sqft",
+    "unit_price": 190.0,
+    "list_price": 190.0,
+    "discount_factor": 1.0,
+    "amount": 72200,
+    "material_ratio": 0.42,
+    "materials": 30324,
+    "labour": 41876,
+    "note": "舊樓多為單相電，升三相須另計；須由註冊電工施工並出 WR1"
+   },
+   {
+    "code": "plumbing",
+    "category": "基礎工程",
+    "name": "全屋來水及去水重造",
+    "quantity": 380.0,
+    "unit": "sqft",
+    "unit_price": 170.0,
+    "list_price": 170.0,
+    "discount_factor": 1.0,
+    "amount": 64600,
+    "material_ratio": 0.42,
+    "materials": 27132,
+    "labour": 37468,
+    "note": "來水部分須持牌水喉匠；去水須出小型工程表格"
+   },
+   {
+    "code": "masonry",
+    "category": "泥水",
+    "name": "牆地面批盪、防水層、找平",
+    "quantity": 380.0,
+    "unit": "sqft",
+    "unit_price": 210.0,
+    "list_price": 210.0,
+    "discount_factor": 1.0,
+    "amount": 79800,
+    "material_ratio": 0.55,
+    "materials": 43890,
+    "labour": 35910,
+    "note": "浴室防水須做閉水測試"
+   },
+   {
+    "code": "flooring",
+    "category": "泥水",
+    "name": "地磚連工包料",
+    "quantity": 380.0,
+    "unit": "sqft",
+    "unit_price": 128,
+    "list_price": 150.0,
+    "discount_factor": 0.85,
+    "amount": 48640,
+    "material_ratio": 0.55,
+    "materials": 26752,
+    "labour": 21888,
+    "note": "木地板另計，約高 20%"
+   },
+   {
+    "code": "painting",
+    "category": "油漆",
+    "name": "全屋牆身及天花油漆",
+    "quantity": 380.0,
+    "unit": "sqft",
+    "unit_price": 49,
+    "list_price": 65.0,
+    "discount_factor": 0.75,
+    "amount": 18620,
+    "material_ratio": 0.35,
+    "materials": 6517,
+    "labour": 12103,
+    "note": "含批灰修補"
+   },
+   {
+    "code": "storage_platform",
+    "category": "木工",
+    "name": "儲物地台（連油壓床）",
+    "quantity": 209,
+    "unit": "sqft",
+    "unit_price": 344,
+    "list_price": 420.0,
+    "discount_factor": 0.82,
+    "amount": 71896,
+    "material_ratio": 0.6,
+    "materials": 43138,
+    "labour": 28758,
+    "note": "按地台覆蓋面積計"
+   },
+   {
+    "code": "kitchen_set",
+    "category": "廚廁",
+    "name": "廚房全套（20 呎內檯面、上下櫃、檯面石）",
+    "quantity": 1,
+    "unit": "set",
+    "unit_price": 52800,
+    "list_price": 60000.0,
+    "discount_factor": 0.88,
+    "amount": 52800,
+    "material_ratio": 0.62,
+    "materials": 32736,
+    "labour": 20064,
+    "note": "不含電器"
+   },
+   {
+    "code": "bathroom_set",
+    "category": "廚廁",
+    "name": "浴室全套（連防水、潔具、企缸）",
+    "quantity": 1,
+    "unit": "set",
+    "unit_price": 49500,
+    "list_price": 55000.0,
+    "discount_factor": 0.9,
+    "amount": 49500,
+    "material_ratio": 0.62,
+    "materials": 30690,
+    "labour": 18810,
+    "note": "改淋浴間與否影響不大"
+   },
+   {
+    "code": "built_in_wardrobe",
+    "category": "木工",
+    "name": "到頂衣櫃",
+    "quantity": 2,
+    "unit": "set",
+    "unit_price": 9840,
+    "list_price": 12000.0,
+    "discount_factor": 0.82,
+    "amount": 19680,
+    "material_ratio": 0.6,
+    "materials": 11808,
+    "labour": 7872,
+    "note": "按 1.8 m 寬估算"
+   },
+   {
+    "code": "door_room",
+    "category": "門窗",
+    "name": "房門連門框及五金",
+    "quantity": 2,
+    "unit": "set",
+    "unit_price": 2975,
+    "list_price": 3500.0,
+    "discount_factor": 0.85,
+    "amount": 5950,
+    "material_ratio": 0.58,
+    "materials": 3451,
+    "labour": 2499,
+    "note": "防火門另計且屬甲類不得改動"
+   },
+   {
+    "code": "aluminium_window",
+    "category": "門窗",
+    "name": "鋁窗（更換，每個）",
+    "quantity": 3,
+    "unit": "set",
+    "unit_price": 4224,
+    "list_price": 4800.0,
+    "discount_factor": 0.88,
+    "amount": 12672,
+    "material_ratio": 0.58,
+    "materials": 7350,
+    "labour": 5322,
+    "note": "須註冊小型工程承建商，出小型工程表格 1"
+   },
+   {
+    "code": "handrail_bath",
+    "category": "適老化",
+    "name": "浴室 L 型扶手（包膠面層，含安裝）",
+    "quantity": 2,
+    "unit": "set",
+    "unit_price": 680.0,
+    "list_price": 680.0,
+    "discount_factor": 1.0,
+    "amount": 1360,
+    "material_ratio": 0.5,
+    "materials": 680,
+    "labour": 680,
+    "note": "丙類，可自行加裝；管徑 32–50 mm"
+   },
+   {
+    "code": "handrail_corridor",
+    "category": "適老化",
+    "name": "走廊連續扶手（每米）",
+    "quantity": 6,
+    "unit": "m",
+    "unit_price": 320.0,
+    "list_price": 320.0,
+    "discount_factor": 1.0,
+    "amount": 1920,
+    "material_ratio": 0.5,
+    "materials": 960,
+    "labour": 960,
+    "note": "頂高 810–900 mm（長者友善建議值）"
+   },
+   {
+    "code": "toilet_grab_bar",
+    "category": "適老化",
+    "name": "坐廁扶手",
+    "quantity": 1,
+    "unit": "set",
+    "unit_price": 520.0,
+    "list_price": 520.0,
+    "discount_factor": 1.0,
+    "amount": 520,
+    "material_ratio": 0.5,
+    "materials": 260,
+    "labour": 260,
+    "note": "承重須 ≥1.3 kN"
+   },
+   {
+    "code": "shower_seat",
+    "category": "適老化",
+    "name": "淋浴摺合座椅",
+    "quantity": 1,
+    "unit": "set",
+    "unit_price": 1500.0,
+    "list_price": 1500.0,
+    "discount_factor": 1.0,
+    "amount": 1500,
+    "material_ratio": 0.5,
+    "materials": 750,
+    "labour": 750,
+    "note": "承重須達成人體重"
+   },
+   {
+    "code": "non_slip_tile",
+    "category": "適老化",
+    "name": "防滑地磚（浴室，連工包料）",
+    "quantity": 40,
+    "unit": "sqft",
+    "unit_price": 95.0,
+    "list_price": 95.0,
+    "discount_factor": 1.0,
+    "amount": 3800,
+    "material_ratio": 0.5,
+    "materials": 1900,
+    "labour": 1900,
+    "note": "2026 新規將防滑由建議升為強制"
+   },
+   {
+    "code": "night_light",
+    "category": "適老化",
+    "name": "感應式夜燈",
+    "quantity": 3,
+    "unit": "set",
+    "unit_price": 180.0,
+    "list_price": 180.0,
+    "discount_factor": 1.0,
+    "amount": 540,
+    "material_ratio": 0.5,
+    "materials": 270,
+    "labour": 270,
+    "note": "沿動線腳位高度安裝"
+   },
+   {
+    "code": "lever_tap",
+    "category": "適老化",
+    "name": "推桿式水龍頭（含安裝）",
+    "quantity": 3,
+    "unit": "set",
+    "unit_price": 450.0,
+    "list_price": 450.0,
+    "discount_factor": 1.0,
+    "amount": 1350,
+    "material_ratio": 0.5,
+    "materials": 675,
+    "labour": 675,
+    "note": "公屋租戶可申請房委會免費更換"
+   },
+   {
+    "code": "threshold_strip",
+    "category": "適老化",
+    "name": "門檻斜邊膠條",
+    "quantity": 2,
+    "unit": "set",
+    "unit_price": 150.0,
+    "list_price": 150.0,
+    "discount_factor": 1.0,
+    "amount": 300,
+    "material_ratio": 0.5,
+    "materials": 150,
+    "labour": 150,
+    "note": "門檻須 ≤20 mm 並倒斜邊"
+   }
+  ],
+  "category_totals": {
+   "基礎工程": 157700,
+   "泥水": 128440,
+   "油漆": 18620,
+   "木工": 91576,
+   "廚廁": 102300,
+   "門窗": 18622,
+   "適老化": 11290
+  },
+  "subtotal": 528548,
+  "material_total": 278211,
+  "labour_total": 250337,
+  "material_ratio_basis": "業界慣例估算，待供應商實報校準",
+  "fees": {
+   "設計費": 31713,
+   "工程監管費": 26427,
+   "前期及雜項": 26427,
+   "備用金（應對舊樓突發）": 42284
+  },
+  "total": 655399,
+  "budget": 500000.0,
+  "gap": 155399.0,
+  "within_budget": false,
+  "aging_subtotal": 11290,
+  "profile": "economy",
+  "profile_label": "降規格（範圍不變）",
+  "profile_note": "全屋照做，但地磚、櫃體、油漆、潔具改用經濟級材料；水電與防水不降級",
+  "excluded_items": [],
+  "additional_works": [],
+  "additional_total": 0,
+  "additional_note": ""
+ },
+ "essential": {
+  "lines": [
+   {
+    "code": "demolition",
+    "category": "基礎工程",
+    "name": "清拆、舊裝修拆除、泥頭清運",
+    "quantity": 380.0,
+    "unit": "sqft",
+    "unit_price": 55.0,
+    "list_price": 55.0,
+    "discount_factor": 1.0,
+    "amount": 20900,
+    "material_ratio": 0.42,
+    "materials": 8778,
+    "labour": 12122,
+    "note": "舊樓含僭建或大量瓷磚者偏高"
+   },
+   {
+    "code": "electrical",
+    "category": "基礎工程",
+    "name": "全屋電線重造（含電箱、插座、開關）",
+    "quantity": 380.0,
+    "unit": "sqft",
+    "unit_price": 190.0,
+    "list_price": 190.0,
+    "discount_factor": 1.0,
+    "amount": 72200,
+    "material_ratio": 0.42,
+    "materials": 30324,
+    "labour": 41876,
+    "note": "舊樓多為單相電，升三相須另計；須由註冊電工施工並出 WR1"
+   },
+   {
+    "code": "plumbing",
+    "category": "基礎工程",
+    "name": "全屋來水及去水重造",
+    "quantity": 380.0,
+    "unit": "sqft",
+    "unit_price": 170.0,
+    "list_price": 170.0,
+    "discount_factor": 1.0,
+    "amount": 64600,
+    "material_ratio": 0.42,
+    "materials": 27132,
+    "labour": 37468,
+    "note": "來水部分須持牌水喉匠；去水須出小型工程表格"
+   },
+   {
+    "code": "masonry",
+    "category": "泥水",
+    "name": "牆地面批盪、防水層、找平",
+    "quantity": 380.0,
+    "unit": "sqft",
+    "unit_price": 210.0,
+    "list_price": 210.0,
+    "discount_factor": 1.0,
+    "amount": 79800,
+    "material_ratio": 0.55,
+    "materials": 43890,
+    "labour": 35910,
+    "note": "浴室防水須做閉水測試"
+   },
+   {
+    "code": "flooring",
+    "category": "泥水",
+    "name": "地磚連工包料",
+    "quantity": 380.0,
+    "unit": "sqft",
+    "unit_price": 150.0,
+    "list_price": 150.0,
+    "discount_factor": 1.0,
+    "amount": 57000,
+    "material_ratio": 0.55,
+    "materials": 31350,
+    "labour": 25650,
+    "note": "木地板另計，約高 20%"
+   },
+   {
+    "code": "bathroom_set",
+    "category": "廚廁",
+    "name": "浴室全套（連防水、潔具、企缸）",
+    "quantity": 1,
+    "unit": "set",
+    "unit_price": 55000.0,
+    "list_price": 55000.0,
+    "discount_factor": 1.0,
+    "amount": 55000,
+    "material_ratio": 0.62,
+    "materials": 34100,
+    "labour": 20900,
+    "note": "改淋浴間與否影響不大"
+   },
+   {
+    "code": "handrail_bath",
+    "category": "適老化",
+    "name": "浴室 L 型扶手（包膠面層，含安裝）",
+    "quantity": 2,
+    "unit": "set",
+    "unit_price": 680.0,
+    "list_price": 680.0,
+    "discount_factor": 1.0,
+    "amount": 1360,
+    "material_ratio": 0.5,
+    "materials": 680,
+    "labour": 680,
+    "note": "丙類，可自行加裝；管徑 32–50 mm"
+   },
+   {
+    "code": "handrail_corridor",
+    "category": "適老化",
+    "name": "走廊連續扶手（每米）",
+    "quantity": 6,
+    "unit": "m",
+    "unit_price": 320.0,
+    "list_price": 320.0,
+    "discount_factor": 1.0,
+    "amount": 1920,
+    "material_ratio": 0.5,
+    "materials": 960,
+    "labour": 960,
+    "note": "頂高 810–900 mm（長者友善建議值）"
+   },
+   {
+    "code": "toilet_grab_bar",
+    "category": "適老化",
+    "name": "坐廁扶手",
+    "quantity": 1,
+    "unit": "set",
+    "unit_price": 520.0,
+    "list_price": 520.0,
+    "discount_factor": 1.0,
+    "amount": 520,
+    "material_ratio": 0.5,
+    "materials": 260,
+    "labour": 260,
+    "note": "承重須 ≥1.3 kN"
+   },
+   {
+    "code": "shower_seat",
+    "category": "適老化",
+    "name": "淋浴摺合座椅",
+    "quantity": 1,
+    "unit": "set",
+    "unit_price": 1500.0,
+    "list_price": 1500.0,
+    "discount_factor": 1.0,
+    "amount": 1500,
+    "material_ratio": 0.5,
+    "materials": 750,
+    "labour": 750,
+    "note": "承重須達成人體重"
+   },
+   {
+    "code": "non_slip_tile",
+    "category": "適老化",
+    "name": "防滑地磚（浴室，連工包料）",
+    "quantity": 40,
+    "unit": "sqft",
+    "unit_price": 95.0,
+    "list_price": 95.0,
+    "discount_factor": 1.0,
+    "amount": 3800,
+    "material_ratio": 0.5,
+    "materials": 1900,
+    "labour": 1900,
+    "note": "2026 新規將防滑由建議升為強制"
+   },
+   {
+    "code": "night_light",
+    "category": "適老化",
+    "name": "感應式夜燈",
+    "quantity": 3,
+    "unit": "set",
+    "unit_price": 180.0,
+    "list_price": 180.0,
+    "discount_factor": 1.0,
+    "amount": 540,
+    "material_ratio": 0.5,
+    "materials": 270,
+    "labour": 270,
+    "note": "沿動線腳位高度安裝"
+   },
+   {
+    "code": "lever_tap",
+    "category": "適老化",
+    "name": "推桿式水龍頭（含安裝）",
+    "quantity": 3,
+    "unit": "set",
+    "unit_price": 450.0,
+    "list_price": 450.0,
+    "discount_factor": 1.0,
+    "amount": 1350,
+    "material_ratio": 0.5,
+    "materials": 675,
+    "labour": 675,
+    "note": "公屋租戶可申請房委會免費更換"
+   },
+   {
+    "code": "threshold_strip",
+    "category": "適老化",
+    "name": "門檻斜邊膠條",
+    "quantity": 2,
+    "unit": "set",
+    "unit_price": 150.0,
+    "list_price": 150.0,
+    "discount_factor": 1.0,
+    "amount": 300,
+    "material_ratio": 0.5,
+    "materials": 150,
+    "labour": 150,
+    "note": "門檻須 ≤20 mm 並倒斜邊"
+   }
+  ],
+  "category_totals": {
+   "基礎工程": 157700,
+   "泥水": 136800,
+   "廚廁": 55000,
+   "適老化": 11290
+  },
+  "subtotal": 360790,
+  "material_total": 181219,
+  "labour_total": 179571,
+  "material_ratio_basis": "業界慣例估算，待供應商實報校準",
+  "fees": {
+   "設計費": 21647,
+   "工程監管費": 18040,
+   "前期及雜項": 18040,
+   "備用金（應對舊樓突發）": 28863
+  },
+  "total": 447380,
+  "budget": 500000.0,
+  "gap": -52620.0,
+  "within_budget": true,
+  "aging_subtotal": 11290,
+  "profile": "essential",
+  "profile_label": "縮範圍（只做必要）",
+  "profile_note": "只做安全與防水：清拆、水電、泥水、浴室；廚房、木工、油漆、門窗暫緩",
+  "excluded_items": [
+   "全屋牆身及天花油漆",
+   "儲物地台（連油壓床）",
+   "廚房全套（20 呎內檯面、上下櫃、檯面石）",
+   "到頂衣櫃",
+   "房門連門框及五金",
+   "鋁窗（更換，每個）"
+  ],
+  "additional_works": [],
+  "additional_total": 0,
+  "additional_note": ""
+ },
+ "retrofit": {
+  "lines": [
+   {
+    "code": "handrail_bath",
+    "category": "適老化",
+    "name": "浴室 L 型扶手（包膠面層，含安裝）",
+    "quantity": 2,
+    "unit": "set",
+    "unit_price": 680.0,
+    "list_price": 680.0,
+    "discount_factor": 1.0,
+    "amount": 1360,
+    "material_ratio": 0.5,
+    "materials": 680,
+    "labour": 680,
+    "note": "丙類，可自行加裝；管徑 32–50 mm"
+   },
+   {
+    "code": "handrail_corridor",
+    "category": "適老化",
+    "name": "走廊連續扶手（每米）",
+    "quantity": 6,
+    "unit": "m",
+    "unit_price": 320.0,
+    "list_price": 320.0,
+    "discount_factor": 1.0,
+    "amount": 1920,
+    "material_ratio": 0.5,
+    "materials": 960,
+    "labour": 960,
+    "note": "頂高 810–900 mm（長者友善建議值）"
+   },
+   {
+    "code": "toilet_grab_bar",
+    "category": "適老化",
+    "name": "坐廁扶手",
+    "quantity": 1,
+    "unit": "set",
+    "unit_price": 520.0,
+    "list_price": 520.0,
+    "discount_factor": 1.0,
+    "amount": 520,
+    "material_ratio": 0.5,
+    "materials": 260,
+    "labour": 260,
+    "note": "承重須 ≥1.3 kN"
+   },
+   {
+    "code": "shower_seat",
+    "category": "適老化",
+    "name": "淋浴摺合座椅",
+    "quantity": 1,
+    "unit": "set",
+    "unit_price": 1500.0,
+    "list_price": 1500.0,
+    "discount_factor": 1.0,
+    "amount": 1500,
+    "material_ratio": 0.5,
+    "materials": 750,
+    "labour": 750,
+    "note": "承重須達成人體重"
+   },
+   {
+    "code": "non_slip_tile",
+    "category": "適老化",
+    "name": "防滑地磚（浴室，連工包料）",
+    "quantity": 40,
+    "unit": "sqft",
+    "unit_price": 95.0,
+    "list_price": 95.0,
+    "discount_factor": 1.0,
+    "amount": 3800,
+    "material_ratio": 0.5,
+    "materials": 1900,
+    "labour": 1900,
+    "note": "2026 新規將防滑由建議升為強制"
+   },
+   {
+    "code": "night_light",
+    "category": "適老化",
+    "name": "感應式夜燈",
+    "quantity": 3,
+    "unit": "set",
+    "unit_price": 180.0,
+    "list_price": 180.0,
+    "discount_factor": 1.0,
+    "amount": 540,
+    "material_ratio": 0.5,
+    "materials": 270,
+    "labour": 270,
+    "note": "沿動線腳位高度安裝"
+   },
+   {
+    "code": "lever_tap",
+    "category": "適老化",
+    "name": "推桿式水龍頭（含安裝）",
+    "quantity": 3,
+    "unit": "set",
+    "unit_price": 450.0,
+    "list_price": 450.0,
+    "discount_factor": 1.0,
+    "amount": 1350,
+    "material_ratio": 0.5,
+    "materials": 675,
+    "labour": 675,
+    "note": "公屋租戶可申請房委會免費更換"
+   },
+   {
+    "code": "threshold_strip",
+    "category": "適老化",
+    "name": "門檻斜邊膠條",
+    "quantity": 2,
+    "unit": "set",
+    "unit_price": 150.0,
+    "list_price": 150.0,
+    "discount_factor": 1.0,
+    "amount": 300,
+    "material_ratio": 0.5,
+    "materials": 150,
+    "labour": 150,
+    "note": "門檻須 ≤20 mm 並倒斜邊"
+   }
+  ],
+  "category_totals": {
+   "適老化": 11290
+  },
+  "subtotal": 11290,
+  "material_total": 5645,
+  "labour_total": 5645,
+  "material_ratio_basis": "業界慣例估算，待供應商實報校準",
+  "fees": {
+   "設計費": 677,
+   "工程監管費": 564,
+   "前期及雜項": 564,
+   "備用金（應對舊樓突發）": 903
+  },
+  "total": 13998,
+  "budget": 500000.0,
+  "gap": -486002.0,
+  "within_budget": true,
+  "aging_subtotal": 11290,
+  "profile": "retrofit",
+  "profile_label": "舊屋改造（只加不改）",
+  "profile_note": "只加裝適老化設施與局部補強，不清拆、不動水電泥水；住戶可繼續居住，工期以日計而非以月計",
+  "excluded_items": [
+   "清拆、舊裝修拆除、泥頭清運",
+   "全屋電線重造（含電箱、插座、開關）",
+   "全屋來水及去水重造",
+   "牆地面批盪、防水層、找平",
+   "地磚連工包料",
+   "全屋牆身及天花油漆",
+   "儲物地台（連油壓床）",
+   "廚房全套（20 呎內檯面、上下櫃、檯面石）",
+   "浴室全套（連防水、潔具、企缸）",
+   "到頂衣櫃",
+   "房門連門框及五金",
+   "鋁窗（更換，每個）"
+  ],
+  "additional_works": [],
+  "additional_total": 0,
+  "additional_note": ""
+ },
+ "retrofit_items": {
+  "handrail_bath": {
+   "name": "浴室 L 型扶手（包膠面層，含安裝）",
+   "quantity": 2,
+   "unit": "set",
+   "unit_price": 680.0,
+   "amount": 1360
+  },
+  "handrail_corridor": {
+   "name": "走廊連續扶手（每米）",
+   "quantity": 6,
+   "unit": "m",
+   "unit_price": 320.0,
+   "amount": 1920
+  },
+  "toilet_grab_bar": {
+   "name": "坐廁扶手",
+   "quantity": 1,
+   "unit": "set",
+   "unit_price": 520.0,
+   "amount": 520
+  },
+  "shower_seat": {
+   "name": "淋浴摺合座椅",
+   "quantity": 1,
+   "unit": "set",
+   "unit_price": 1500.0,
+   "amount": 1500
+  },
+  "non_slip_tile": {
+   "name": "防滑地磚（浴室，連工包料）",
+   "quantity": 40,
+   "unit": "sqft",
+   "unit_price": 95.0,
+   "amount": 3800
+  },
+  "night_light": {
+   "name": "感應式夜燈",
+   "quantity": 3,
+   "unit": "set",
+   "unit_price": 180.0,
+   "amount": 540
+  },
+  "lever_tap": {
+   "name": "推桿式水龍頭（含安裝）",
+   "quantity": 3,
+   "unit": "set",
+   "unit_price": 450.0,
+   "amount": 1350
+  },
+  "threshold_strip": {
+   "name": "門檻斜邊膠條",
+   "quantity": 2,
+   "unit": "set",
+   "unit_price": 150.0,
+   "amount": 300
+  }
+ },
+ "mode_comparison": {
+  "retrofit": {
+   "label": "舊屋改造（只加不改）",
+   "note": "只加裝適老化設施與局部補強，不清拆、不動水電泥水；住戶可繼續居住，工期以日計而非以月計",
+   "total": 13998,
+   "subtotal": 11290,
+   "lines": [
+    {
+     "code": "handrail_bath",
+     "category": "適老化",
+     "name": "浴室 L 型扶手（包膠面層，含安裝）",
+     "quantity": 2,
+     "unit": "set",
+     "unit_price": 680.0,
+     "list_price": 680.0,
+     "discount_factor": 1.0,
+     "amount": 1360,
+     "material_ratio": 0.5,
+     "materials": 680,
+     "labour": 680,
+     "note": "丙類，可自行加裝；管徑 32–50 mm"
+    },
+    {
+     "code": "handrail_corridor",
+     "category": "適老化",
+     "name": "走廊連續扶手（每米）",
+     "quantity": 6,
+     "unit": "m",
+     "unit_price": 320.0,
+     "list_price": 320.0,
+     "discount_factor": 1.0,
+     "amount": 1920,
+     "material_ratio": 0.5,
+     "materials": 960,
+     "labour": 960,
+     "note": "頂高 810–900 mm（長者友善建議值）"
+    },
+    {
+     "code": "toilet_grab_bar",
+     "category": "適老化",
+     "name": "坐廁扶手",
+     "quantity": 1,
+     "unit": "set",
+     "unit_price": 520.0,
+     "list_price": 520.0,
+     "discount_factor": 1.0,
+     "amount": 520,
+     "material_ratio": 0.5,
+     "materials": 260,
+     "labour": 260,
+     "note": "承重須 ≥1.3 kN"
+    },
+    {
+     "code": "shower_seat",
+     "category": "適老化",
+     "name": "淋浴摺合座椅",
+     "quantity": 1,
+     "unit": "set",
+     "unit_price": 1500.0,
+     "list_price": 1500.0,
+     "discount_factor": 1.0,
+     "amount": 1500,
+     "material_ratio": 0.5,
+     "materials": 750,
+     "labour": 750,
+     "note": "承重須達成人體重"
+    },
+    {
+     "code": "non_slip_tile",
+     "category": "適老化",
+     "name": "防滑地磚（浴室，連工包料）",
+     "quantity": 40,
+     "unit": "sqft",
+     "unit_price": 95.0,
+     "list_price": 95.0,
+     "discount_factor": 1.0,
+     "amount": 3800,
+     "material_ratio": 0.5,
+     "materials": 1900,
+     "labour": 1900,
+     "note": "2026 新規將防滑由建議升為強制"
+    },
+    {
+     "code": "night_light",
+     "category": "適老化",
+     "name": "感應式夜燈",
+     "quantity": 3,
+     "unit": "set",
+     "unit_price": 180.0,
+     "list_price": 180.0,
+     "discount_factor": 1.0,
+     "amount": 540,
+     "material_ratio": 0.5,
+     "materials": 270,
+     "labour": 270,
+     "note": "沿動線腳位高度安裝"
+    },
+    {
+     "code": "lever_tap",
+     "category": "適老化",
+     "name": "推桿式水龍頭（含安裝）",
+     "quantity": 3,
+     "unit": "set",
+     "unit_price": 450.0,
+     "list_price": 450.0,
+     "discount_factor": 1.0,
+     "amount": 1350,
+     "material_ratio": 0.5,
+     "materials": 675,
+     "labour": 675,
+     "note": "公屋租戶可申請房委會免費更換"
+    },
+    {
+     "code": "threshold_strip",
+     "category": "適老化",
+     "name": "門檻斜邊膠條",
+     "quantity": 2,
+     "unit": "set",
+     "unit_price": 150.0,
+     "list_price": 150.0,
+     "discount_factor": 1.0,
+     "amount": 300,
+     "material_ratio": 0.5,
+     "materials": 150,
+     "labour": 150,
+     "note": "門檻須 ≤20 mm 並倒斜邊"
+    }
+   ]
+  },
+  "full": {
+   "label": "全屋標準",
+   "total": 717552,
+   "subtotal": 578670
+  },
+  "upgrade_cost": 703554,
+  "upgrade_pct": 5026.1,
+  "ratio": 51.3
+ },
+ "scenarios": [
+  {
+   "key": "standard",
+   "label": "全屋標準",
+   "note": "範圍與材料都不變，原本的方案",
+   "total": 717552,
+   "subtotal": 578670,
+   "budget": 500000.0,
+   "gap": 217552.0,
+   "within_budget": false,
+   "excluded_items": [],
+   "line_count": 20,
+   "saving_vs_standard": 0,
+   "saving_pct": 0.0
+  },
+  {
+   "key": "economy",
+   "label": "降規格（範圍不變）",
+   "note": "全屋照做，但地磚、櫃體、油漆、潔具改用經濟級材料；水電與防水不降級",
+   "total": 655399,
+   "subtotal": 528548,
+   "budget": 500000.0,
+   "gap": 155399.0,
+   "within_budget": false,
+   "excluded_items": [],
+   "line_count": 20,
+   "saving_vs_standard": 62153,
+   "saving_pct": 8.7
+  },
+  {
+   "key": "essential",
+   "label": "縮範圍（只做必要）",
+   "note": "只做安全與防水：清拆、水電、泥水、浴室；廚房、木工、油漆、門窗暫緩",
+   "total": 447380,
+   "subtotal": 360790,
+   "budget": 500000.0,
+   "gap": -52620.0,
+   "within_budget": true,
+   "excluded_items": [
+    "全屋牆身及天花油漆",
+    "儲物地台（連油壓床）",
+    "廚房全套（20 呎內檯面、上下櫃、檯面石）",
+    "到頂衣櫃",
+    "房門連門框及五金",
+    "鋁窗（更換，每個）"
+   ],
+   "line_count": 14,
+   "saving_vs_standard": 270172,
+   "saving_pct": 37.7
+  }
+ ],
+ "schedule": {
+  "full_elderly": {
+   "duration_weeks": 9.5,
+   "tasks": [
+    {
+     "id": "subsidy",
+     "name": "提交津貼申請並安排市建局視察施工前狀況",
+     "trade": "業主",
+     "weeks": 1.0,
+     "start_week": 0.0,
+     "finish_week": 1.0,
+     "slack_weeks": 0.0,
+     "critical": true,
+     "note": "硬約束：未經視察開工，該項目不獲津貼"
+    },
+    {
+     "id": "demolition",
+     "name": "清拆舊裝修及泥頭清運",
+     "trade": "清拆",
+     "weeks": 1.0,
+     "start_week": 1.0,
+     "finish_week": 2.0,
+     "slack_weeks": 0.0,
+     "critical": true,
+     "note": "舊樓須注意結構牆與甲類裝置不可動"
+    },
+    {
+     "id": "order_fixtures",
+     "name": "廚廁設備與潔具下單",
+     "trade": "廚廁",
+     "weeks": 2.0,
+     "start_week": 1.0,
+     "finish_week": 3.0,
+     "slack_weeks": 5.5,
+     "critical": false,
+     "note": "選現貨可縮短至 1 週"
+    },
+    {
+     "id": "order_joinery",
+     "name": "訂造傢俬與到頂櫃下單（廠內製作）",
+     "trade": "木工",
+     "weeks": 5.0,
+     "start_week": 1.0,
+     "finish_week": 6.0,
+     "slack_weeks": 1.5,
+     "critical": false,
+     "note": "離場製作，與泥水並行 —— 壓縮工期的關鍵"
+    },
+    {
+     "id": "windows",
+     "name": "鋁窗更換及窗邊防水",
+     "trade": "門窗",
+     "weeks": 1.0,
+     "start_week": 2.0,
+     "finish_week": 3.0,
+     "slack_weeks": 6.5,
+     "critical": false,
+     "note": "與水電同期進行，避免二次搭棚"
+    },
+    {
+     "id": "electrical",
+     "name": "全屋電線重造（註冊電工）",
+     "trade": "水電",
+     "weeks": 2.0,
+     "start_week": 2.0,
+     "finish_week": 4.0,
+     "slack_weeks": 0.0,
+     "critical": true,
+     "note": "完工須出 WR1 證明"
+    },
+    {
+     "id": "plumbing",
+     "name": "來水及去水重造（持牌水喉匠）",
+     "trade": "水電",
+     "weeks": 2.0,
+     "start_week": 2.0,
+     "finish_week": 4.0,
+     "slack_weeks": 2.0,
+     "critical": false,
+     "note": "完工須出 WWO46 及小型工程表格"
+    },
+    {
+     "id": "masonry",
+     "name": "泥水、防水、防滑地磚",
+     "trade": "泥水",
+     "weeks": 2.0,
+     "start_week": 4.0,
+     "finish_week": 6.0,
+     "slack_weeks": 0.0,
+     "critical": true,
+     "note": "浴室須做閉水測試"
+    },
+    {
+     "id": "carpentry",
+     "name": "傢俬與地台安裝",
+     "trade": "木工",
+     "weeks": 1.5,
+     "start_week": 6.0,
+     "finish_week": 7.5,
+     "slack_weeks": 0.0,
+     "critical": true,
+     "note": ""
+    },
+    {
+     "id": "fixtures",
+     "name": "廚櫃與潔具安裝",
+     "trade": "廚廁",
+     "weeks": 1.5,
+     "start_week": 6.0,
+     "finish_week": 7.5,
+     "slack_weeks": 1.0,
+     "critical": false,
+     "note": ""
+    },
+    {
+     "id": "painting",
+     "name": "油漆及收口",
+     "trade": "油漆",
+     "weeks": 1.0,
+     "start_week": 7.5,
+     "finish_week": 8.5,
+     "slack_weeks": 0.0,
+     "critical": true,
+     "note": "須待木工完成後進場"
+    },
+    {
+     "id": "aging",
+     "name": "扶手、夜燈、推桿水龍頭安裝",
+     "trade": "適老化安裝",
+     "weeks": 0.5,
+     "start_week": 8.5,
+     "finish_week": 9.0,
+     "slack_weeks": 0.0,
+     "critical": true,
+     "note": "丙類可自行施工，毋須批准；扶手位置須按使用者身高現場定位"
+    },
+    {
+     "id": "handover",
+     "name": "清潔、驗收、合規文件遞交",
+     "trade": "業主",
+     "weeks": 0.5,
+     "start_week": 9.0,
+     "finish_week": 9.5,
+     "slack_weeks": 0.0,
+     "critical": true,
+     "note": "須收齊 WR1 / WWO46 / 小型工程表格方可結案"
+    }
+   ],
+   "critical_path": [
+    {
+     "name": "提交津貼申請並安排市建局視察施工前狀況",
+     "weeks": 1.0,
+     "trade": "業主"
+    },
+    {
+     "name": "清拆舊裝修及泥頭清運",
+     "weeks": 1.0,
+     "trade": "清拆"
+    },
+    {
+     "name": "全屋電線重造（註冊電工）",
+     "weeks": 2.0,
+     "trade": "水電"
+    },
+    {
+     "name": "泥水、防水、防滑地磚",
+     "weeks": 2.0,
+     "trade": "泥水"
+    },
+    {
+     "name": "傢俬與地台安裝",
+     "weeks": 1.5,
+     "trade": "木工"
+    },
+    {
+     "name": "油漆及收口",
+     "weeks": 1.0,
+     "trade": "油漆"
+    },
+    {
+     "name": "扶手、夜燈、推桿水龍頭安裝",
+     "weeks": 0.5,
+     "trade": "適老化安裝"
+    },
+    {
+     "name": "清潔、驗收、合規文件遞交",
+     "weeks": 0.5,
+     "trade": "業主"
+    }
+   ],
+   "parallel_groups": [
+    {
+     "start_week": 1.0,
+     "tasks": [
+      "清拆舊裝修及泥頭清運",
+      "廚廁設備與潔具下單",
+      "訂造傢俬與到頂櫃下單（廠內製作）"
+     ]
+    },
+    {
+     "start_week": 2.0,
+     "tasks": [
+      "鋁窗更換及窗邊防水",
+      "全屋電線重造（註冊電工）",
+      "來水及去水重造（持牌水喉匠）"
+     ]
+    },
+    {
+     "start_week": 6.0,
+     "tasks": [
+      "傢俬與地台安裝",
+      "廚櫃與潔具安裝"
+     ]
+    }
+   ]
+  },
+  "full_elderly_no_subsidy": {
+   "duration_weeks": 8.5,
+   "tasks": [
+    {
+     "id": "demolition",
+     "name": "清拆舊裝修及泥頭清運",
+     "trade": "清拆",
+     "weeks": 1.0,
+     "start_week": 0.0,
+     "finish_week": 1.0,
+     "slack_weeks": 0.0,
+     "critical": true,
+     "note": "舊樓須注意結構牆與甲類裝置不可動"
+    },
+    {
+     "id": "order_fixtures",
+     "name": "廚廁設備與潔具下單",
+     "trade": "廚廁",
+     "weeks": 2.0,
+     "start_week": 0.0,
+     "finish_week": 2.0,
+     "slack_weeks": 5.5,
+     "critical": false,
+     "note": "選現貨可縮短至 1 週"
+    },
+    {
+     "id": "order_joinery",
+     "name": "訂造傢俬與到頂櫃下單（廠內製作）",
+     "trade": "木工",
+     "weeks": 5.0,
+     "start_week": 0.0,
+     "finish_week": 5.0,
+     "slack_weeks": 1.5,
+     "critical": false,
+     "note": "離場製作，與泥水並行 —— 壓縮工期的關鍵"
+    },
+    {
+     "id": "windows",
+     "name": "鋁窗更換及窗邊防水",
+     "trade": "門窗",
+     "weeks": 1.0,
+     "start_week": 1.0,
+     "finish_week": 2.0,
+     "slack_weeks": 6.5,
+     "critical": false,
+     "note": "與水電同期進行，避免二次搭棚"
+    },
+    {
+     "id": "electrical",
+     "name": "全屋電線重造（註冊電工）",
+     "trade": "水電",
+     "weeks": 2.0,
+     "start_week": 1.0,
+     "finish_week": 3.0,
+     "slack_weeks": 0.0,
+     "critical": true,
+     "note": "完工須出 WR1 證明"
+    },
+    {
+     "id": "plumbing",
+     "name": "來水及去水重造（持牌水喉匠）",
+     "trade": "水電",
+     "weeks": 2.0,
+     "start_week": 1.0,
+     "finish_week": 3.0,
+     "slack_weeks": 2.0,
+     "critical": false,
+     "note": "完工須出 WWO46 及小型工程表格"
+    },
+    {
+     "id": "masonry",
+     "name": "泥水、防水、防滑地磚",
+     "trade": "泥水",
+     "weeks": 2.0,
+     "start_week": 3.0,
+     "finish_week": 5.0,
+     "slack_weeks": 0.0,
+     "critical": true,
+     "note": "浴室須做閉水測試"
+    },
+    {
+     "id": "carpentry",
+     "name": "傢俬與地台安裝",
+     "trade": "木工",
+     "weeks": 1.5,
+     "start_week": 5.0,
+     "finish_week": 6.5,
+     "slack_weeks": 0.0,
+     "critical": true,
+     "note": ""
+    },
+    {
+     "id": "fixtures",
+     "name": "廚櫃與潔具安裝",
+     "trade": "廚廁",
+     "weeks": 1.5,
+     "start_week": 5.0,
+     "finish_week": 6.5,
+     "slack_weeks": 1.0,
+     "critical": false,
+     "note": ""
+    },
+    {
+     "id": "painting",
+     "name": "油漆及收口",
+     "trade": "油漆",
+     "weeks": 1.0,
+     "start_week": 6.5,
+     "finish_week": 7.5,
+     "slack_weeks": 0.0,
+     "critical": true,
+     "note": "須待木工完成後進場"
+    },
+    {
+     "id": "aging",
+     "name": "扶手、夜燈、推桿水龍頭安裝",
+     "trade": "適老化安裝",
+     "weeks": 0.5,
+     "start_week": 7.5,
+     "finish_week": 8.0,
+     "slack_weeks": 0.0,
+     "critical": true,
+     "note": "丙類可自行施工，毋須批准；扶手位置須按使用者身高現場定位"
+    },
+    {
+     "id": "handover",
+     "name": "清潔、驗收、合規文件遞交",
+     "trade": "業主",
+     "weeks": 0.5,
+     "start_week": 8.0,
+     "finish_week": 8.5,
+     "slack_weeks": 0.0,
+     "critical": true,
+     "note": "須收齊 WR1 / WWO46 / 小型工程表格方可結案"
+    }
+   ],
+   "critical_path": [
+    {
+     "name": "清拆舊裝修及泥頭清運",
+     "weeks": 1.0,
+     "trade": "清拆"
+    },
+    {
+     "name": "全屋電線重造（註冊電工）",
+     "weeks": 2.0,
+     "trade": "水電"
+    },
+    {
+     "name": "泥水、防水、防滑地磚",
+     "weeks": 2.0,
+     "trade": "泥水"
+    },
+    {
+     "name": "傢俬與地台安裝",
+     "weeks": 1.5,
+     "trade": "木工"
+    },
+    {
+     "name": "油漆及收口",
+     "weeks": 1.0,
+     "trade": "油漆"
+    },
+    {
+     "name": "扶手、夜燈、推桿水龍頭安裝",
+     "weeks": 0.5,
+     "trade": "適老化安裝"
+    },
+    {
+     "name": "清潔、驗收、合規文件遞交",
+     "weeks": 0.5,
+     "trade": "業主"
+    }
+   ],
+   "parallel_groups": [
+    {
+     "start_week": 0.0,
+     "tasks": [
+      "清拆舊裝修及泥頭清運",
+      "廚廁設備與潔具下單",
+      "訂造傢俬與到頂櫃下單（廠內製作）"
+     ]
+    },
+    {
+     "start_week": 1.0,
+     "tasks": [
+      "鋁窗更換及窗邊防水",
+      "全屋電線重造（註冊電工）",
+      "來水及去水重造（持牌水喉匠）"
+     ]
+    },
+    {
+     "start_week": 5.0,
+     "tasks": [
+      "傢俬與地台安裝",
+      "廚櫃與潔具安裝"
+     ]
+    }
+   ]
+  },
+  "full_young": {
+   "duration_weeks": 9.0,
+   "tasks": [
+    {
+     "id": "subsidy",
+     "name": "提交津貼申請並安排市建局視察施工前狀況",
+     "trade": "業主",
+     "weeks": 1.0,
+     "start_week": 0.0,
+     "finish_week": 1.0,
+     "slack_weeks": 0.0,
+     "critical": true,
+     "note": "硬約束：未經視察開工，該項目不獲津貼"
+    },
+    {
+     "id": "demolition",
+     "name": "清拆舊裝修及泥頭清運",
+     "trade": "清拆",
+     "weeks": 1.0,
+     "start_week": 1.0,
+     "finish_week": 2.0,
+     "slack_weeks": 0.0,
+     "critical": true,
+     "note": "舊樓須注意結構牆與甲類裝置不可動"
+    },
+    {
+     "id": "order_fixtures",
+     "name": "廚廁設備與潔具下單",
+     "trade": "廚廁",
+     "weeks": 2.0,
+     "start_week": 1.0,
+     "finish_week": 3.0,
+     "slack_weeks": 5.5,
+     "critical": false,
+     "note": "選現貨可縮短至 1 週"
+    },
+    {
+     "id": "order_joinery",
+     "name": "訂造傢俬與到頂櫃下單（廠內製作）",
+     "trade": "木工",
+     "weeks": 5.0,
+     "start_week": 1.0,
+     "finish_week": 6.0,
+     "slack_weeks": 1.5,
+     "critical": false,
+     "note": "離場製作，與泥水並行 —— 壓縮工期的關鍵"
+    },
+    {
+     "id": "windows",
+     "name": "鋁窗更換及窗邊防水",
+     "trade": "門窗",
+     "weeks": 1.0,
+     "start_week": 2.0,
+     "finish_week": 3.0,
+     "slack_weeks": 6.0,
+     "critical": false,
+     "note": "與水電同期進行，避免二次搭棚"
+    },
+    {
+     "id": "electrical",
+     "name": "全屋電線重造（註冊電工）",
+     "trade": "水電",
+     "weeks": 2.0,
+     "start_week": 2.0,
+     "finish_week": 4.0,
+     "slack_weeks": 0.0,
+     "critical": true,
+     "note": "完工須出 WR1 證明"
+    },
+    {
+     "id": "plumbing",
+     "name": "來水及去水重造（持牌水喉匠）",
+     "trade": "水電",
+     "weeks": 2.0,
+     "start_week": 2.0,
+     "finish_week": 4.0,
+     "slack_weeks": 2.0,
+     "critical": false,
+     "note": "完工須出 WWO46 及小型工程表格"
+    },
+    {
+     "id": "masonry",
+     "name": "泥水、防水、防滑地磚",
+     "trade": "泥水",
+     "weeks": 2.0,
+     "start_week": 4.0,
+     "finish_week": 6.0,
+     "slack_weeks": 0.0,
+     "critical": true,
+     "note": "浴室須做閉水測試"
+    },
+    {
+     "id": "carpentry",
+     "name": "傢俬與地台安裝",
+     "trade": "木工",
+     "weeks": 1.5,
+     "start_week": 6.0,
+     "finish_week": 7.5,
+     "slack_weeks": 0.0,
+     "critical": true,
+     "note": ""
+    },
+    {
+     "id": "fixtures",
+     "name": "廚櫃與潔具安裝",
+     "trade": "廚廁",
+     "weeks": 1.5,
+     "start_week": 6.0,
+     "finish_week": 7.5,
+     "slack_weeks": 1.0,
+     "critical": false,
+     "note": ""
+    },
+    {
+     "id": "painting",
+     "name": "油漆及收口",
+     "trade": "油漆",
+     "weeks": 1.0,
+     "start_week": 7.5,
+     "finish_week": 8.5,
+     "slack_weeks": 0.0,
+     "critical": true,
+     "note": "須待木工完成後進場"
+    },
+    {
+     "id": "handover",
+     "name": "清潔、驗收、合規文件遞交",
+     "trade": "業主",
+     "weeks": 0.5,
+     "start_week": 8.5,
+     "finish_week": 9.0,
+     "slack_weeks": 0.0,
+     "critical": true,
+     "note": "須收齊 WR1 / WWO46 / 小型工程表格方可結案"
+    }
+   ],
+   "critical_path": [
+    {
+     "name": "提交津貼申請並安排市建局視察施工前狀況",
+     "weeks": 1.0,
+     "trade": "業主"
+    },
+    {
+     "name": "清拆舊裝修及泥頭清運",
+     "weeks": 1.0,
+     "trade": "清拆"
+    },
+    {
+     "name": "全屋電線重造（註冊電工）",
+     "weeks": 2.0,
+     "trade": "水電"
+    },
+    {
+     "name": "泥水、防水、防滑地磚",
+     "weeks": 2.0,
+     "trade": "泥水"
+    },
+    {
+     "name": "傢俬與地台安裝",
+     "weeks": 1.5,
+     "trade": "木工"
+    },
+    {
+     "name": "油漆及收口",
+     "weeks": 1.0,
+     "trade": "油漆"
+    },
+    {
+     "name": "清潔、驗收、合規文件遞交",
+     "weeks": 0.5,
+     "trade": "業主"
+    }
+   ],
+   "parallel_groups": [
+    {
+     "start_week": 1.0,
+     "tasks": [
+      "清拆舊裝修及泥頭清運",
+      "廚廁設備與潔具下單",
+      "訂造傢俬與到頂櫃下單（廠內製作）"
+     ]
+    },
+    {
+     "start_week": 2.0,
+     "tasks": [
+      "鋁窗更換及窗邊防水",
+      "全屋電線重造（註冊電工）",
+      "來水及去水重造（持牌水喉匠）"
+     ]
+    },
+    {
+     "start_week": 6.0,
+     "tasks": [
+      "傢俬與地台安裝",
+      "廚櫃與潔具安裝"
+     ]
+    }
+   ]
+  },
+  "essential": {
+   "duration_weeks": 8.5,
+   "tasks": [
+    {
+     "id": "subsidy",
+     "name": "提交津貼申請並安排市建局視察施工前狀況",
+     "trade": "業主",
+     "weeks": 1.0,
+     "start_week": 0.0,
+     "finish_week": 1.0,
+     "slack_weeks": 0.0,
+     "critical": true,
+     "note": "硬約束：未經視察開工，該項目不獲津貼"
+    },
+    {
+     "id": "demolition",
+     "name": "清拆舊裝修及泥頭清運",
+     "trade": "清拆",
+     "weeks": 1.0,
+     "start_week": 1.0,
+     "finish_week": 2.0,
+     "slack_weeks": 0.0,
+     "critical": true,
+     "note": "舊樓須注意結構牆與甲類裝置不可動"
+    },
+    {
+     "id": "order_fixtures",
+     "name": "廚廁設備與潔具下單",
+     "trade": "廚廁",
+     "weeks": 2.0,
+     "start_week": 1.0,
+     "finish_week": 3.0,
+     "slack_weeks": 4.5,
+     "critical": false,
+     "note": "選現貨可縮短至 1 週"
+    },
+    {
+     "id": "electrical",
+     "name": "全屋電線重造（註冊電工）",
+     "trade": "水電",
+     "weeks": 2.0,
+     "start_week": 2.0,
+     "finish_week": 4.0,
+     "slack_weeks": 0.0,
+     "critical": true,
+     "note": "完工須出 WR1 證明"
+    },
+    {
+     "id": "plumbing",
+     "name": "來水及去水重造（持牌水喉匠）",
+     "trade": "水電",
+     "weeks": 2.0,
+     "start_week": 2.0,
+     "finish_week": 4.0,
+     "slack_weeks": 2.0,
+     "critical": false,
+     "note": "完工須出 WWO46 及小型工程表格"
+    },
+    {
+     "id": "masonry",
+     "name": "泥水、防水、防滑地磚",
+     "trade": "泥水",
+     "weeks": 2.0,
+     "start_week": 4.0,
+     "finish_week": 6.0,
+     "slack_weeks": 0.0,
+     "critical": true,
+     "note": "浴室須做閉水測試"
+    },
+    {
+     "id": "fixtures",
+     "name": "廚櫃與潔具安裝",
+     "trade": "廚廁",
+     "weeks": 1.5,
+     "start_week": 6.0,
+     "finish_week": 7.5,
+     "slack_weeks": 0.0,
+     "critical": true,
+     "note": ""
+    },
+    {
+     "id": "aging",
+     "name": "扶手、夜燈、推桿水龍頭安裝",
+     "trade": "適老化安裝",
+     "weeks": 0.5,
+     "start_week": 7.5,
+     "finish_week": 8.0,
+     "slack_weeks": 0.0,
+     "critical": true,
+     "note": "丙類可自行施工，毋須批准；扶手位置須按使用者身高現場定位"
+    },
+    {
+     "id": "handover",
+     "name": "清潔、驗收、合規文件遞交",
+     "trade": "業主",
+     "weeks": 0.5,
+     "start_week": 8.0,
+     "finish_week": 8.5,
+     "slack_weeks": 0.0,
+     "critical": true,
+     "note": "須收齊 WR1 / WWO46 / 小型工程表格方可結案"
+    }
+   ],
+   "critical_path": [
+    {
+     "name": "提交津貼申請並安排市建局視察施工前狀況",
+     "weeks": 1.0,
+     "trade": "業主"
+    },
+    {
+     "name": "清拆舊裝修及泥頭清運",
+     "weeks": 1.0,
+     "trade": "清拆"
+    },
+    {
+     "name": "全屋電線重造（註冊電工）",
+     "weeks": 2.0,
+     "trade": "水電"
+    },
+    {
+     "name": "泥水、防水、防滑地磚",
+     "weeks": 2.0,
+     "trade": "泥水"
+    },
+    {
+     "name": "廚櫃與潔具安裝",
+     "weeks": 1.5,
+     "trade": "廚廁"
+    },
+    {
+     "name": "扶手、夜燈、推桿水龍頭安裝",
+     "weeks": 0.5,
+     "trade": "適老化安裝"
+    },
+    {
+     "name": "清潔、驗收、合規文件遞交",
+     "weeks": 0.5,
+     "trade": "業主"
+    }
+   ],
+   "parallel_groups": [
+    {
+     "start_week": 1.0,
+     "tasks": [
+      "清拆舊裝修及泥頭清運",
+      "廚廁設備與潔具下單"
+     ]
+    },
+    {
+     "start_week": 2.0,
+     "tasks": [
+      "全屋電線重造（註冊電工）",
+      "來水及去水重造（持牌水喉匠）"
+     ]
+    }
+   ]
+  },
+  "retrofit": {
+   "duration_weeks": 2.0,
+   "tasks": [
+    {
+     "id": "protect",
+     "name": "進場保護與家具移位（不清拆）",
+     "trade": "雜工",
+     "weeks": 0.5,
+     "start_week": 0.0,
+     "finish_week": 0.5,
+     "slack_weeks": 0.0,
+     "critical": true,
+     "note": "保留原有裝修；地板、門框、家具都要包保護，避免加裝時刮花"
+    },
+    {
+     "id": "install",
+     "name": "加裝適老化設施（扶手、夜燈、防滑、推桿水龍頭）",
+     "trade": "適老化安裝",
+     "weeks": 1.0,
+     "start_week": 0.5,
+     "finish_week": 1.5,
+     "slack_weeks": 0.0,
+     "critical": true,
+     "note": "多屬丙類可自行施工，毋須批准；扶手位置須按使用者身高現場定位"
+    },
+    {
+     "id": "handover",
+     "name": "清潔、使用教學、驗收",
+     "trade": "業主",
+     "weeks": 0.5,
+     "start_week": 1.5,
+     "finish_week": 2.0,
+     "slack_weeks": 0.0,
+     "critical": true,
+     "note": "無須遞交小型工程文件；重點是教會使用者怎麼用，而不是交鎖匙"
+    }
+   ],
+   "critical_path": [
+    {
+     "name": "進場保護與家具移位（不清拆）",
+     "weeks": 0.5,
+     "trade": "雜工"
+    },
+    {
+     "name": "加裝適老化設施（扶手、夜燈、防滑、推桿水龍頭）",
+     "weeks": 1.0,
+     "trade": "適老化安裝"
+    },
+    {
+     "name": "清潔、使用教學、驗收",
+     "weeks": 0.5,
+     "trade": "業主"
+    }
+   ],
+   "parallel_groups": []
+  }
+ },
+ "hk": {
+  "restricted": 11,
+  "free": 14,
+  "approval": 17,
+  "subsidy": 22,
+  "direct": 8,
+  "dimension": 69,
+  "dim_categories": [
+   "通道",
+   "斜坡",
+   "扶手",
+   "門",
+   "升降機",
+   "衛浴",
+   "廚房",
+   "單位設計",
+   "樓梯",
+   "照明",
+   "休息設施",
+   "標識",
+   "樂齡科技"
+  ],
+  "compare": 14,
+  "sources": 11,
+  "compliance": 10,
+  "subsidy_rule_keys": [
+   "津貼上限",
+   "申請次數",
+   "與房協計劃的關係",
+   "時序限制",
+   "審批依據",
+   "圖則一致性",
+   "常見不獲資助項目"
+  ],
+  "first_dimension": {
+   "category": "通道",
+   "item": "通道淨闊度",
+   "requirement": "通道（走廊、大堂、路徑）淨闊不得少於 1050 mm",
+   "min": "1050",
+   "max": "",
+   "unit": "mm",
+   "level": "BFA 2008（法定）",
+   "mandatory": "法定強制",
+   "source": "BFA 2008 第3分部 第31(a)段",
+   "grade": "A"
+  },
+  "briefing_keys": [
+   "不可改動的甲類裝置",
+   "可自行改動的丙類裝置",
+   "須事前批准的乙類裝置",
+   "尺寸參數",
+   "津貼直接相關項目",
+   "津貼限制",
+   "合規文件"
+  ]
+ },
+ "schema_cases": {
+  "缺欄位": [
+   {
+    "summary": "ok",
+    "household_profile": {},
+    "project_tags": [],
+    "priorities": [],
+    "risks": [],
+    "missing_info": [],
+    "recommended_route": "",
+    "fast_track_hint": ""
+   },
+   [
+    "缺少欄位 household_profile，已補預設值",
+    "缺少欄位 project_tags，已補預設值",
+    "缺少欄位 priorities，已補預設值",
+    "缺少欄位 risks，已補預設值",
+    "缺少欄位 missing_info，已補預設值",
+    "缺少欄位 recommended_route，已補預設值",
+    "缺少欄位 fast_track_hint，已補預設值"
+   ]
+  ],
+  "型別錯": [
+   {
+    "layout_strategy": "",
+    "zones": [
+     "分區A",
+     "分區B"
+    ],
+    "storage_plan": {
+     "items": [
+      {
+       "a": 1
+      }
+     ]
+    },
+    "circulation": {},
+    "lighting_daylight": [],
+    "do_not_touch": [],
+    "quick_wins": [],
+    "risks": []
+   },
+   [
+    "欄位 layout_strategy 型別不符（期望字串），已改用預設值",
+    "欄位 circulation 型別不符（期望物件），已改用預設值",
+    "缺少欄位 lighting_daylight，已補預設值",
+    "缺少欄位 do_not_touch，已補預設值",
+    "缺少欄位 quick_wins，已補預設值",
+    "缺少欄位 risks，已補預設值"
+   ]
+  ],
+  "包裝清單": [
+   {
+    "design_principles": [],
+    "measures": [
+     {
+      "code": "handrail_bath"
+     }
+    ],
+    "restricted_warnings": [],
+    "subsidy_plan": {
+     "plan": "x"
+    },
+    "compliance_checklist": [],
+    "phasing": []
+   },
+   [
+    "缺少欄位 design_principles，已補預設值",
+    "缺少欄位 restricted_warnings，已補預設值",
+    "缺少欄位 compliance_checklist，已補預設值",
+    "缺少欄位 phasing，已補預設值"
+   ]
+  ],
+  "多餘欄位": [
+   {
+    "extra_note": "模型多給的",
+    "verdict": "ok",
+    "total_review": {},
+    "cost_drivers": [],
+    "optimizations": [],
+    "do_not_cut": [],
+    "subsidy_offset": {},
+    "cashflow": []
+   },
+   [
+    "缺少欄位 total_review，已補預設值",
+    "缺少欄位 cost_drivers，已補預設值",
+    "缺少欄位 optimizations，已補預設值",
+    "缺少欄位 do_not_cut，已補預設值",
+    "缺少欄位 subsidy_offset，已補預設值",
+    "缺少欄位 cashflow，已補預設值"
+   ]
+  ],
+  "頂層非物件": [
+   {},
+   [
+    "頂層不是物件（實際為 list），已全部使用預設值"
+   ]
+  ]
+ }
+}
