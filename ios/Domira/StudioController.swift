@@ -5,7 +5,6 @@ import RoomPlan
 final class StudioController: UIViewController, WKScriptMessageHandler, WKNavigationDelegate, WKUIDelegate {
     private let host = "domira.jiaxun-chen1218.workers.dev"
     private var web: WKWebView!
-    private let status = UILabel()
     private var pendingScan: String?
 
     override func viewDidLoad() {
@@ -16,10 +15,7 @@ final class StudioController: UIViewController, WKScriptMessageHandler, WKNaviga
         config.userContentController.add(WeakHandler(self), name: "domiraRoomPlan")
         config.userContentController.add(WeakHandler(self), name: "domiraShare")
         let script = #"""
-        document.addEventListener('click', async e => {
-          const a=e.target.closest('a[download]');
-          if(!a || !a.href.startsWith('blob:')) return;
-          e.preventDefault();
+        async function shareExport(a) {
           try {
             const b=await (await fetch(a.href)).blob();
             if(b.size>20*1024*1024) throw new Error('檔案超過 20 MB，請使用網頁匯出。');
@@ -27,6 +23,17 @@ final class StudioController: UIViewController, WKScriptMessageHandler, WKNaviga
             reader.onload=()=>window.webkit.messageHandlers.domiraShare.postMessage({name:a.download,data:reader.result});
             reader.readAsDataURL(b);
           } catch(err) { alert(err.message); }
+        }
+        // Studio exports use detached anchors, whose events do not bubble to document.
+        const originalAnchorClick=HTMLAnchorElement.prototype.click;
+        HTMLAnchorElement.prototype.click=function() {
+          if(this.hasAttribute('download') && this.href.startsWith('blob:')) { void shareExport(this); return; }
+          return originalAnchorClick.call(this);
+        };
+        document.addEventListener('click', e => {
+          const a=e.target.closest('a[download]');
+          if(!a || !a.href.startsWith('blob:')) return;
+          e.preventDefault(); void shareExport(a);
         },true);
         """#
         config.userContentController.addUserScript(WKUserScript(source: script, injectionTime: .atDocumentEnd, forMainFrameOnly: true))
