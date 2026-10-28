@@ -10,7 +10,12 @@ Object.assign(CATALOG,{
 });
 export const MODEL_STYLES={sofa:['cloud','timber','channel','armless'],chair:['arc','cantilever','lounge'],table:['oval','rect','pedestal'],lamp:['arc','tripod','column'],rug:['woven','plush','border'],plant:['fig','olive','palm'],bed:['platform','upholstered','canopy'],desk:['writing','trestle','executive'],cabinet:['low','fluted','tall'],bookshelf:['open','ladder','grid'],dining:['rect','round','extendable'],stool:['round','saddle','upholstered','tubular']};
 export function itemBounds(item){const a=item.rotation*Math.PI/180,c=Math.abs(Math.cos(a)),s=Math.abs(Math.sin(a));return {w:item.w*c+item.d*s,d:item.w*s+item.d*c};}
-export function clampItem(item,room){const b=itemBounds(item);return {...item,x:Math.max(-room.width/2+b.w/2,Math.min(room.width/2-b.w/2,item.x)),z:Math.max(-room.depth/2+b.d/2,Math.min(room.depth/2-b.d/2,item.z))};}
+export function clampItem(item,room){const b=itemBounds(item),clampAxis=(v,lo,hi)=>lo>hi?0:Math.max(lo,Math.min(hi,v));return {...item,x:clampAxis(item.x,-room.width/2+b.w/2,room.width/2-b.w/2),z:clampAxis(item.z,-room.depth/2+b.d/2,room.depth/2-b.d/2)};}
+export const ITEM_SIZE_LIMITS={min:.2,max:6};
+export function clampItemSize(item){const c=(v,lo,hi)=>Math.max(lo,Math.min(hi,Number.isFinite(+v)?+v:lo));return {...item,w:c(item.w,ITEM_SIZE_LIMITS.min,ITEM_SIZE_LIMITS.max),d:c(item.d,ITEM_SIZE_LIMITS.min,ITEM_SIZE_LIMITS.max),h:c(item.h,.005,ITEM_SIZE_LIMITS.max)};}
+// 拉伸：把地面交點換算成家具局部軸向的半徑，回傳要套用的尺寸增量。
+// 中心固定（兩側對稱擴張）；拖過中心不會翻面，因為取絕對值。
+export function stretchPatch(item,point,axis){const a=-item.rotation*Math.PI/180,cos=Math.cos(a),sin=Math.sin(a),dx=point.x-item.x,dz=point.z-item.z,lx=dx*cos-dz*sin,lz=dx*sin+dz*cos,size=Math.max(ITEM_SIZE_LIMITS.min,Math.abs(axis==='w'?lx:lz)*2);return axis==='w'?{w:size}:{d:size};}
 export function collisions(items){const out=[];for(let i=0;i<items.length;i++)for(let j=i+1;j<items.length;j++){const a=items[i],b=items[j];if(a.type==='rug'||b.type==='rug')continue;const aa=itemBounds(a),bb=itemBounds(b);if(Math.abs(a.x-b.x)<(aa.w+bb.w)/2-.04&&Math.abs(a.z-b.z)<(aa.d+bb.d)/2-.04)out.push([a.id,b.id]);}return out;}
 
 // Persisted rotations match furniture.js / SVG / AR: 0=+Z, 90=-X, 180=-Z, 270=+X.
