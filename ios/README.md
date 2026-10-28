@@ -19,9 +19,19 @@ Local Mac alternative: install Xcode and XcodeGen, run `cd ios && xcodegen gener
 
 Proposed Bundle ID `ltd.duomo.domira` must be registered by the account owner (not yet confirmed). Supply the non-secret Apple Team ID and create an App Store Connect app record with this identifier. Paid Apple Developer membership is required.
 
-For signed cloud builds, the account owner must create/export an Apple Distribution certificate with private key (.p12), its password and an App Store provisioning profile matching this app; create an App Store Connect API key with appropriate access. Save these only as GitHub Actions encrypted secrets, never in chat or Git: `IOS_DISTRIBUTION_P12_BASE64`, `IOS_DISTRIBUTION_PASSWORD`, `IOS_PROVISION_PROFILE_BASE64`, `ASC_API_KEY_P8_BASE64`, `ASC_KEY_ID`, `ASC_ISSUER_ID`. Signed upload workflow is the next step once the identifier/team and credential route are confirmed; this repository currently only runs unsigned builds. No testers have been invited and no Apple submission has been made.
+## Signed upload from GitHub (no local Mac)
 
-An owner without access to certificate creation tools can use Apple's Xcode Cloud onboarding with a trusted Mac session, or arrange a secure Mac session for signing setup. GitHub macOS compilation does not bypass Apple signing requirements. Do not send Apple account passwords or private keys to a developer/chat.
+The manually triggered `Upload iOS to TestFlight` workflow uses Xcode automatic signing with an Apple team API key. It is never triggered by a source push and has not yet been run. Register `ltd.duomo.domira` and create its App Store Connect app record first. The Apple Team ID is entered as a workflow input. Xcode may create signing certificates/profiles in the specified Apple team; do not run until the owner confirms this identifier and team.
+
+The account owner must create an App Store Connect **team API key** with permission to manage certificates/identifiers/profiles and upload builds, and save these GitHub Actions secrets personally:
+
+- `ASC_KEY_ID`: Apple key ID.
+- `ASC_ISSUER_ID`: Apple issuer ID.
+- `ASC_PRIVATE_KEY`: full downloaded `.p8` PEM content, including BEGIN/END lines.
+
+Never send the private key or Apple password to chat. The workflow writes the key into a restricted temporary directory on an ephemeral macOS runner, removes it on completion, archives/exports using automatic provisioning and uploads through Transporter. It does not submit App Review or invite testers. If Apple API roles or the team's automatic signing setup reject certificate creation, the workflow stops: resolve that permission with the account owner rather than bypass signing. Signed upload is unverified until the real account is configured.
+
+After processing, open App Store Connect → Domira → TestFlight, supply beta review information and select internal testers. External testers require Apple's beta review. Complete agreements personally if Apple requests them. No Apple submission or invitation has yet occurred.
 
 ## Device acceptance before external beta
 
