@@ -1,0 +1,26 @@
+name: Build iOS beta
+on:
+  push:
+    branches: ["v2.0"]
+    paths: ["ios/**", ".github/workflows/ios-build.yml"]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: macos-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: Generate Xcode project
+        run: |
+          brew install xcodegen
+          cd ios
+          xcodegen generate
+      - name: Compile for iPhone and iPad without signing
+        run: >-
+          xcodebuild -project ios/Domira.xcodeproj -scheme Domira
+          -configuration Release -sdk iphoneos -destination 'generic/platform=iOS'
+          -derivedDataPath ios/build CODE_SIGNING_ALLOWED=NO build

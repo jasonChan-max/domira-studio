@@ -15,3 +15,12 @@ node_modules/
 *.zip
 *.tar.gz
 .DS_Store
+
+# Generated Apple build output and signing material
+ios/build/
+ios/*.xcodeproj/
+*.xcarchive/
+*.ipa
+*.p12
+*.p8
+*.mobileprovision
