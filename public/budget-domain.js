@@ -1,6 +1,6 @@
 export const BUDGET_VERSION='2026-10-26';
 export const BUDGET_CATEGORIES={
- sofa:{label:'沙發',low:2500,high:7000},chair:{label:'座椅',low:800,high:2600},table:{label:'桌几',low:400,high:1800},lamp:{label:'燈具',low:400,high:1500},rug:{label:'地毯',low:400,high:1800},plant:{label:'植栽',low:250,high:1200},bed:{label:'睡床',low:1800,high:5500},desk:{label:'書桌',low:600,high:2400},cabinet:{label:'收納櫃',low:800,high:3000},bookshelf:{label:'書架',low:700,high:2500},dining:{label:'餐桌',low:900,high:3200},stool:{label:'凳子',low:150,high:600}
+ sofa:{label:'沙發',low:2500,high:7000},chair:{label:'座椅',low:800,high:2600},table:{label:'桌几',low:400,high:1800},lamp:{label:'燈具',low:400,high:1500},rug:{label:'地毯',low:400,high:1800},plant:{label:'植栽',low:250,high:1200},bed:{label:'睡床',low:1800,high:5500},desk:{label:'書桌',low:600,high:2400},cabinet:{label:'收納櫃',low:800,high:3000},bookshelf:{label:'書架',low:700,high:2500},dining:{label:'餐桌',low:900,high:3200},stool:{label:'凳子',low:150,high:600},wardrobe:{label:'衣櫃',low:1200,high:4500}
 };
 // Editorial purchasing allowances in HKD, never converted Taiwan prices or merchant offers.
 const ESTIMATE_OVERRIDES={
