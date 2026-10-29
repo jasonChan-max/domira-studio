@@ -32,6 +32,7 @@ const concepts={
  bookshelf:[['open','開放層架','#b69d76'],['ladder','斜梯層架','#a48b67'],['grid','方格書架','#b7a17f']],
  dining:[['rect','實木長餐桌','#b29b76'],['round','圓柱腳餐桌','#b8aa8b'],['extendable','伸展餐桌','#9b805b']],
  stool:[['round','圓座木凳','#a58f68'],['saddle','馬鞍木凳','#9d825b'],['upholstered','軟墊矮凳','#b7b09c']],
+ wardrobe:[['door','雙門木櫃','#b9a888'],['open','開放層架','#c2b49a'],['sliding','推拉門櫃','#a89a80']],
  plant:[['fig','琴葉榕','#59714c'],['olive','橄欖樹','#6c7d59'],['palm','散尾葵','#526d50']]
 };
 export const CONCEPT_PRODUCTS=Object.entries(concepts).flatMap(([type,styles])=>styles.map(([modelStyle,name,color])=>({...CATALOG[type],id:'concept-'+type+'-'+modelStyle,type,modelStyle,name,brand:'DOMIRA',color,price:null,source:null,material:({sofa:'織物與木框',chair:'木質與織物',table:modelStyle==='pedestal'?'洞石風格':'木質風格',lamp:'金屬、木質與織物',rug:'編織風格',plant:'室內植栽示意',bed:'木質與織物',desk:'木質與金屬',cabinet:'木質收納',bookshelf:'木質層架',dining:'木質桌面',stool:'木質與織物'})[type],dimensionBasis:'設計概念尺寸',modelNotice:'Domira 原創概念模型，無對應在售商品，不提供虛構報價。',scores:null,pros:['可直接加入場景試搭','配色與輪廓可自由組合'],cons:['未對應實際品牌商品','尺寸、材質與售價需另行選購確認']})));
