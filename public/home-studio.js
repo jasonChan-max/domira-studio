@@ -1,6 +1,7 @@
 import {API_BASE} from './api-config.js';
 import {HOME_KINDS,HOME_COLORS,homeFromAnalysis,validateHome,homePlanSVG} from './home-domain.js';
 import {imageToPixels,detectWalls,snapRoomsToWalls} from './wall-detect.js';
+import {loadWallModel,segmentWalls,wallLinesFromMask} from './wall-onnx.js';
 const hs=s=>document.querySelector(s),homeEscape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export function createHomeStudio({modal,setCleanup,createHome,notify}){
  let sequence=0,controller=null,image=null,analysis=null,draft=null,live=false;
@@ -12,15 +13,39 @@ export function createHomeStudio({modal,setCleanup,createHome,notify}){
 }
  function renderRooms(){hs('#floorplan-rooms').innerHTML=draft.rooms.map((r,index)=>`<div class="floorplan-room-row"><div class="floorplan-room-name"><span style="background:${HOME_COLORS[r.kind]}"></span><input aria-label="房間 ${index+1} 名稱" data-home-field="name" data-room-index="${index}" value="${homeEscape(r.name)}" maxlength="40"><button aria-label="移除 ${homeEscape(r.name)}" data-remove-room="${index}">×</button></div><select aria-label="房間 ${index+1} 用途" data-home-field="kind" data-room-index="${index}">${Object.entries(HOME_KINDS).map(([k,label])=>`<option value="${k}" ${k===r.kind?'selected':''}>${label}</option>`).join('')}</select>${[['x','中心 X'],['z','中心 Z'],['width','寬'],['depth','深']].map(([key,label])=>`<label>${label} / m<input type="number" step=".01" data-home-field="${key}" data-room-index="${index}" value="${r[key].toFixed(2)}" aria-label="房間 ${index+1} ${label}"></label>`).join('')}<small class="confidence ${r.confidence}">${({high:'高信心',medium:'待核對',low:'低信心'})[r.confidence]||'待核對'} · ${r.openings.length} 個門窗${r.notes?' · '+homeEscape(r.notes):''}</small>${doorEditor(r,index)}</div>`).join('');document.querySelectorAll('[data-home-field]').forEach(input=>input.onchange=()=>{const room=draft.rooms[Number(input.dataset.roomIndex)],key=input.dataset.homeField;room[key]=['name','kind'].includes(key)?input.value:Number(input.value);room.purpose=['bedroom','dining','work'].includes(room.kind)?room.kind:'living';preview();});document.querySelectorAll('[data-home-field]').forEach(input=>input.oninput=input.onchange);document.querySelectorAll('[data-remove-room]').forEach(button=>button.onclick=()=>{draft.rooms.splice(Number(button.dataset.removeRoom),1);renderRooms();preview();});document.querySelectorAll('[data-add-door]').forEach(button=>button.onclick=()=>{const[ri,edge]=button.dataset.addDoor.split(':');draft.rooms[Number(ri)].openings.push({kind:'door',edge,offset:.4,width:.2});renderRooms();preview();});document.querySelectorAll('[data-remove-opening]').forEach(button=>button.onclick=()=>{const[ri,oi]=button.dataset.removeOpening.split(':');draft.rooms[Number(ri)].openings.splice(Number(oi),1);renderRooms();preview();});}
  async function snapWithWalls(data){
-  // 用圖上實際畫著的牆線，把 AI 給的房間邊界拉正。
-  // 牆的位置用像素量（確定性），房間名稱與面積仍用 AI 的（那是語義，CV 給不了）。
+  // 牆的位置用「圖上實際畫著的線」量（確定性），房間名稱與面積仍用 AI 的（那是語義）。
+  // 兩層：先跑訓練好的 UNet（mIoU 0.769、wall 0.721），失敗才退回閾值法（免下載、但對木紋敏感）。
   try{
-   const px=await imageToPixels(image.data);
-   const walls=detectWalls(px.data,px.width,px.height);
-   if(!walls.hLines.length||!walls.vLines.length)return data;
+   let lines=null,source='';
+   try{
+    const model=await loadWallModel('models/unet-int8.onnx',(got,total)=>{
+     const el=hs('#floorplan-status');
+     if(el)el.textContent=total?'載入牆線模型 '+Math.round(got/total*100)+'%（'+Math.round(total/1048576)+'MB，只需一次）…':'載入牆線模型…';
+    });
+    const seg=await segmentWalls(image,{session:model});
+    const l=wallLinesFromMask(seg.mask,seg.width,seg.height);
+    if(l.hLines.length&&l.vLines.length){lines=l;source='分割模型';}
+   }catch(error){console.warn('[wall-onnx] 模型不可用，退回閾值法：',error);}
+
+   if(!lines){
+    const px=await imageToPixels(image.data);
+    const w=detectWalls(px.data,px.width,px.height);
+    lines={hLines:w.hLines,vLines:w.vLines};
+    source='閾值法';
+   }
+
+   // 外框：所有夠長牆線的整體範圍（模型與閾值法共用同一套估法）
+   const keepH=lines.hLines.filter(l=>l.len>=80);
+   const keepV=lines.vLines.filter(l=>l.len>=80);
+   const xs=[],ys=[];
+   for(const l of keepH){xs.push(l.from,l.to);ys.push(l.pos);}
+   for(const l of keepV){xs.push(l.pos);ys.push(l.from,l.to);}
+   if(!xs.length||!ys.length)return data;
+   const box={x0:Math.min(...xs),x1:Math.max(...xs),y0:Math.min(...ys),y1:Math.max(...ys)};
+   const walls={hLines:lines.hLines,vLines:lines.vLines,box};
    const r=snapRoomsToWalls(data.rooms,walls);
    if(!r.snappedEdges)return data;
-   return {...data,rooms:r.rooms,warnings:[...(data.warnings||[]),'已用圖上實際牆線校正房間邊界（'+r.snappedEdges+'/'+r.totalEdges+' 條邊吸附）。']};
+   return {...data,rooms:r.rooms,warnings:[...(data.warnings||[]),'已用圖上實際牆線校正房間邊界（'+source+'，'+r.snappedEdges+'/'+r.totalEdges+' 條邊吸附）。']};
   }catch(error){console.warn('[wall-detect] skipped:',error);return data;}
  }
  function showReview(data){analysis=data;const aspect=data.frame&&data.frame.w>0?data.frame.h/data.frame.w:image.height/image.width,readArea=(data.rooms||[]).reduce((s,r)=>s+(r.area_sqm||0),0),assumedArea=readArea>15?readArea*1.25:50,assumedW=Math.sqrt(assumedArea/Math.min(Math.max(aspect,.2),5)),w=Number(hs('#floorplan-known-width').value)||data.scale.width||assumedW,d=data.scale.depth||Math.round(w*aspect*100)/100;draft=homeFromAnalysis(data,w,Math.max(2,Math.min(40,d)),2.7,false);hs('#floorplan-review').hidden=false;hs('#floorplan-upload').hidden=true;hs('#floorplan-summary').textContent=data.summary;hs('#floorplan-review-image').src=image.data;hs('#home-width').value=Number(hs('#floorplan-known-width').value)||data.scale.width||'';hs('#home-depth').value=data.scale.depth||'';hs('#floorplan-scale-note').textContent=data.scale.basis==='dimensioned'?'AI 讀取到圖上尺寸，仍請按原圖或實測核對。':readArea>15?'圖上各房間標註面積合計 '+readArea.toFixed(2)+' m²（淨面積），已加 25% 牆體與公用部分換算全屋寬深；仍請逐間核對。':'圖紙沒有可驗證的尺寸標註；請填入全屋實際長寬。未填入前，寬深是按圖紙比例假設的示意值（約 40 m²）。';hs('#floorplan-warnings').textContent=['首版以矩形空間近似單層戶型，不是施工圖。',...data.warnings].join(' ');renderRooms();preview();hs('#modal').scrollTop=0;}
