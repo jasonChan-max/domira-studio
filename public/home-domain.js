@@ -287,7 +287,7 @@ export function mergeNearbyWalls(segments,tol=.8){
 // 就沿重疊較小的軸縮小較小的那一間；縮到 0.6 m 下限仍重疊就把它往遠離對方的方向移開。
 // 取捨是「寧可面積偏小，也不要讓使用者為了重疊手動改資料才能生成」——縮過的房間會寫進 warnings。
 function forceSeparate(home){
- const rooms=home.rooms,hw=home.width/2,hd=home.depth/2,shrunk=new Set();
+ const rooms=home.rooms,hw=home.width/2,hd=home.depth/2,shrunk=new Set();const orig=new Map(rooms.map(r=>[r.id,{w:r.width,d:r.depth}]));
  for(let iter=0;iter<400;iter++){
   let clean=true;
   for(let i=0;i<rooms.length;i++)for(let j=i+1;j<rooms.length;j++){
@@ -299,13 +299,16 @@ function forceSeparate(home){
    const small=alongX?(a.width<=b.width?a:b):(a.depth<=b.depth?a:b);
    const other=small===a?b:a;
    const overlap=alongX?ox:oz;
+   const minSide=1.4;
    if(alongX){
-    const next=Math.max(.6,small.width-overlap-.01);
-    if(next<small.width-.001){small.width=roundHome(next);shrunk.add(small.name);}
+    const next=small.width-overlap-.01;
+    const floor=Math.min(minSide,(orig.get(small.id)?.w||small.width)*.95);
+    if(next>=floor){small.width=roundHome(next);shrunk.add(small.name);}
     else{const dir=small.x>=other.x?1:-1;small.x=roundHome(small.x+dir*(overlap/2+.005));}
    }else{
-    const next=Math.max(.6,small.depth-overlap-.01);
-    if(next<small.depth-.001){small.depth=roundHome(next);shrunk.add(small.name);}
+    const next=small.depth-overlap-.01;
+    const floor=Math.min(minSide,(orig.get(small.id)?.d||small.depth)*.95);
+    if(next>=floor){small.depth=roundHome(next);shrunk.add(small.name);}
     else{const dir=small.z>=other.z?1:-1;small.z=roundHome(small.z+dir*(overlap/2+.005));}
    }
   }
