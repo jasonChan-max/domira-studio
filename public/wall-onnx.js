@@ -2,7 +2,8 @@
 //
 // 為什麼要多一個模型：`wall-detect.js` 那套是「閾值＋厚度＋長度」的傳統 CV，
 // 能抓到牆，但遇到木地板紋理、家具圖例、尺寸標註就開始出錯。
-// 這個模型是在 700 張真實平面圖上訓練的（mIoU 0.769、wall 0.721），對這些干擾的容忍度高得多。
+// 這個模型是在 700 張真實平面圖上訓練的（5 類含「屋外」；驗證集 mIoU 0.718、wall 0.646，
+// 但真正該看的是它在真實彩色戶型圖上的表現），對這些干擾的容忍度高得多。
 //
 // 兩者並存：模型負責「牆在哪」（語意分割），傳統 CV 當後備（模型載入失敗時仍能跑）。
 
@@ -89,7 +90,7 @@ function letterbox(source, size) {
  * @param {HTMLImageElement|HTMLCanvasElement} source 原圖
  * @param {Object} options {session, size}
  * @returns {Promise<{mask: Uint8Array, width: number, height: number, stats: Object}>}
- *          mask 是「原圖尺寸」的類別圖（0=floor 1=wall 2=door 3=window）
+ *          mask 是「原圖尺寸」的類別圖（0=floor 1=wall 2=door 3=window 4=outside）
  */
 export async function segmentWalls(source, options = {}) {
   const size = options.size || 512;
