@@ -77,6 +77,36 @@ export function buildRoomGraph(home){
  return {nodes:rooms.map(r=>({id:r.id,name:r.name,kind:r.kind})),edges};
 }
 
+// 整屋版的門扇開合檢查：門洞兩端的鉸鏈以門寬為半徑掃 90°，擋住的家具會撞門。
+// 開向在圖上未必看得出，所以兩個鉸鏈、兩側房間都算——但只檢查「與房間同側」的家具，
+// 否則貼在同一堵牆另一邊的家具會被誤報（它們的距離天然就小於門寬）。
+export function doorSwingConflicts(home){
+ const graph=buildRoomGraph(home),byId=new Map((home.rooms||[]).map(r=>[r.id,r])),out=[],seen=new Set();
+ // 點到旋轉矩形的距離；用外接軸對齊盒保守近似，夠用來判「在不在門前」
+ const reach=(px,pz,i)=>{const rad=(i.rotation||0)*Math.PI/180,ex=Math.abs(Math.cos(rad))*i.w/2+Math.abs(Math.sin(rad))*i.d/2,ez=Math.abs(Math.sin(rad))*i.w/2+Math.abs(Math.cos(rad))*i.d/2,dx=Math.max(Math.abs(px-i.x)-ex,0),dz=Math.max(Math.abs(pz-i.z)-ez,0);return Math.hypot(dx,dz);};
+ for(const e of graph.edges){
+  const a=byId.get(e.a),b=byId.get(e.b);
+  if(!a||!b)continue;
+  const horizontal=e.shared.axis==='x',w=e.door.width;
+  const wallPos=horizontal?(a.z+a.depth/2+b.z-b.depth/2)/2:(a.x+a.width/2+b.x-b.width/2)/2;
+  for(const hinge of [e.door.from,e.door.to]){
+   const hx=horizontal?hinge:wallPos,hz=horizontal?wallPos:hinge;
+   for(const [room,other] of [[a,b],[b,a]]){
+    for(const item of (room.items||[])){
+     if(item.role==='surface')continue;
+     // 只查與門「另一側」相反的那一半：家具中心必須和這個房間在同一側
+     const sameSide=horizontal?(item.z-wallPos)*(room.z-wallPos)>0:(item.x-wallPos)*(room.x-wallPos)>0;
+     if(!sameSide)continue;
+     const key=room.id+'|'+item.id;
+     if(seen.has(key))continue;
+     if(reach(hx,hz,item)<w-.001){seen.add(key);out.push({edge:`${e.a}|${e.b}`,roomId:room.id,roomName:room.name,itemId:item.id,itemName:item.name,doorWidth:w});}
+    }
+   }
+  }
+ }
+ return out;
+}
+
 // 夜間動線：睡房 →（有門相連的房間）→ 浴室。只回答「走得通嗎、門夠寬嗎、每間房淨寬夠不夠」，
 // 不假裝知道床邊到門的實際步距——那需要家具與門的連線距離，現在只有房間矩形。
 export function nightRoute(home,{mobility='standard'}={}){
