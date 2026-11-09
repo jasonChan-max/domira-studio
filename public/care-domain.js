@@ -62,21 +62,38 @@ export function careGeometry(p){
   if(i.role!=='surface'&&Math.abs(i.x)-b.w/2<profile.corridor/2-.001)failures.push({rule:'corridor',id:i.id,message:i.name+'佔用中央連續通道。'});
   if(i.role!=='surface'&&pointClearance([0,0],i)<profile.turning/2-.001)failures.push({rule:'turning',id:i.id,message:i.name+'佔用中央1.5m迴轉區。'});
  }
-	// 門扇開合區：每一道門各自算。門向房內開 90°，半徑取門寬——門板長度等於
-	// 門洞淨寬，掃過的就是以鉸鏈為心的四分之一圓。鉸鏈可能在門洞任一側，
-	// 兩種都算（保守取聯集）。同一件家具擋到多道門只報一次。
+	// 門扇開合區：真正的四分之一圓交集判定。
+	// 舊版用「家具到鉸鏈距離 < 門寬」，等於把鉸鏈周圍整圈都算禁區（含門洞側面與
+	// 後方的 270°），實際禁區比門板掃過的大一圈。改成：取家具的 9 個取樣點
+	// （中心、四角、四邊中點），任一落在扇形內才算擋住。
 	{
-		const blocking = new Map();
-		for (const d of doorList(p)) {
-			const hinges = d.axis === 'x' ? [[d.x0, d.z], [d.x1, d.z]] : [[d.x, d.z0], [d.x, d.z1]];
-			for (const [hx, hz] of hinges) for (const i of items) {
-				if (i.role === 'surface') continue;
-				if (!blocking.has(i.id) && pointClearance([hx, hz], i) < d.w - .001) blocking.set(i.id, d.w);
+		const norm=v=>((v%360)+360)%360;
+		const inFan=(px,pz,cx,cz,r,a0,a1)=>{
+			const dx=px-cx,dz=pz-cz;
+			if(dx*dx+dz*dz>r*r)return false;
+			const a=norm(Math.atan2(dz,dx)*180/Math.PI),s=norm(a0),e=norm(a1);
+			return s<=e?a>=s&&a<=e:a>=s||a<=e;
+		};
+		// 每道門兩個鉸鏈各自的扇形起訖角（atan2 以 +x 為 0、+z 為 90）
+		const fansOf=d=>d.axis==='x'
+			?[[d.x0,d.z,d.edge==='bottom'?270:0,d.edge==='bottom'?360:90],
+			  [d.x1,d.z,d.edge==='bottom'?180:90,d.edge==='bottom'?270:180]]
+			:[[d.x,d.z0,d.edge==='left'?0:90,d.edge==='left'?90:180],
+			  [d.x,d.z1,d.edge==='left'?270:180,d.edge==='left'?360:270]];
+		const blocking=new Map();
+		for(const d of doorList(p)){
+			for(const [hx,hz,a0,a1] of fansOf(d)){
+				for(const i of items){
+					if(i.role==='surface'||blocking.has(i.id))continue;
+					const rad=(i.rotation||0)*Math.PI/180,c=Math.cos(rad),s=Math.sin(rad),hw=i.w/2,hd=i.d/2;
+					const pts=[[0,0],[-hw,-hd],[hw,-hd],[hw,hd],[-hw,hd],[0,-hd],[hw,0],[0,hd],[-hw,0]];
+					if(pts.some(([x,z])=>inFan(i.x+x*c-z*s,i.z+x*s+z*c,hx,hz,d.w,a0,a1)))blocking.set(i.id,d.w);
+				}
 			}
 		}
-		for (const [id, w] of blocking) {
-			const i = items.find(x => x.id === id);
-			failures.push({ rule: 'door-swing', id, message: i.name + '位於門扇開合範圍內（門寬' + w.toFixed(2) + 'm、向房內開90°），開門時會撞到。' });
+		for(const [id,w] of blocking){
+			const i=items.find(x=>x.id===id);
+			failures.push({rule:'door-swing',id,message:i.name+'位於門扇開合範圍內（門寬'+w.toFixed(2)+'m、向房內開90°），開門時會撞到。'});
 		}
 	}
  for(const pair of careCollisions(items))failures.push({rule:'collision',message:'家具占地重疊，請移動或減少家具。',pair});
