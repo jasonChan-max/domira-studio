@@ -7,7 +7,7 @@ import {createScanStudio} from './scan-studio.js';
 import {detectXR,xrErrorMessage} from './xr-support.js';
 import {sanitizeScanRoom} from './scan-domain.js';
 import {CARE_DATA} from './care-data.js';
-import {newCareProject,validateCareProject,careGeometry,careReview,safeCareLayout,careExport,placeCareItem,CARE_PROFILES,FIELD_CHECKS,SAMPLE_ITEMS} from './care-domain.js';
+import {newCareProject,validateCareProject,careGeometry,careReview,safeCareLayout,careExport,placeCareItem,CARE_PROFILES,FIELD_CHECKS,SAMPLE_ITEMS,doorList} from './care-domain.js';
 import {createCareOnboarding} from './care-onboarding.js';
 import {ALL_CARE_PRODUCTS} from './care-catalog.js';
 import {requestedItems,remainingRequestedItems,validateBrief} from './care-brief.js';
@@ -28,9 +28,43 @@ function persist(){state.updatedAt=new Date().toISOString();try{localStorage.set
 function stage(step){const active=step==='scan'?'layout':step;$$('[data-step]').forEach(e=>e.classList.toggle('active',e.dataset.step===active));}
 async function api(path,body){const r=await fetch(API_BASE+'/api/'+path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});const d=await r.json();if(!r.ok)throw Error(d.error||'服務暫時無法使用');return d;}
 function select(id){selected=id;scene?.highlight(id);const i=state.items.find(x=>x.id===id);$('#selection').hidden=!i;if(i){$('#selected-name').textContent=i.name;$('#remove-item').textContent=i.requestKey?'暫不擺放':'移除';for(const k of ['x','z','rotation'])$('#item-'+k).value=Number(i[k].toFixed(3));}$('#xr-item').value=id||'';}
-function transform(id,delta,done){const index=state.items.findIndex(i=>i.id===id);if(index<0)return;if(delta){const candidate={...state.items[index],...delta};if('w'in delta||'d'in delta){if(Date.now()-lastWarn>2500){notify('家具尺寸已鎖定；請移除後按實物尺寸重新加入。');lastWarn=Date.now();}return;}const items=state.items.map((i,n)=>n===index?candidate:i),result=careGeometry({...state,items});if(!result.ok){if(Date.now()-lastWarn>2200){notify(result.failures[0].message+' 已保留有效位置。');lastWarn=Date.now();}scene?.update(state.items);return;}if(!dragBefore){invalidateGeneration();dragBefore=structuredClone(state);}state.items=items;state.fieldChecks={};scene?.update(items);select(id);review();}if(done&&dragBefore){history.push(dragBefore);dragBefore=null;persist();}}
+// 拖動時自由跟隨，放開才檢查。原本每一步都跑 careGeometry，違規就整件家具彈回原位，
+// 害得家具連穿過迴轉區到另一邊都做不到。現在改成「先放，放開再問」。
+function confirmPlacement(failures,revert,keep){
+ const head=failures.slice(0,3).map(f=>'<li>'+esc(f.message)+'</li>').join('');
+ const more=failures.length>3?'<p class="note">另有 '+(failures.length-3)+' 項。</p>':'';
+ modal('這個位置有問題','<ul>'+head+'</ul>'+more+'<p class="note">可以先放著調整，匯出前會列為待修正。</p><div class="modal-actions"><button class="secondary" id="place-revert">換個位置</button><button class="primary" id="place-keep">仍然放在這裡</button></div>','放置確認');
+ $('#place-revert').onclick=()=>{closeModal();revert();};
+ $('#place-keep').onclick=()=>{closeModal();keep();};
+}
+function transform(id,delta,done){const index=state.items.findIndex(i=>i.id===id);if(index<0)return;if(delta){const candidate={...state.items[index],...delta};if('w'in delta||'d'in delta){if(Date.now()-lastWarn>2500){notify('家具尺寸已鎖定；請移除後按實物尺寸重新加入。');lastWarn=Date.now();}return;}if(!dragBefore){invalidateGeneration();dragBefore=structuredClone(state);}state.items=state.items.map((i,n)=>n===index?candidate:i);state.fieldChecks={};scene?.update(state.items);select(id);review();}if(done){if(!dragBefore)return;const keepId=id,before=dragBefore,result=careGeometry(state);if(!result.ok){const revert=()=>{state=structuredClone(before);dragBefore=null;scene?.update(state.items);select(state.items.some(i=>i.id===keepId)?keepId:null);update();notify('已回到放置前的位置。');};const keep=()=>{history.push(before);dragBefore=null;persist();notify('已放置；檢查面板有 '+result.failures.length+' 項待修正。');};confirmPlacement(result.failures,revert,keep);return;}history.push(dragBefore);dragBefore=null;persist();}}
 function review(){$$('[data-check]').forEach(e=>e.checked=state.fieldChecks?.[e.dataset.check]===true);const r=careReview(state);$('#review').innerHTML=`<strong class="${r.ok?'':'blocked'}">${r.ok?'✓ 幾何檢查通過':'需要調整配置'}</strong><p class="note">通道 ${r.profile.corridor.toFixed(2)}m · 迴轉區 Ø${r.profile.turning}m · 入口目標 ${r.profile.door}m</p><ul>${r.failures.slice(0,3).map(f=>'<li class="blocked">'+esc(f.message)+'</li>').join('')}${r.pending.slice(0,3).map(p=>'<li>'+esc(p.label)+'</li>').join('')}</ul><p class="note">${r.pending.length}項待核對 · 幾何結果不等於全屋法定合規。</p><a href="#field-review">查看現場核對項目 ↓</a>`;$('#export-open').disabled=!r.ok;$('#export-open').textContent=r.ok?(r.pending.length?'匯出設計草案 ↗':'匯出設計與核對記錄 ↗'):'請先修正幾何問題';}
-function update({room=false}={}){state.unplaced=remainingRequestedItems(state);if(scene){if(room){if(state.room.source!=='demo'&&!state.room.measurement)scene.measuredRoom({...state.room,measurement:{method:'manual-rectangle'}});else scene.room(state.room);}scene.update(state.items);const profile=CARE_PROFILES[state.profile];scene.showCirculation([[0,state.room.depth/2-.1],[0,0],[0,-state.room.depth/2+.1]]);const strip=new THREE.Mesh(new THREE.PlaneGeometry(profile.corridor,state.room.depth),new THREE.MeshBasicMaterial({color:'#65b888',transparent:true,opacity:.16,depthWrite:false,side:THREE.DoubleSide}));strip.rotation.x=-Math.PI/2;strip.position.y=.034;scene.circulationGroup.add(strip);const circle=new THREE.Mesh(new THREE.RingGeometry(profile.turning/2-.01,profile.turning/2,80),new THREE.MeshBasicMaterial({color:'#338a61',side:THREE.DoubleSide}));circle.rotation.x=-Math.PI/2;circle.position.y=.036;scene.circulationGroup.add(circle);const route=scene.circulationGroup;route?.traverse(o=>{if(o.userData.route&&o.material){o.material.transparent=true;o.material.opacity=.65;}});}
+function update({room=false}={}){state.unplaced=remainingRequestedItems(state);if(scene){if(room){if(state.room.source!=='demo'&&!state.room.measurement)scene.measuredRoom({...state.room,measurement:{method:'manual-rectangle'}});else scene.room(state.room);}scene.update(state.items);const profile=CARE_PROFILES[state.profile];scene.showCirculation([[0,state.room.depth/2-.1],[0,0],[0,-state.room.depth/2+.1]]);const strip=new THREE.Mesh(new THREE.PlaneGeometry(profile.corridor,state.room.depth),new THREE.MeshBasicMaterial({color:'#65b888',transparent:true,opacity:.16,depthWrite:false,side:THREE.DoubleSide}));strip.rotation.x=-Math.PI/2;strip.position.y=.034;scene.circulationGroup.add(strip);const circle=new THREE.Mesh(new THREE.RingGeometry(profile.turning/2-.01,profile.turning/2,80),new THREE.MeshBasicMaterial({color:'#338a61',side:THREE.DoubleSide}));circle.rotation.x=-Math.PI/2;circle.position.y=.036;scene.circulationGroup.add(circle);
+  // 門扇開合區：每一道門各畫兩片（鉸鏈在門洞兩端各一種可能），與 careGeometry 的
+  // door-swing 判定同一套幾何。起居室這種有兩個門的房間，會看到四片扇形分成兩組。
+  // 角度換算：rotation.x=-90° 之後，幾何的 +Y 對應世界 -Z，所以 theta=0→+X、
+  // 90→-Z、180→-X、270→+Z。下面的 start 就是按這個對照表推的。
+  {
+    const mat=()=>new THREE.MeshBasicMaterial({color:'#e0a63c',transparent:true,opacity:.17,depthWrite:false,side:THREE.DoubleSide});
+    const addFan=(hx,hz,start,w)=>{
+      const fan=new THREE.Mesh(new THREE.CircleGeometry(w,28,start*Math.PI/180,Math.PI/2),mat());
+      fan.rotation.x=-Math.PI/2;
+      fan.position.set(hx,.037,hz);
+      scene.circulationGroup.add(fan);
+    };
+    for(const d of doorList(state)){
+      if(d.axis==='x'){
+        const inward=d.edge==='bottom'?-1:1;
+        addFan(d.x0,d.z,inward<0?0:270,d.w);
+        addFan(d.x1,d.z,inward<0?90:180,d.w);
+      }else{
+        const inward=d.edge==='right'?-1:1;
+        addFan(d.x,d.z0,inward>0?270:180,d.w);
+        addFan(d.x,d.z1,inward>0?0:90,d.w);
+      }
+    }
+  }
+  const route=scene.circulationGroup;route?.traverse(o=>{if(o.userData.route&&o.material){o.material.transparent=true;o.material.opacity=.65;}});}
  $('#project-name').textContent=state.name;$('#room-size').textContent=`${state.room.width.toFixed(2)} × ${state.room.depth.toFixed(2)}m · ${(state.room.width*state.room.depth).toFixed(1)}m²`;
  $('#capture-source').textContent=({demo:'示範房間 · 請先測量你的空間','webxr-measured':'WebXR三點測量 · 矩形參數模型','roomplan-imported':'RoomPlan匯入 · 請核對不規則區域','manual-guided':'實測尺寸 · 參數化房間','camera-guided':'攝像頭參考＋實測尺寸','measured-adjusted':'已人工修正測量尺寸','remote-reconstruction':'重建服務結果'})[state.room.source]||'匯入的房間';
  for(const k of ['width','depth','height'])$('#room-'+k).value=state.room[k];$('#profile').value=state.profile;$('#purpose').value=state.purpose||'living';$('#style').value=state.style||'warm';$('#door-width').value=state.doorWidth;$('#door-confirmed').checked=!!state.doorConfirmed;
