@@ -38,8 +38,22 @@ export function careGeometry(p){
   if(i.role!=='surface'&&Math.abs(i.x)-b.w/2<profile.corridor/2-.001)failures.push({rule:'corridor',id:i.id,message:i.name+'佔用中央連續通道。'});
   if(i.role!=='surface'&&pointClearance([0,0],i)<profile.turning/2-.001)failures.push({rule:'turning',id:i.id,message:i.name+'佔用中央1.5m迴轉區。'});
  }
+	// 門扇開合區：入口固定在下方中央（z=+depth/2），門向房內開 90°。
+	// 半徑取門寬——門板長度等於門洞淨寬，掃過的是以鉸鏈為心的四分之一圓。
+	// 不知道鉸鏈在左端還是右端，兩種都算（保守取聯集），任一被佔用就報。
+	{
+		const hingeZ = room.depth / 2, half = p.doorWidth / 2, blocking = new Set();
+		for (const hx of [-half, half]) for (const i of items) {
+			if (i.role === 'surface') continue;
+			if (pointClearance([hx, hingeZ], i) < p.doorWidth - .001) blocking.add(i.id);
+		}
+		for (const id of blocking) {
+			const i = items.find(x => x.id === id);
+			failures.push({ rule: 'door-swing', id, message: i.name + '位於門扇開合範圍內（門寬' + p.doorWidth.toFixed(2) + 'm、向房內開90°），開門時會撞到。' });
+		}
+	}
  for(const pair of careCollisions(items))failures.push({rule:'collision',message:'家具占地重疊，請移動或減少家具。',pair});
- return {ok:!failures.length,failures,profile,scope:'矩形包絡／中央通道與迴轉區／邊界及家具碰撞；非全屋法定認證',rulesVersion:CARE_RULES_VERSION};
+ return {ok:!failures.length,failures,profile,scope:'矩形包絡／中央通道與迴轉區／門扇開合區／邊界及家具碰撞；非全屋法定認證',rulesVersion:CARE_RULES_VERSION};
 }
 export function careReview(p){const geometry=careGeometry(p),pending=FIELD_CHECKS.filter(([id])=>p.fieldChecks?.[id]!==true).map(([id,label])=>({id,label}));for(const r of CARE_DATA.sheets[0].records)if(p.fieldChecks?.[r.id]!==true)pending.push({id:r.id,label:r.fields['指标项']+'：需現場核對原表參考及適用性'});if(!p.doorConfirmed)pending.unshift({id:'door-confirmation',label:'確認畫面下方中央入口的位置及實測淨寬'});if(p.room.source==='demo')pending.unshift({id:'measurement',label:'示範房間需以真實測量取代'});if(p.room.measurement?.geometry==='wall-aligned-bounding-rectangle')pending.unshift({id:'irregular-room',label:'RoomPlan包絡矩形內的不規則／凹位須另行核對'});if(p.items.some(i=>i.dimensionSource!=='user-confirmed'))pending.push({id:'furniture-dimensions',label:'所有家具示意尺寸需實物覆核'});const unplaced=remainingRequestedItems(p);if(unplaced.length)pending.push({id:'unplaced-products',label:unplaced.length+'件所選產品尚未放入空間'});return {...geometry,pending,status:!geometry.ok?'blocked':pending.length?'review-required':'checks-recorded',certified:false};}
 export function newCareProject(room={width:6,depth:4.5,height:2.7,source:'demo'},name='我的樂齡空間'){return {format:CARE_VERSION,id:crypto.randomUUID(),name,room,profile:'wheelchair',purpose:'living',style:'warm',doorWidth:.9,doorConfirmed:false,items:[],fieldChecks:{},updatedAt:new Date().toISOString()};}
