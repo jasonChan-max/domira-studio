@@ -28,28 +28,55 @@ export function validateCareProject(p){
  if(!Number.isFinite(p.doorWidth)||p.doorWidth<.3||p.doorWidth>3||p.doorWidth>p.room.width)throw Error('入口淨寬不正確。');
  return p;
 }
+// 把房間的門統一成局部座標清單。
+// p.doors 是從整屋帶進來的（edge＋offset＋width，與 home 的 openings 同格式），
+// 支援起居室這種「一個通玄關、一個通睡房」的多門情況；
+// 沒有 p.doors 就退回舊行為：單一入口放在下方中央（doorWidth）。
+export function doorList(p){
+ const W=p.room.width,D=p.room.depth,clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+ if(Array.isArray(p.doors)&&p.doors.length){
+  return p.doors.map(d=>{
+   const w=clamp(Number(d.width)||.9,.3,3),off=clamp(Number(d.offset)||0,0,1);
+   if(d.edge==='bottom'||d.edge==='top'){
+    const z=d.edge==='bottom'?D/2:-D/2,x0=-W/2+off*W;
+    return {edge:d.edge,axis:'x',z,x0,x1:x0+w,w};
+   }
+   const x=d.edge==='right'?W/2:-W/2,z0=-D/2+off*D;
+   return {edge:d.edge||'left',axis:'z',x,z0,z1:z0+w,w};
+  });
+ }
+ const w=clamp(Number(p.doorWidth)||.9,.3,3),x0=-W/2+(1-w/W)/2*W;
+ return [{edge:'bottom',axis:'x',z:D/2,x0,x1:x0+w,w}];
+}
 export function careGeometry(p){
  validateCareProject(p);const {room,items}=p,profile=CARE_PROFILES[p.profile],failures=[];
  if(room.width<profile.turning||room.depth<profile.turning)failures.push({rule:'turning',message:'房間未能容納中央1.5m迴轉區。'});
- if(p.doorWidth<profile.door)failures.push({rule:'door',message:`入口淨寬${p.doorWidth.toFixed(2)}m，低於本方案${profile.door}m目標。`});
+ if(!Array.isArray(p.doors)||!p.doors.length){
+  if(p.doorWidth<profile.door)failures.push({rule:'door',message:`入口淨寬${p.doorWidth.toFixed(2)}m，低於本方案${profile.door}m目標。`});
+ }else{
+  for(const d of doorList(p))if(d.w<profile.door)failures.push({rule:'door',edge:d.edge,message:`${d.edge}牆的門淨寬${d.w.toFixed(2)}m，低於本方案${profile.door}m目標。`});
+ }
  for(const i of items){const b=itemBounds(i);if(Math.abs(i.x)+b.w/2>room.width/2+.001||Math.abs(i.z)+b.d/2>room.depth/2+.001)failures.push({rule:'bounds',id:i.id,message:i.name+'超出房間邊界。'});
   if(i.h>room.height)failures.push({rule:'height',id:i.id,message:i.name+'高於房間層高。'});
   // Central strip and circular turning zone are explicit conservative design reservations.
   if(i.role!=='surface'&&Math.abs(i.x)-b.w/2<profile.corridor/2-.001)failures.push({rule:'corridor',id:i.id,message:i.name+'佔用中央連續通道。'});
   if(i.role!=='surface'&&pointClearance([0,0],i)<profile.turning/2-.001)failures.push({rule:'turning',id:i.id,message:i.name+'佔用中央1.5m迴轉區。'});
  }
-	// 門扇開合區：入口固定在下方中央（z=+depth/2），門向房內開 90°。
-	// 半徑取門寬——門板長度等於門洞淨寬，掃過的是以鉸鏈為心的四分之一圓。
-	// 不知道鉸鏈在左端還是右端，兩種都算（保守取聯集），任一被佔用就報。
+	// 門扇開合區：每一道門各自算。門向房內開 90°，半徑取門寬——門板長度等於
+	// 門洞淨寬，掃過的就是以鉸鏈為心的四分之一圓。鉸鏈可能在門洞任一側，
+	// 兩種都算（保守取聯集）。同一件家具擋到多道門只報一次。
 	{
-		const hingeZ = room.depth / 2, half = p.doorWidth / 2, blocking = new Set();
-		for (const hx of [-half, half]) for (const i of items) {
-			if (i.role === 'surface') continue;
-			if (pointClearance([hx, hingeZ], i) < p.doorWidth - .001) blocking.add(i.id);
+		const blocking = new Map();
+		for (const d of doorList(p)) {
+			const hinges = d.axis === 'x' ? [[d.x0, d.z], [d.x1, d.z]] : [[d.x, d.z0], [d.x, d.z1]];
+			for (const [hx, hz] of hinges) for (const i of items) {
+				if (i.role === 'surface') continue;
+				if (!blocking.has(i.id) && pointClearance([hx, hz], i) < d.w - .001) blocking.set(i.id, d.w);
+			}
 		}
-		for (const id of blocking) {
+		for (const [id, w] of blocking) {
 			const i = items.find(x => x.id === id);
-			failures.push({ rule: 'door-swing', id, message: i.name + '位於門扇開合範圍內（門寬' + p.doorWidth.toFixed(2) + 'm、向房內開90°），開門時會撞到。' });
+			failures.push({ rule: 'door-swing', id, message: i.name + '位於門扇開合範圍內（門寬' + w.toFixed(2) + 'm、向房內開90°），開門時會撞到。' });
 		}
 	}
  for(const pair of careCollisions(items))failures.push({rule:'collision',message:'家具占地重疊，請移動或減少家具。',pair});

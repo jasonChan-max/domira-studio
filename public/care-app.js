@@ -7,7 +7,7 @@ import {createScanStudio} from './scan-studio.js';
 import {detectXR,xrErrorMessage} from './xr-support.js';
 import {sanitizeScanRoom} from './scan-domain.js';
 import {CARE_DATA} from './care-data.js';
-import {newCareProject,validateCareProject,careGeometry,careReview,safeCareLayout,careExport,placeCareItem,CARE_PROFILES,FIELD_CHECKS,SAMPLE_ITEMS} from './care-domain.js';
+import {newCareProject,validateCareProject,careGeometry,careReview,safeCareLayout,careExport,placeCareItem,CARE_PROFILES,FIELD_CHECKS,SAMPLE_ITEMS,doorList} from './care-domain.js';
 import {createCareOnboarding} from './care-onboarding.js';
 import {ALL_CARE_PRODUCTS} from './care-catalog.js';
 import {requestedItems,remainingRequestedItems,validateBrief} from './care-brief.js';
@@ -31,15 +31,28 @@ function select(id){selected=id;scene?.highlight(id);const i=state.items.find(x=
 function transform(id,delta,done){const index=state.items.findIndex(i=>i.id===id);if(index<0)return;if(delta){const candidate={...state.items[index],...delta};if('w'in delta||'d'in delta){if(Date.now()-lastWarn>2500){notify('家具尺寸已鎖定；請移除後按實物尺寸重新加入。');lastWarn=Date.now();}return;}const items=state.items.map((i,n)=>n===index?candidate:i),result=careGeometry({...state,items});if(!result.ok){if(Date.now()-lastWarn>2200){notify(result.failures[0].message+' 已保留有效位置。');lastWarn=Date.now();}scene?.update(state.items);return;}if(!dragBefore){invalidateGeneration();dragBefore=structuredClone(state);}state.items=items;state.fieldChecks={};scene?.update(items);select(id);review();}if(done&&dragBefore){history.push(dragBefore);dragBefore=null;persist();}}
 function review(){$$('[data-check]').forEach(e=>e.checked=state.fieldChecks?.[e.dataset.check]===true);const r=careReview(state);$('#review').innerHTML=`<strong class="${r.ok?'':'blocked'}">${r.ok?'✓ 幾何檢查通過':'需要調整配置'}</strong><p class="note">通道 ${r.profile.corridor.toFixed(2)}m · 迴轉區 Ø${r.profile.turning}m · 入口目標 ${r.profile.door}m</p><ul>${r.failures.slice(0,3).map(f=>'<li class="blocked">'+esc(f.message)+'</li>').join('')}${r.pending.slice(0,3).map(p=>'<li>'+esc(p.label)+'</li>').join('')}</ul><p class="note">${r.pending.length}項待核對 · 幾何結果不等於全屋法定合規。</p><a href="#field-review">查看現場核對項目 ↓</a>`;$('#export-open').disabled=!r.ok;$('#export-open').textContent=r.ok?(r.pending.length?'匯出設計草案 ↗':'匯出設計與核對記錄 ↗'):'請先修正幾何問題';}
 function update({room=false}={}){state.unplaced=remainingRequestedItems(state);if(scene){if(room){if(state.room.source!=='demo'&&!state.room.measurement)scene.measuredRoom({...state.room,measurement:{method:'manual-rectangle'}});else scene.room(state.room);}scene.update(state.items);const profile=CARE_PROFILES[state.profile];scene.showCirculation([[0,state.room.depth/2-.1],[0,0],[0,-state.room.depth/2+.1]]);const strip=new THREE.Mesh(new THREE.PlaneGeometry(profile.corridor,state.room.depth),new THREE.MeshBasicMaterial({color:'#65b888',transparent:true,opacity:.16,depthWrite:false,side:THREE.DoubleSide}));strip.rotation.x=-Math.PI/2;strip.position.y=.034;scene.circulationGroup.add(strip);const circle=new THREE.Mesh(new THREE.RingGeometry(profile.turning/2-.01,profile.turning/2,80),new THREE.MeshBasicMaterial({color:'#338a61',side:THREE.DoubleSide}));circle.rotation.x=-Math.PI/2;circle.position.y=.036;scene.circulationGroup.add(circle);
-  // 門扇開合區：入口在房間下方中央，門向房內開 90°。左右鉸鏈都畫，與 careGeometry
-  // 的 door-swing 判定保持同一套幾何——使用者看到的兩片扇形，就是那條規則在擋的範圍。
+  // 門扇開合區：每一道門各畫兩片（鉸鏈在門洞兩端各一種可能），與 careGeometry 的
+  // door-swing 判定同一套幾何。起居室這種有兩個門的房間，會看到四片扇形分成兩組。
+  // 角度換算：rotation.x=-90° 之後，幾何的 +Y 對應世界 -Z，所以 theta=0→+X、
+  // 90→-Z、180→-X、270→+Z。下面的 start 就是按這個對照表推的。
   {
-    const dw=Number(state.doorWidth)||.9,halfDw=dw/2,hingeZ=state.room.depth/2;
-    for(const [hx,thetaStart] of [[-halfDw,0],[halfDw,Math.PI/2]]){
-      const fan=new THREE.Mesh(new THREE.CircleGeometry(dw,28,thetaStart,Math.PI/2),new THREE.MeshBasicMaterial({color:'#e0a63c',transparent:true,opacity:.17,depthWrite:false,side:THREE.DoubleSide}));
+    const mat=()=>new THREE.MeshBasicMaterial({color:'#e0a63c',transparent:true,opacity:.17,depthWrite:false,side:THREE.DoubleSide});
+    const addFan=(hx,hz,start,w)=>{
+      const fan=new THREE.Mesh(new THREE.CircleGeometry(w,28,start*Math.PI/180,Math.PI/2),mat());
       fan.rotation.x=-Math.PI/2;
-      fan.position.set(hx,.037,hingeZ);
+      fan.position.set(hx,.037,hz);
       scene.circulationGroup.add(fan);
+    };
+    for(const d of doorList(state)){
+      if(d.axis==='x'){
+        const inward=d.edge==='bottom'?-1:1;
+        addFan(d.x0,d.z,inward<0?0:270,d.w);
+        addFan(d.x1,d.z,inward<0?90:180,d.w);
+      }else{
+        const inward=d.edge==='right'?-1:1;
+        addFan(d.x,d.z0,inward>0?270:180,d.w);
+        addFan(d.x,d.z1,inward>0?0:90,d.w);
+      }
     }
   }
   const route=scene.circulationGroup;route?.traverse(o=>{if(o.userData.route&&o.material){o.material.transparent=true;o.material.opacity=.65;}});}
