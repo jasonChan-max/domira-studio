@@ -103,4 +103,4 @@ export function safeCareLayout(project,proposal=[]){
  }
  return {items:p.items,skipped,review:careReview(p),description:'沿牆配置，保留中央連續通道與1.5m迴轉區；超出空間的家具不加入。'};
 }
-export function careExport(p){validateCareProject(p);return {...p,unplaced:remainingRequestedItems(p),updatedAt:new Date().toISOString(),review:careReview(p),units:'m',coordinateSystem:'right-handed-y-up',origin:'floor-center',rotationConvention:'degrees; local front +z; clockwise plan rotation',doorLocation:'bottom-center-confirm-on-site'};}
+export function careExport(p){validateCareProject(p);return {...p,unplaced:remainingRequestedItems(p),updatedAt:new Date().toISOString(),review:careReview(p),units:'m',coordinateSystem:'right-handed-y-up',origin:'floor-center',rotationConvention:'degrees; local front +z; clockwise plan rotation',doorLocation:(Array.isArray(p.doors)&&p.doors.length)?'imported-from-floorplan-verify-on-site':'bottom-center-confirm-on-site'};}
