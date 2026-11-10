@@ -101,7 +101,13 @@ export async function handleCareChat(request,env={}){
     let result;
     try{result=JSON.parse(reply);}catch{throw new ChatError('未收到可驗算的擺位提案，請重試。','CARE_CHAT_INVALID_REPLY',502);}
     if(typeof result?.reply!=='string'||!result.reply.trim())throw new ChatError('擺位提案缺少說明，請重試。','CARE_CHAT_INVALID_REPLY',502);
-    try{const {moves}=validateChatMoves(input.scene,result.moves);return json({reply:result.reply.trim(),model:config.model,moves});}
+    try{
+     const {moves}=validateChatMoves(input.scene,result.moves);
+     // The proposal card presents validated coordinates and angles. Free-form model
+     // prose can describe a heading that disagrees with the actual rotation.
+     const reply=moves.length?`已找到 ${moves.length} 項通過驗算的擺位，請核對下方移動距離及角度。`:result.reply.trim();
+     return json({reply,model:config.model,moves});
+    }
     catch(error){return json({reply:'這次提案未通過幾何或家具資料驗算。'+error.message,model:config.model,moves:[]});}
    }
    return json({reply:reply.trim(),model:config.model});
