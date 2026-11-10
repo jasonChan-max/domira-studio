@@ -1,5 +1,6 @@
-import {validateHome} from './home-domain.js';
+import {HOME_KINDS,validateHome} from './home-domain.js';
 import {newCareProject,validateCareProject,careReview} from './care-domain.js';
+import {ALL_CARE_PRODUCTS} from './care-catalog.js';
 export const HK_SOURCE='https://www.censtatd.gov.hk/en/data/stat_report/product/B1120118/att/B11201182021XXXXB0100.pdf';
 export function hkCareHome(){
  const w=6.4,d=6.40625,top=3.8,bottom=d-top;
@@ -9,6 +10,42 @@ export function hkCareHome(){
  home.rooms[0].openings=[door('bottom',2.65/3.6,.9/3.6),door('right',2.25/3.8,.9/3.8)];home.rooms[1].openings=[door('left',2.25/3.8,.9/3.8)];home.rooms[2].openings=[door('right',.45/bottom,.9/bottom)];home.rooms[3].openings=[door('top',.55/2.2,.9/2.2),door('left',.45/bottom,.9/bottom),door('right',.45/bottom,.9/bottom),door('bottom',.65/2.2,.9/2.2)];home.rooms[4].openings=[door('left',.45/bottom,.9/bottom)];
  return validateHome(home);
 }
-export function roomCareProject(home,room){return newCareProject({width:room.width,depth:room.depth,height:room.height,source:home.source==='hk-elderly-demo'?'demo':'manual-guided',units:'m'},room.name);}
+export function roomCareProject(home,room){
+ const purpose=['bedroom','dining'].includes(room.kind)?room.kind:'living';
+ return {...newCareProject({width:room.width,depth:room.depth,height:room.height,source:home.source==='hk-elderly-demo'?'demo':'manual-guided',units:'m'},room.name),purpose};
+}
+
+export const canPlanCareRoom=room=>[room.width,room.depth].every(value=>value>=2&&value<=15);
+
+export function createManualCareHome(dimensions,entries){
+ const {width,depth,height}=dimensions;
+ const rooms=entries.map((entry,index)=>{
+  const {name,kind,left,top,width:roomWidth,depth:roomDepth}=entry;
+  if(!name?.trim()||!Object.hasOwn(HOME_KINDS,kind)||![left,top,roomWidth,roomDepth].every(Number.isFinite))throw Error(`請填妥第 ${index+1} 個房間。`);
+  if(left<0||top<0||left+roomWidth>width+1e-8||top+roomDepth>depth+1e-8)throw Error(name+' 超出全屋範圍。');
+  return {id:`manual-${index+1}`,name:name.trim(),kind,purpose:kind,width:roomWidth,depth:roomDepth,height,
+   x:left+roomWidth/2-width/2,z:top+roomDepth/2-depth/2,items:[],openings:[]};
+ });
+ for(const [index,a] of rooms.entries())for(const b of rooms.slice(index+1)){
+  if((a.width+b.width)/2-Math.abs(a.x-b.x)>1e-8&&(a.depth+b.depth)/2-Math.abs(a.z-b.z)>1e-8)throw Error(a.name+' 與 '+b.name+' 重疊。');
+ }
+ if(!rooms.some(canPlanCareRoom))throw Error('至少需要一間長寬均為 2–15 m 的可規劃房間。');
+ return validateHome({format:'domira.home.v1',width,depth,height,source:'care-manual',scaleConfirmed:false,rooms});
+}
+
+export function careRoomAssignments(home,brief,overrides={}){
+ const rooms=home.rooms.filter(canPlanCareRoom);
+ const allocations={};
+ for(const selection of brief.selections){
+  const {productId}=selection,product=ALL_CARE_PRODUCTS.find(p=>p.productId===productId);
+  const kinds=product?.careKind==='care-bed'||productId==='HOME-BED'||productId==='AID-019'?['bedroom']:
+   ['stool','shower','folding','swivel','commode','toilet','rail','surface'].includes(product?.careKind)?['bathroom']:
+   productId==='HOME-DINING'?['dining','living']:['living','dining'];
+  const chosen=rooms.find(room=>room.id===overrides?.[productId]);
+  const recommended=kinds.map(kind=>rooms.find(room=>room.kind===kind)).find(Boolean);
+  allocations[productId]=(chosen||recommended||rooms[0])?.id;
+ }
+ return allocations;
+}
 export function validateCareWhole(whole){if(!whole||whole.format!=='domira.care.home.v1')throw Error('全屋格式不正確');validateHome(whole.home);if(!whole.home.rooms.some(r=>r.id===whole.activeRoomId))throw Error('目前房間不存在');for(const r of whole.home.rooms){const p=whole.projects[r.id];if(p){validateCareProject(p);if(Math.abs(p.room.width-r.width)>.001||Math.abs(p.room.depth-r.depth)>.001)throw Error('房間尺寸不一致');}}return whole;}
 export function wholeReview(whole){return whole.home.rooms.map(r=>({id:r.id,name:r.name,area:r.width*r.depth,review:whole.projects[r.id]?careReview(whole.projects[r.id]):null}));}

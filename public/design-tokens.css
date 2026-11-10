@@ -262,4 +262,9 @@
  --domira-workspace-focus: #14653e;
  --domira-reading-ink: #121d18;
  --domira-reading-edge: #394b42;
+ --domira-action-green: #163e30;
+ --domira-action-hover: #0d2b21;
+ --domira-action-text: #ffffff;
+ --domira-reading-focus: #145739;
+ --domira-reading-placeholder: #43544a;
 }

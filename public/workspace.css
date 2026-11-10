@@ -10,7 +10,8 @@
 :is(.care-shell,.needs-dialog,#care-chat,.app-shell,.reading-tools) :focus-visible {
  outline:3px solid var(--domira-workspace-focus); outline-offset:2px;
 }
-.care-nav { flex-wrap:wrap; row-gap:.4rem; }
+.care-nav { height:auto; min-height:4.25rem; padding-block:.65rem; flex-wrap:wrap; gap:.45rem 1rem; }
+.care-nav .reading-tools { margin-inline-start:auto; }
 .care-intro { padding-block:clamp(1.25rem,3vw,2.5rem); }
 .care-intro h1 { font-size:clamp(1.8rem,4vw,3rem); }
 .care-config h2 { margin-top:0; }
@@ -48,10 +49,63 @@
  --domira-workspace-muted:var(--domira-reading-ink); --domira-workspace-edge:var(--domira-reading-edge);
  --domira-color-border:var(--domira-reading-edge); --domira-color-background:var(--domira-color-surface);
 }
-.reading-contrast :is(.care-shell,.needs-dialog,#care-chat,.app-shell,dialog) :is(p,li,small,label,.note) { color:var(--domira-reading-ink)!important; }
-.reading-contrast :is(.care-shell,.needs-dialog,#care-chat,.app-shell,dialog) :is(input,select,textarea,.secondary) { border-color:var(--domira-reading-edge)!important; }
+.reading-contrast :is(.care-shell,.needs-dialog,#care-chat,.app-shell,dialog) :is(input,select,textarea) {
+ color:var(--domira-reading-ink); background-color:var(--domira-color-surface); border:1px solid var(--domira-reading-edge);
+ accent-color:var(--domira-action-green);
+}
+.reading-contrast :is(input,textarea)::placeholder { color:var(--domira-reading-placeholder); opacity:1; }
+.reading-contrast :is(.care-shell,.needs-dialog,#care-chat,.app-shell,dialog) :is(small,.note,.canvas-footer,.needs-progress span,#whole-review span) {
+ font-size:max(.875rem,1em); line-height:1.5;
+}
+.reading-contrast :focus-visible {
+ outline:3px solid var(--domira-reading-focus); outline-offset:3px;
+ box-shadow:0 0 0 2px var(--domira-color-surface);
+}
+body :is(.care-shell,.care-nav,.needs-dialog,#care-chat,.app-shell,.sidebar,dialog) :is(.primary,.secondary,.generate-btn,.plan-entry,#route-start,[data-reading],.chat-launch),
+body :is(#care-chat-toggle,.whole-actions button,.whole-toolbar button,.care-steps button,.canvas-tools button,.views button,.needs-tabs button,.product-select,#whole-review button) {
+ background:var(--domira-action-green); color:var(--domira-action-text);
+ border:1px solid var(--domira-action-green); border-radius:var(--domira-radius-control);
+ min-height:2.75rem; line-height:1.35; text-align:center;
+}
+body :is(.care-shell,.care-nav,.needs-dialog,#care-chat,.app-shell,.sidebar,dialog) :is(.primary,.secondary,.generate-btn,.plan-entry,#route-start,[data-reading]):hover,
+body :is(#care-chat-toggle,.whole-actions button,.whole-toolbar button,.care-steps button,.canvas-tools button,.views button,.needs-tabs button,.product-select,#whole-review button):hover {
+ background:var(--domira-action-hover); color:var(--domira-action-text);
+}
+body :is(.care-shell,.care-nav,.needs-dialog,#care-chat,.app-shell,.sidebar,dialog) :is(.primary,.secondary,.generate-btn,.plan-entry,#route-start,[data-reading]) :is(span,small,b,strong),
+body :is(.care-steps,.views,.whole-toolbar,.needs-tabs,#whole-review,.product-select) :is(span,small,b,strong) { color:inherit; }
+body :is(.reading-tools,.care-steps,.views,.whole-toolbar,.needs-tabs) button:is([aria-pressed=true],.active) {
+ font-weight:700; text-decoration:underline; text-underline-offset:.24em;
+ box-shadow:inset 0 0 0 2px var(--domira-action-text);
+}
+body :is(.care-shell,.care-nav,.needs-dialog,#care-chat,.app-shell,dialog) button:disabled { opacity:.65; cursor:not-allowed; }
+body :is(.reading-tools button,.care-steps button,.whole-actions button,.whole-toolbar button,.views button,.chat-actions button,.needs-tabs button) {
+ display:inline-flex; align-items:center; justify-content:center; gap:.35rem; writing-mode:horizontal-tb;
+ white-space:nowrap; word-break:normal; overflow-wrap:normal;
+}
+.care-steps,.whole-toolbar,.whole-builder-actions { display:flex; flex-wrap:wrap; gap:.45rem; }
+.care-steps button { flex:1 0 auto; padding:.65rem .8rem; }
+.care-steps b { display:inline; margin:0; }
+.whole-dashboard { grid-template-columns:minmax(0,1fr) minmax(0,1fr); }
+.whole-actions { display:flex; flex-wrap:wrap; align-items:center; align-content:start; }
+.whole-actions button { flex:1 1 auto; min-width:0; padding-inline:.7rem; }
+#whole-review { grid-template-columns:repeat(auto-fit,minmax(min(100%,13rem),1fr)); }
+body #whole-review button { text-align:start; }
+.whole-toolbar select { flex:1 1 10rem; min-width:0; }
+.whole-fields { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,8.5rem),1fr)); gap:.65rem; }
+.whole-fields label,.whole-allocation-list label { display:grid; gap:.3rem; }
+.whole-fields :is(input,select),.whole-allocation-list select { width:100%; min-width:0; min-height:2.75rem; }
+.whole-builder-room { border:1px solid var(--domira-workspace-edge); margin:1rem 0; padding:.65rem; min-width:0; }
+.whole-builder-room button { margin-top:.55rem; }
+.whole-builder-room legend { font-weight:700; padding-inline:.35rem; }
+.manual-home-preview svg { width:100%; height:auto; max-height:17rem; }
+.whole-allocation-list { display:grid; gap:.65rem; margin-block:1rem; }
+.whole-allocation-list label { grid-template-columns:minmax(0,1fr) minmax(8rem,45%); align-items:center; }
 @media (max-width:44rem) {
  .reading-large .care-grid { grid-template-columns:minmax(0,1fr); }
+ .whole-dashboard { grid-template-columns:minmax(0,1fr); }
+ .app-shell .topbar { height:auto; min-height:4rem; flex-wrap:wrap; gap:.4rem; padding-block:.4rem; }
+ .app-shell .top-actions { flex-wrap:wrap; }
+ .whole-toolbar { position:static; }
  .reading-tools { gap:.25rem; }
  .reading-tools button { padding-inline:.5rem; }
 }

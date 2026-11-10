@@ -10,7 +10,7 @@
     "build:cloudflare": "node scripts/build-cloudflare.mjs --api-url https://domira-api.jiaxun-chen1218.workers.dev --web-origin https://domira.jiaxun-chen1218.workers.dev",
     "verify:cloudflare": "node scripts/verify-cloudflare.mjs"
   },
-  "version": "2.1.0",
+  "version": "2.1.1",
   "engines": {
     "node": ">=22"
   },
