@@ -48,3 +48,7 @@ export const HOME_FURNITURE=Object.freeze(homeDefinitions.map(([productId,name,t
  dimensionSource:'concept',dimensionLabel,conceptDimensions:Object.freeze({w,d,h,units:'m',basis:'authored-home-furniture-illustration'}),sku:null,
 })));
 export const ALL_CARE_PRODUCTS=Object.freeze([...CARE_PRODUCTS,...HOME_FURNITURE]);
+
+export function productFitsProfile(product, profile){
+ return profile!=='wheelchair'||!['walker','cane'].includes(product?.careKind);
+}

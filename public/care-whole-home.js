@@ -1,10 +1,11 @@
+import {createCareChat} from './care-chat-ui.js';
 import {hkCareHome,HK_SOURCE,roomCareProject,validateCareWhole,wholeReview} from './care-home-domain.js';
 import {homePlanSVG,homeItems} from './home-domain.js';
 import {createHomeStudio} from './home-studio.js';
 import {createRenderStudio} from './render-studio.js';
 import {CARE_PRODUCTS} from './care-catalog.js';
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-export function createCareWholeHome({scene,getState,replaceState,refresh,modal,closeModal,setCleanup,notify,api,checkpoint}){
+export function createCareWholeHome({scene,getState,replaceState,refresh,modal,closeModal,setCleanup,notify,api,checkpoint,stopAR}){
  let busy=false,planning=false,epoch=0;const $=s=>document.querySelector(s);
  const clean=p=>{const {wholeHome,...rest}=p;return structuredClone(rest);};
  function saveRoom(){const p=getState(),w=p.wholeHome;if(!w)return;w.projects[w.activeRoomId]=clean(p);const r=w.home.rooms.find(r=>r.id===w.activeRoomId);r.items=p.items;}
@@ -21,6 +22,10 @@ export function createCareWholeHome({scene,getState,replaceState,refresh,modal,c
  $('#whole-export').onclick=exportWhole;
  const renderer=createRenderStudio({scene,getState:()=>{const p=getState();return {schemaVersion:1,id:p.id,name:p.name,room:p.room,items:p.items,style:p.style,purpose:p.purpose,preferences:['flow'],mobility:p.profile==='wheelchair'?'wheelchair':'senior'};},modal,closeModal,notify,icons:()=>{}});$('#care-render').onclick=()=>{const w=getState().wholeHome;if(w?.view==='whole')openRoom(w.activeRoomId);if(!scene)return notify('此裝置未啟用3D');renderer.open();};
  const oldTransform=scene?.onTransform,oldSelect=scene?.onSelect;if(scene){scene.onTransform=(...args)=>{if(getState().wholeHome?.view==='whole')return notify('請先進入房間，再調整家具。');epoch++;oldTransform(...args);};scene.onSelect=id=>{const w=getState().wholeHome;if(w?.view==='whole'){const r=w.home.rooms.find(r=>r.items.some(i=>i.id===id));if(r)openRoom(r.id);return;}oldSelect(id);};}
- let chat=[];$('#care-chat-toggle').onclick=()=>$('#care-chat').hidden=!$('#care-chat').hidden;$('#care-chat-form').onsubmit=async e=>{e.preventDefault();const input=$('#care-chat-input'),message=input.value.trim();if(!message)return;chat.push({role:'user',content:message});input.value='';const button=$('#care-chat-send');button.disabled=true;const draw=()=>$('#care-chat-log').replaceChildren(...chat.map(m=>{const p=document.createElement('p');p.className=m.role;p.textContent=(m.role==='user'?'你：':'設計助手：')+m.content;return p;}));draw();try{const p=getState(),response=await fetch((await import('./api-config.js')).API_BASE+'/api/care/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:chat.slice(-6).map(m=>({...m,content:m.content.slice(0,2000)})),context:{room:p.room,profile:p.profile,wholeHome:p.wholeHome?{width:p.wholeHome.home.width,depth:p.wholeHome.home.depth,rooms:p.wholeHome.home.rooms.map(r=>({name:r.name,kind:r.kind,width:r.width,depth:r.depth,x:r.x,z:r.z}))}:null,brief:p.brief}})}),data=await response.json();if(!response.ok)throw Error(data.error||'對話服務不可用');chat.push({role:'assistant',content:data.reply});draw();}catch(e){chat.push({role:'assistant',content:e.message});draw();}finally{button.disabled=false;}};
+ createCareChat({getState,notify,apply:items=>{
+  stopAR();epoch++;checkpoint();const p=getState();
+  p.items=items;p.fieldChecks={};if(p.wholeHome)p.wholeHome.view='room';
+  refresh({room:true});
+ }});
  $('#hk-source').href=HK_SOURCE;return {sync,openRoom,generateAll,stop:()=>{epoch++;importer.stop();}};
 }

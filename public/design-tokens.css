@@ -254,3 +254,12 @@
   --domira-color-border-alpha-67: color-mix(in srgb, var(--domira-color-border) 67%, transparent);
   --domira-color-surface-alpha-38: color-mix(in srgb, var(--domira-color-surface) 38%, transparent);
 }
+
+:root {
+ --domira-workspace-muted: #46574f;
+ --domira-workspace-edge: #a5b1a9;
+ --domira-workspace-tint: #eaf1ec;
+ --domira-workspace-focus: #14653e;
+ --domira-reading-ink: #121d18;
+ --domira-reading-edge: #394b42;
+}

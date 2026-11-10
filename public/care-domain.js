@@ -68,12 +68,27 @@ export function placeCareItem(project,raw,index=project.items.length){
  return null;
 }
 export function safeCareLayout(project,proposal=[]){
- validateCareProject(project);const p={...project,items:[]},skipped=[];
- const candidates=proposal.length?proposal:SAMPLE_ITEMS;
- for(const [index,raw] of candidates.slice(0,40).entries()){
-  let found;try{found=placeCareItem(p,raw,index);}catch{}
-  if(found)p.items.push(found);else skipped.push(String(raw?.name||'無效候選家具'));
+ validateCareProject(project);
+ const candidates=(proposal.length?proposal:SAMPLE_ITEMS).slice(0,40);
+ const plan=(order,usePreferred)=>{
+  const p={...project,items:[]},skipped=[];
+  for(const [index,raw] of order.entries()){
+   const input=usePreferred?raw:{...raw,x:undefined,z:undefined,rotation:undefined};
+   let found;
+   try{found=placeCareItem(p,input,index);}catch{}
+   if(found)p.items.push(found);else skipped.push(String(raw?.name||'無效候選家具'));
+  }
+  return {p,skipped};
+ };
+ const preferred=plan(candidates,true);
+ let best=preferred;
+ if(preferred.skipped.length&&candidates.length>1){
+  const footprint=i=>i?.role==='surface'?0:(i?.w||0)*(i?.d||0);
+  const largestFirst=[...candidates].sort((a,b)=>footprint(b)-footprint(a));
+  for(const option of [plan(largestFirst,true),plan(largestFirst,false)]){
+   if(option.p.items.length>best.p.items.length)best=option;
+  }
  }
- return {items:p.items,skipped,review:careReview(p),description:'沿牆配置，保留中央連續通道與1.5m迴轉區；超出空間的家具不加入。'};
+ return {items:best.p.items,skipped:best.skipped,review:careReview(best.p),description:'沿牆配置，保留中央通道、迴轉區和門扇空間。'};
 }
 export function careExport(p){validateCareProject(p);return {...p,unplaced:remainingRequestedItems(p),updatedAt:new Date().toISOString(),review:careReview(p),units:'m',coordinateSystem:'right-handed-y-up',origin:'floor-center',rotationConvention:'degrees; local front +z; clockwise plan rotation',doorLocation:'bottom-center-confirm-on-site'};}

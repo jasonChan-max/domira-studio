@@ -1,5 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {newCareProject,SAMPLE_ITEMS} from '../public/care-domain.js';
+import {validateChatMoves} from '../public/care-chat-layout.js';
+import {productFitsProfile,CARE_PRODUCTS} from '../public/care-catalog.js';
 import {handleCareChat} from '../worker/care-chat.js';
 
 const env={DEEPSEEK_API_KEY:'server-only-test-secret'};
@@ -103,4 +106,30 @@ test('client cancellation aborts provider work and pre-cancelled requests do not
  t.mock.method(globalThis,'fetch',async(url,options)=>{calls++;signal=options.signal;started();return new Promise((resolve,reject)=>signal.addEventListener('abort',()=>reject(new DOMException('cancelled','AbortError')),{once:true}));});
  const controller=new AbortController(),pending=handleCareChat(request(payload(),{signal:controller.signal}),env);await ready;controller.abort();const r=await pending;assert.equal(r.status,499);assert.equal((await r.json()).code,'CARE_CHAT_CANCELLED');assert.equal(signal.aborted,true);
  const cancelled=new AbortController();cancelled.abort();const r2=await handleCareChat(request(payload(),{signal:cancelled.signal}),env);assert.equal(r2.status,499);assert.equal(calls,1);
+});
+
+
+test('wheelchair selection hides walking aids but keeps both wheelchair choices',()=>{
+ const allowed=CARE_PRODUCTS.filter(p=>productFitsProfile(p,'wheelchair'));
+ assert.ok(!allowed.some(p=>['walker','cane'].includes(p.careKind)));
+ assert.equal(allowed.filter(p=>p.careKind==='wheelchair').length,2);
+ assert.ok(CARE_PRODUCTS.some(p=>p.careKind==='walker'&&productFitsProfile(p,'walker')));
+});
+
+test('DeepSeek layout chat only returns validated movement and keeps project furniture unchanged',async t=>{
+ const scene=newCareProject();scene.items=[{...SAMPLE_ITEMS[0],id:'chair-1',x:-2,z:-1,rotation:270}];
+ let moves=[{id:'chair-1',x:-2,z:0,rotation:270}],calls=0;
+ t.mock.method(globalThis,'fetch',async(url,options)=>{
+  calls++;assert.equal(url,'https://api.deepseek.com/chat/completions');const body=JSON.parse(options.body);
+  assert.equal(body.response_format.type,'json_object');assert.match(body.messages[1].content,/chair-1/);
+  return completion(JSON.stringify({reply:'將椅子沿側牆移動。',moves}));
+ });
+ const body=payload({mode:'layout',scene});
+ const accepted=await (await handleCareChat(request(body),env)).json();
+ assert.deepEqual(accepted.moves,moves);assert.equal(scene.items[0].z,-1);
+ assert.deepEqual(validateChatMoves(scene,moves).items[0],{...scene.items[0],z:0});
+ for(const move of [{...moves[0],x:0},{...moves[0],id:'fake'},{...moves[0],w:.1}]){
+  moves=[move];const refused=await (await handleCareChat(request(body),env)).json();assert.deepEqual(refused.moves,[]);assert.match(refused.reply,/未通過/);
+ }
+ assert.equal(calls,4);
 });

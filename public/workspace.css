@@ -1,0 +1,57 @@
+/* Shared workspace reading controls and Care layout. */
+.reading-tools { display:flex; flex-wrap:wrap; align-items:center; gap:.35rem; }
+.reading-tools button,.chat-prompts button,.direct-options label {
+ min-height:2.75rem; padding:.45rem .7rem; border:1px solid var(--domira-workspace-edge);
+ border-radius:var(--domira-radius-control); background:var(--domira-color-surface); color:var(--domira-color-ink);
+}
+.reading-tools button[aria-pressed=true],.direct-options label:has(:checked),.choice-filter button[aria-pressed=true] {
+ background:var(--domira-workspace-tint); color:var(--domira-color-ink); border-color:var(--domira-workspace-focus); font-weight:700;
+}
+:is(.care-shell,.needs-dialog,#care-chat,.app-shell,.reading-tools) :focus-visible {
+ outline:3px solid var(--domira-workspace-focus); outline-offset:2px;
+}
+.care-nav { flex-wrap:wrap; row-gap:.4rem; }
+.care-intro { padding-block:clamp(1.25rem,3vw,2.5rem); }
+.care-intro h1 { font-size:clamp(1.8rem,4vw,3rem); }
+.care-config h2 { margin-top:0; }
+.care-shell :is(.care-config,.whole-dashboard,.care-canvas-card,.needs-product,.data-cards article),.needs-dialog,#care-chat {
+ background:var(--domira-color-surface); color:var(--domira-color-ink); border-color:var(--domira-workspace-edge); box-shadow:none;
+}
+.care-shell :is(small,.note,.product-envelope,.canvas-footer),.needs-dialog :is(small,.note,.needs-title p),#care-chat small {
+ color:var(--domira-workspace-muted);
+}
+.needs-dialog .needs-settings:has(.direct-options) { grid-template-columns:1fr; }
+.direct-options { border:0; padding:0; margin:0; display:flex; gap:.5rem; flex-wrap:wrap; }
+.direct-options legend { padding:0; margin-bottom:.45rem; font-weight:700; }
+.needs-dialog .direct-options label { display:inline-flex; align-items:center; gap:.5rem; cursor:pointer; }
+.direct-options input { accent-color:var(--domira-workspace-focus); }
+.choice-filter { margin-block:.75rem; }
+.choice-filter input { display:block; width:100%; max-width:26rem; min-height:2.75rem; }
+.choice-filter .needs-tabs { display:flex; flex-wrap:wrap; margin-block:.5rem; }
+#care-chat { width:min(27rem,calc(100vw - 1.5rem)); max-height:calc(100dvh - 5.5rem); overflow:auto; }
+#care-chat header { display:flex; align-items:flex-start; justify-content:space-between; gap:.75rem; }
+#care-chat-close { min-width:2.75rem; min-height:2.75rem; font-size:1.35rem; }
+#care-chat-log { max-height:min(24vh,14rem); overflow:auto; }
+#care-chat-log:empty { display:none; }
+#care-chat-log p { overflow-wrap:anywhere; white-space:pre-wrap; }
+.chat-actions,.chat-prompts { display:flex; flex-wrap:wrap; gap:.45rem; }
+.chat-actions button,.chat-prompts button { min-height:2.75rem; }
+#care-chat-form { display:grid; grid-template-columns:1fr; }
+#care-chat-status:empty { display:none; }
+#care-chat-proposal { padding:.6rem; background:var(--domira-workspace-tint); }
+.reading-large :is(.care-shell,.care-nav,.needs-dialog,#care-chat,.app-shell,.sidebar,dialog) :is(p,li,small,label,input,select,button,textarea,a,dt,dd) {
+ font-size:max(1.1rem,1em)!important; line-height:1.5;
+}
+.reading-large :is(.care-shell,.care-nav,.needs-dialog,#care-chat,.app-shell,.sidebar,dialog) :is(button,select,input:not([type=radio],[type=checkbox])) { min-height:3rem; }
+.reading-contrast {
+ --domira-color-ink:var(--domira-reading-ink); --domira-color-muted:var(--domira-reading-ink);
+ --domira-workspace-muted:var(--domira-reading-ink); --domira-workspace-edge:var(--domira-reading-edge);
+ --domira-color-border:var(--domira-reading-edge); --domira-color-background:var(--domira-color-surface);
+}
+.reading-contrast :is(.care-shell,.needs-dialog,#care-chat,.app-shell,dialog) :is(p,li,small,label,.note) { color:var(--domira-reading-ink)!important; }
+.reading-contrast :is(.care-shell,.needs-dialog,#care-chat,.app-shell,dialog) :is(input,select,textarea,.secondary) { border-color:var(--domira-reading-edge)!important; }
+@media (max-width:44rem) {
+ .reading-large .care-grid { grid-template-columns:minmax(0,1fr); }
+ .reading-tools { gap:.25rem; }
+ .reading-tools button { padding-inline:.5rem; }
+}
