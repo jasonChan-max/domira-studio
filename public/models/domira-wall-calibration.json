@@ -1,0 +1,32 @@
+{
+  "format": "domira.wall-calibration.v1",
+  "backboneSha256": "4e37ad763067ac06f70a0ff69fae199fef06f15e38d8fbc8e15bcf503aa8852b",
+  "weights": [
+    -0.12622204648926985,
+    0.14999284281395328,
+    -0.08887458648051318,
+    0.11346134618294344,
+    -0.4087626955685965,
+    0.4603521492551321,
+    -2.296899014617437
+  ],
+  "blend": 1,
+  "offset": 0.5,
+  "plans": {
+    "train": 23,
+    "validation": 8,
+    "test": 8
+  },
+  "test": {
+    "baseline": {
+      "iou": 0.48367,
+      "precision": 0.46759,
+      "recall": 0.82992
+    },
+    "calibrated": {
+      "iou": 0.48016,
+      "precision": 0.67851,
+      "recall": 0.63431
+    }
+  }
+}

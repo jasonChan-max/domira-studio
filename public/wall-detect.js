@@ -124,28 +124,38 @@ export function snapRoomsToWalls(rooms, walls, options = {}) {
   const { box, hLines, vLines } = walls;
   const bw = box.x1 - box.x0 || 1;
   const bh = box.y1 - box.y0 || 1;
+  const frame = options.frame;
+  const normalized = frame?.w > 0 && frame?.h > 0;
+  const span = normalized ? Math.max(frame.w, frame.h) : 1;
+  const fw = normalized ? 1000 * frame.w / span : 1000;
+  const fh = normalized ? 1000 * frame.h / span : 1000;
+  const ox = (1000 - fw) / 2, oy = (1000 - fh) / 2;
   let snappedEdges = 0, totalEdges = 0;
   const out = rooms.map((r) => {
     const b = r.rect;
-    const x0 = box.x0 + (b.x / 1000) * bw;
-    const y0 = box.y0 + (b.y / 1000) * bh;
-    const x1 = box.x0 + ((b.x + b.w) / 1000) * bw;
-    const y1 = box.y0 + ((b.y + b.h) / 1000) * bh;
+    const x0 = box.x0 + ((b.x - ox) / fw) * bw;
+    const y0 = box.y0 + ((b.y - oy) / fh) * bh;
+    const x1 = box.x0 + ((b.x + b.w - ox) / fw) * bw;
+    const y1 = box.y0 + ((b.y + b.h - oy) / fh) * bh;
     const nx0 = snapOne(x0, vLines, Math.floor(y0), Math.ceil(y1), o.snapTol);
     const nx1 = snapOne(x1, vLines, Math.floor(y0), Math.ceil(y1), o.snapTol);
     const ny0 = snapOne(y0, hLines, Math.floor(x0), Math.ceil(x1), o.snapTol);
     const ny1 = snapOne(y1, hLines, Math.floor(x0), Math.ceil(x1), o.snapTol);
+    if ((nx1 - nx0) * fw / bw < 15 || (ny1 - ny0) * fh / bh < 15) {
+      totalEdges += 4;
+      return r;
+    }
     for (const [a, b2] of [[x0, nx0], [x1, nx1], [y0, ny0], [y1, ny1]]) {
       totalEdges++;
       if (Math.abs(a - b2) > 0.5) snappedEdges++;
     }
-    const nw = Math.max(15, ((nx1 - nx0) / bw) * 1000);
-    const nh = Math.max(15, ((ny1 - ny0) / bh) * 1000);
+    const nw = Math.max(15, ((nx1 - nx0) / bw) * fw);
+    const nh = Math.max(15, ((ny1 - ny0) / bh) * fh);
     return {
       ...r,
       rect: {
-        x: Math.max(0, Math.min(1000 - nw, ((nx0 - box.x0) / bw) * 1000)),
-        y: Math.max(0, Math.min(1000 - nh, ((ny0 - box.y0) / bh) * 1000)),
+        x: Math.max(0, Math.min(1000 - nw, ox + ((nx0 - box.x0) / bw) * fw)),
+        y: Math.max(0, Math.min(1000 - nh, oy + ((ny0 - box.y0) / bh) * fh)),
         w: Math.min(nw, 1000),
         h: Math.min(nh, 1000),
       },

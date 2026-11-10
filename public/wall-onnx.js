@@ -7,14 +7,40 @@
 //
 // 兩者並存：模型負責「牆在哪」（語意分割），傳統 CV 當後備（模型載入失敗時仍能跑）。
 
-const CLASSES = ['floor', 'wall', 'door', 'window'];
+const CLASSES = ['floor', 'wall', 'door', 'window', 'outside'];
 const MEAN = [0.485, 0.456, 0.406];
 const STD = [0.229, 0.224, 0.225];
 
-const ORT_CDN = 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/dist/ort.min.js';
+const ORT_CDN = 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.31.1/dist/ort.min.js';
 
 let ortPromise = null;
 let sessionPromise = null;
+let calibrationPromise;
+
+function loadCalibration() {
+  calibrationPromise ??= fetch(new URL('./models/domira-wall-calibration.json', import.meta.url))
+    .then(response => response.ok ? response.json() : null)
+    .then(value => value?.format === 'domira.wall-calibration.v1' &&
+      value.weights?.length === 7 && value.weights.every(Number.isFinite) &&
+      Number.isFinite(value.offset) && value.blend > 0 && value.blend <= 1 ? value : null)
+    .catch(() => null);
+  return calibrationPromise;
+}
+
+const clip = value => Math.max(-16, Math.min(16, value));
+export function wallClass(logits, stride, index, calibration) {
+  const wall = logits[stride + index];
+  let alternative = 0;
+  for (const candidate of [2, 3, 4]) {
+    if (logits[candidate * stride + index] > logits[alternative * stride + index]) alternative = candidate;
+  }
+  const margin = wall - logits[alternative * stride + index];
+  if (!calibration) return margin > 0 ? 1 : alternative;
+  const {weights, blend, offset} = calibration;
+  let score = weights[6] + weights[5] * clip(margin);
+  for (let channel = 0; channel < 5; channel++) score += weights[channel] * clip(logits[channel * stride + index]);
+  return (1 - blend) * margin + blend * score + offset > 0 ? 1 : alternative;
+}
 
 function loadOrt() {
   if (!ortPromise) {
@@ -36,10 +62,12 @@ export async function loadWallModel(url, onProgress) {
   if (sessionPromise) return sessionPromise;
   sessionPromise = (async () => {
     const ort = await loadOrt();
+    ort.env.wasm.proxy = typeof Worker !== 'undefined';
     let modelData = url;
     // 有 onProgress 就先自己抓，才能回報進度（InferenceSession.create 吃 URL 時無法回報）
     if (typeof onProgress === 'function') {
       const res = await fetch(url);
+      if (!res.ok || !res.body) throw new Error('牆體模型下載失敗');
       const total = Number(res.headers.get('content-length')) || 0;
       const reader = res.body.getReader();
       const chunks = [];
@@ -56,8 +84,16 @@ export async function loadWallModel(url, onProgress) {
       for (const c of chunks) { buf.set(c, off); off += c.length; }
       modelData = buf;
     }
-    return ort.InferenceSession.create(modelData, { executionProviders: ['wasm'], graphOptimizationLevel: 'all' });
+    const options = { executionProviders: ['wasm'], graphOptimizationLevel: 'all' };
+    try {
+      return await ort.InferenceSession.create(modelData, options);
+    } catch (error) {
+      if (!ort.env.wasm.proxy) throw error;
+      ort.env.wasm.proxy = false;
+      return ort.InferenceSession.create(url, options);
+    }
   })();
+  sessionPromise.catch(() => { sessionPromise = null; });
   return sessionPromise;
 }
 
@@ -101,66 +137,33 @@ export async function segmentWalls(source, options = {}) {
   const inputName = session.inputNames[0];
   const results = await session.run({ [inputName]: tensor });
   const logits = results[session.outputNames[0]];
-  const [, C, H, W] = logits.dims;
-  const data = logits.data;
-
-  // argmax over channels
-  const small = new Uint8Array(H * W);
-  for (let i = 0; i < H * W; i++) {
-    let best = 0, bestV = -Infinity;
-    for (let c = 0; c < C; c++) {
-      const v = data[c * H * W + i];
-      if (v > bestV) { bestV = v; best = c; }
-    }
-    small[i] = best;
-  }
-
-  // 裁掉 letterbox 邊，縮回原圖尺寸
-  const canvas = document.createElement('canvas');
-  canvas.width = boxed.nw;
-  canvas.height = boxed.nh;
-  const ctx = canvas.getContext('2d');
-  const imgData = ctx.createImageData(boxed.nw, boxed.nh);
+  const [, channels, height, width] = logits.dims;
+  if (channels !== CLASSES.length || height !== size || width !== size) throw new Error('牆體模型輸出格式不符');
+  const calibration = await loadCalibration();
+  const small = new Uint8Array(boxed.nw * boxed.nh);
   for (let y = 0; y < boxed.nh; y++) {
     for (let x = 0; x < boxed.nw; x++) {
-      const v = small[(y + boxed.oy) * W + (x + boxed.ox)];
-      const i = (y * boxed.nw + x) * 4;
-      imgData.data[i] = v === 1 ? 255 : v === 2 ? 60 : v === 3 ? 60 : 200;
-      imgData.data[i + 1] = v === 2 ? 120 : v === 3 ? 220 : 200;
-      imgData.data[i + 2] = v === 1 ? 60 : 200;
-      imgData.data[i + 3] = 255;
+      small[y * boxed.nw + x] = wallClass(logits.data, height * width, (y + boxed.oy) * width + x + boxed.ox, calibration);
     }
   }
-  ctx.putImageData(imgData, 0, 0);
-
-  // 放大回原圖尺寸（最近鄰，保持類別不糊掉）
-  const full = document.createElement('canvas');
-  full.width = source.width;
-  full.height = source.height;
-  const fctx = full.getContext('2d', { willReadFrequently: true });
-  fctx.imageSmoothingEnabled = false;
-  fctx.drawImage(canvas, 0, 0, source.width, source.height);
-  const fullData = fctx.getImageData(0, 0, source.width, source.height).data;
-
   const mask = new Uint8Array(source.width * source.height);
-  const stats = { floor: 0, wall: 0, door: 0, window: 0 };
-  for (let i = 0; i < mask.length; i++) {
-    const r = fullData[i * 4], g = fullData[i * 4 + 1], b = fullData[i * 4 + 2];
-    let cls = 0;
-    if (r === 255 && g === 200 && b === 60) cls = 1;
-    else if (r === 60 && g === 120 && b === 200) cls = 2;
-    else if (r === 60 && g === 220 && b === 200) cls = 3;
-    mask[i] = cls;
-    stats[CLASSES[cls]]++;
+  const stats = Object.fromEntries(CLASSES.map(name => [name, 0]));
+  for (let y = 0; y < source.height; y++) {
+    const row = Math.floor((y + .5) * boxed.nh / source.height) * boxed.nw;
+    for (let x = 0; x < source.width; x++) {
+      const value = small[row + Math.floor((x + .5) * boxed.nw / source.width)];
+      mask[y * source.width + x] = value;
+      stats[CLASSES[value]]++;
+    }
   }
-  return { mask, width: source.width, height: source.height, stats };
+  return { mask, width: source.width, height: source.height, stats, calibrated: !!calibration };
 }
 
 /** 把 mask 裡的牆（類別 1）抽成水平／垂直線段，供吸附使用。 */
 export function wallLinesFromMask(mask, width, height, options = {}) {
   const minLenH = options.minLenH || 100;
   const minLenV = options.minLenV || 28;
-  const gap = options.gap || 90;
+  const gap = options.gap ?? 90;
   const hLines = [], vLines = [];
 
   const collect = (alongRows) => {

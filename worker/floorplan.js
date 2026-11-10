@@ -1,4 +1,4 @@
-import {validatePlanAnalysis} from '../public/home-domain.js';
+import {readPlanDimensions,validatePlanAnalysis} from '../public/home-domain.js';
 const floorplanJSON=(data,status=200)=>new Response(JSON.stringify(data),{status,headers:{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store'}});
 const floorplanRequests=new Map();
 // 視覺模型供應商可配置：預設仍是 DeepSeek，要換 Gemini／Qwen 只要改 Cloudflare Secret，
@@ -92,6 +92,7 @@ export async function analyzeFloorplanAreas(body,env){
   const value=Number(a.area_sqm);
   if(Number.isFinite(value)&&value>0)areas.push({i,area_sqm:value,name:String(a.name||room.name||'')});
  });
- return {areas,matched,total:rooms.length,model:result.model,provider:result.provider,
+ const readings=readPlanDimensions(result.raw.dimensions);
+ return {areas,dimensions:readings.dimensions,matched,total:rooms.length,model:result.model,provider:result.provider,
   warnings:['面積取自 '+result.model+'（讀圖上印刷數字），對上 '+matched+'/'+rooms.length+' 間；房間位置與門窗未變動。']};
 }

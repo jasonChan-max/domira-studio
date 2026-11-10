@@ -4,3 +4,9 @@
 .floorplan-review-copy>img{width:100%;max-height:180px;object-fit:contain;background:var(--domira-color-surface);border-radius:var(--domira-radius-control);margin-bottom:8px}
 
 .floorplan-modal .form-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.floorplan-modal .field input{min-width:0;box-sizing:border-box;width:100%}.floorplan-consent{max-width:100%}.floorplan-consent input{width:16px!important;height:16px!important;padding:0!important;flex:0 0 16px;margin:3px 0 0!important}@media(max-width:760px){.floorplan-modal .form-grid{grid-template-columns:minmax(0,1fr)}}
+
+.floorplan-wall-preview { margin-block: .75rem; }
+.floorplan-wall-preview summary { cursor: pointer; font-weight: 600; }
+.floorplan-wall-preview img { display: block; width: 100%; max-height: 24rem; object-fit: contain; margin-top: .65rem; }
+.floorplan-readings { margin-block: 1rem; }
+.floorplan-readings li { margin-block: .35rem; overflow-wrap: anywhere; }
