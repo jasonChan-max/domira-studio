@@ -101,9 +101,12 @@ async function snapWithWalls(data, upload){
    const walls={hLines:lines.hLines,vLines:lines.vLines,box:{x0:Math.min(...xs),x1:Math.max(...xs),y0:Math.min(...ys),y1:Math.max(...ys)}};
    const result=snapRoomsToWalls(data.rooms,walls,{frame:data.frame});
    if(!result.snappedEdges)return withPoly;
-   const snapped=attachPolygons(result.rooms,data.polygonsForSnap||predicted?.polygons,predicted?.segWidth,predicted?.segHeight);
+   const snapped=attachPolygons(result.rooms,predicted?.polygons,predicted?.segWidth,predicted?.segHeight);
    const snappedCount=snapped.filter(x=>Array.isArray(x.polygon)&&x.polygon.length>=3).length;
-   return {...data,rooms:snapped,warnings:[...data.warnings,'已依'+source+'校正 '+result.snappedEdges+' 條房間邊界，請與原圖核對。',...(snappedCount?[polyNote]:[])]};
+   // 多邊形生效時濾掉 AI 那句「以單一矩形近似」——它只知道自己回矩形，不知道我們
+   // 已經用 mask 輪廓補上了，留著會讓使用者以為形狀還是方的。
+   const baseWarnings=snappedCount?data.warnings.filter(w=>!/矩形近似|單一矩形|單一矩形空間/.test(w)):data.warnings;
+   return {...data,rooms:snapped,warnings:[...baseWarnings,'已依'+source+'校正 '+result.snappedEdges+' 條房間邊界，請與原圖核對。',...(snappedCount?[polyNote]:[])]};
   }catch(error){console.warn('[wall-detect] skipped:',error);return data;}
  }
  function renderDimensions(first,second){
