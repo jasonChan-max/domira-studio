@@ -48,6 +48,15 @@ export function roomsFromMask(mask, width, height, options = {}) {
   if (totalFloor === 0) return [];
   const minArea = totalFloor * minAreaRatio;
 
+  // 把牆（1）和門（2）像素按「最近的地板連通域」分配，讓房間擴張到牆中線。
+  //
+  // 為什麼非做不可（2026-11-11 使用者實測）：只取 floor 連通域的話，
+  // 相鄰房間之間隔著一圈牆像素，誰都沒認領，畫出來就是一條條空隙；
+  // 門洞更糟——門不是 floor 也不是 wall，是一個真正的洞。
+  // 吸收之後相鄰房間正好在牆中線相接（沒有縫），門洞被填平（門是通道，地板本來就該連續）。
+  // 窗（3）與屋外（4）不吸收：窗在外牆上、屋外是房子外面，擴進去只會把形狀弄歪。
+  if (options.absorbWalls !== false) absorbWalls(mask, width, height, label);
+
   const rooms = [];
   for (let id = 0; id < sizes.length; id++) {
     if (sizes[id] < minArea) continue;
@@ -84,6 +93,105 @@ export function roomsFromMask(mask, width, height, options = {}) {
 
   rooms.sort((a, b) => b.area - a.area);
   return rooms;
+}
+
+/**
+ * 多源 BFS：每個牆／門像素歸給離它最近的地板連通域。
+ *
+ * 難點是「距離」：不能用歐氏距離逐點算（262k 像素 × 30 間會爆），
+ * 用 4 鄰域 BFS 分層擴散即可——牆通常只有幾個像素厚，BFS 的層數就是到最近房間的步數，
+ * 兩間房在同一條中線上相遇，正好各分一半。
+ *
+ * 只吸收牆（1）與門（2）。窗（3）不吸收：它在外牆上，吃掉會讓房間朝外鼓出去。
+ */
+function absorbWalls(mask, width, height, label) {
+  const n = width * height;
+  const dist = new Int32Array(n).fill(-1);
+  const queue = new Int32Array(n);
+  let head = 0, tail = 0;
+  for (let i = 0; i < n; i++) {
+    if (label[i] >= 0) { dist[i] = 0; queue[tail++] = i; }
+  }
+  while (head < tail) {
+    const p = queue[head++];
+    const d = dist[p] + 1;
+    const x = p % width, y = (p - x) / width;
+    const take = (q) => {
+      if (dist[q] !== -1) return;
+      const c = mask[q];
+      if (c !== 1 && c !== 2) return;
+      dist[q] = d;
+      label[q] = label[p];
+      queue[tail++] = q;
+    };
+    if (x > 0) take(p - 1);
+    if (x < width - 1) take(p + 1);
+    if (y > 0) take(p - width);
+    if (y < height - 1) take(p + width);
+  }
+}
+
+/**
+ * 從 mask 抽出門的位置（類別 2 的連通域）。
+ *
+ * 為什麼要單獨抽：門洞在 mask 裡既不是地板也不是牆，`roomsFromMask` 會把它按最近的
+ * 房間吸收掉（讓地板連續、不留洞），代價是門本身在幾何上消失了。所以要在吸收之前
+ * 先記下門在哪，之後在 2D／3D 上單獨畫出來。
+ *
+ * 回傳像素座標的 {cx, cy, x, y, w, h, area, horizontal}；轉公尺由呼叫方按比例尺處理。
+ */
+export function doorsFromMask(mask, width, height, options = {}) {
+  const DOOR_CLASS = 2;
+  const minAreaRatio = options.minAreaRatio ?? 0.0008;
+  const n = width * height;
+  const label = new Int32Array(n).fill(-1);
+  const sizes = [];
+  const stack = new Int32Array(n);
+  let next = 0;
+
+  for (let start = 0; start < n; start++) {
+    if (label[start] !== -1 || mask[start] !== DOOR_CLASS) continue;
+    let sp = 0;
+    stack[sp++] = start;
+    label[start] = next;
+    let count = 0;
+    while (sp > 0) {
+      const p = stack[--sp];
+      count++;
+      const x = p % width, y = (p - x) / width;
+      if (x > 0) { const q = p - 1; if (label[q] === -1 && mask[q] === DOOR_CLASS) { label[q] = next; stack[sp++] = q; } }
+      if (x < width - 1) { const q = p + 1; if (label[q] === -1 && mask[q] === DOOR_CLASS) { label[q] = next; stack[sp++] = q; } }
+      if (y > 0) { const q = p - width; if (label[q] === -1 && mask[q] === DOOR_CLASS) { label[q] = next; stack[sp++] = q; } }
+      if (y < height - 1) { const q = p + width; if (label[q] === -1 && mask[q] === DOOR_CLASS) { label[q] = next; stack[sp++] = q; } }
+    }
+    sizes.push(count);
+    next++;
+  }
+
+  const total = sizes.reduce((a, b) => a + b, 0);
+  if (!total) return [];
+  const minArea = Math.max(4, total * minAreaRatio);
+  const out = [];
+  for (let id = 0; id < sizes.length; id++) {
+    if (sizes[id] < minArea) continue;
+    let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity, sx = 0, sy = 0;
+    for (let i = 0; i < n; i++) {
+      if (label[i] !== id) continue;
+      const x = i % width, y = (i - x) / width;
+      if (x < x0) x0 = x;
+      if (x > x1) x1 = x;
+      if (y < y0) y0 = y;
+      if (y > y1) y1 = y;
+      sx += x; sy += y;
+    }
+    out.push({
+      cx: sx / sizes[id], cy: sy / sizes[id],
+      x: x0, y: y0, w: x1 - x0, h: y1 - y0,
+      area: sizes[id],
+      horizontal: (x1 - x0) >= (y1 - y0),
+    });
+  }
+  return out;
 }
 
 /** 追蹤連通域的外輪廓（Moore 鄰域，順時針繞一圈）。 */

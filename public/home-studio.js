@@ -1,8 +1,8 @@
 import {API_BASE} from './api-config.js';
 import {HOME_KINDS,HOME_COLORS,homeFromAnalysis,validateHome,homePlanSVG,readPlanDimensions,roomsFromPolygons} from './home-domain.js';
+import {roomsFromMask,doorsFromMask} from './room-polygon.js';
 import {imageToPixels,detectWalls,snapRoomsToWalls} from './wall-detect.js';
 import {loadWallModel,segmentWalls,wallLinesFromMask} from './wall-onnx.js';
-import {roomsFromMask} from './room-polygon.js';
 const hs=s=>document.querySelector(s),homeEscape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export function createHomeStudio({modal,setCleanup,createHome,notify}){
  let sequence=0,controller=null,image=null,analysis=null,draft=null,live=false;
@@ -12,7 +12,7 @@ export function createHomeStudio({modal,setCleanup,createHome,notify}){
  const label={top:'上',right:'右',bottom:'下',left:'左'};
  return `<div class="door-editor" style="display:flex;flex-wrap:wrap;gap:4px;margin-top:4px;align-items:center">${['top','right','bottom','left'].map(edge=>`<button type="button" data-add-door="${index}:${edge}" title="在${label[edge]}牆加一道門" style="font-size:11px;padding:2px 6px;cursor:pointer">+${label[edge]}門</button>`).join('')}${r.openings.map((o,i)=>`<span style="font-size:11px;padding:2px 6px;background:#eef2ec;border-radius:4px;display:inline-flex;align-items:center;gap:2px">${o.kind==='door'?'門':'窗'}·${label[o.edge]||o.edge}<button type="button" data-remove-opening="${index}:${i}" title="刪除" style="background:none;border:none;cursor:pointer;padding:0 2px">×</button></span>`).join('')}</div>`;
 }
- function renderRooms(){hs('#floorplan-rooms').innerHTML=draft.rooms.map((r,index)=>`<div class="floorplan-room-row"><div class="floorplan-room-name"><span style="background:${HOME_COLORS[r.kind]}"></span><input aria-label="房間 ${index+1} 名稱" data-home-field="name" data-room-index="${index}" value="${homeEscape(r.name)}" maxlength="40"><button aria-label="移除 ${homeEscape(r.name)}" data-remove-room="${index}">×</button></div><select aria-label="房間 ${index+1} 用途" data-home-field="kind" data-room-index="${index}">${Object.entries(HOME_KINDS).map(([k,label])=>`<option value="${k}" ${k===r.kind?'selected':''}>${label}</option>`).join('')}</select>${[['x','中心 X'],['z','中心 Z'],['width','寬'],['depth','深']].map(([key,label])=>`<label>${label} / m<input type="number" step=".01" data-home-field="${key}" data-room-index="${index}" value="${r[key].toFixed(2)}" aria-label="房間 ${index+1} ${label}"></label>`).join('')}<small class="confidence ${r.confidence}">${({high:'高信心',medium:'待核對',low:'低信心'})[r.confidence]||'待核對'} · ${r.openings.length} 個門窗${r.notes?' · '+homeEscape(r.notes):''}</small>${doorEditor(r,index)}</div>`).join('');document.querySelectorAll('[data-home-field]').forEach(input=>input.onchange=()=>{const room=draft.rooms[Number(input.dataset.roomIndex)],key=input.dataset.homeField;room[key]=['name','kind'].includes(key)?input.value:Number(input.value);room.purpose=['bedroom','dining','work'].includes(room.kind)?room.kind:'living';preview();});document.querySelectorAll('[data-home-field]').forEach(input=>input.oninput=input.onchange);document.querySelectorAll('[data-remove-room]').forEach(button=>button.onclick=()=>{draft.rooms.splice(Number(button.dataset.removeRoom),1);renderRooms();preview();});document.querySelectorAll('[data-add-door]').forEach(button=>button.onclick=()=>{const[ri,edge]=button.dataset.addDoor.split(':');draft.rooms[Number(ri)].openings.push({kind:'door',edge,offset:.4,width:.2});renderRooms();preview();});document.querySelectorAll('[data-remove-opening]').forEach(button=>button.onclick=()=>{const[ri,oi]=button.dataset.removeOpening.split(':');draft.rooms[Number(ri)].openings.splice(Number(oi),1);renderRooms();preview();});}
+ function renderRooms(){hs('#floorplan-rooms').innerHTML=draft.rooms.map((r,index)=>`<div class="floorplan-room-row"><div class="floorplan-room-name"><span style="background:${HOME_COLORS[r.kind]}"></span><input aria-label="房間 ${index+1} 名稱" data-home-field="name" data-room-index="${index}" value="${homeEscape(r.name)}" maxlength="40"><button aria-label="移除 ${homeEscape(r.name)}" data-remove-room="${index}">×</button></div><select aria-label="房間 ${index+1} 用途" data-home-field="kind" data-room-index="${index}">${Object.entries(HOME_KINDS).map(([k,label])=>`<option value="${k}" ${k===r.kind?'selected':''}>${label}</option>`).join('')}</select>${Array.isArray(r.polygon)&&r.polygon.length>=3?`<small>真實形狀：${r.polygon.length} 點多邊形 · 面積 ${(Number(r.area_sqm)||0).toFixed(2)} m²（下面的寬 ${r.width.toFixed(2)} × 深 ${r.depth.toFixed(2)} 只是外接矩形，不是房間形狀）</small>`:''}${[['x','中心 X'],['z','中心 Z'],['width','寬'],['depth','深']].map(([key,label])=>`<label>${label} / m<input type="number" step=".01" data-home-field="${key}" data-room-index="${index}" value="${r[key].toFixed(2)}" aria-label="房間 ${index+1} ${label}"${Array.isArray(r.polygon)&&r.polygon.length>=3&&(key==='width'||key==='depth')?' readonly title="多邊形房間的寬深是外接矩形，修改無效"':''}></label>`).join('')}<small class="confidence ${r.confidence}">${({high:'高信心',medium:'待核對',low:'低信心'})[r.confidence]||'待核對'} · ${r.openings.length} 個門窗${r.notes?' · '+homeEscape(r.notes):''}</small>${doorEditor(r,index)}</div>`).join('');document.querySelectorAll('[data-home-field]').forEach(input=>input.onchange=()=>{const room=draft.rooms[Number(input.dataset.roomIndex)],key=input.dataset.homeField;room[key]=['name','kind'].includes(key)?input.value:Number(input.value);room.purpose=['bedroom','dining','work'].includes(room.kind)?room.kind:'living';preview();});document.querySelectorAll('[data-home-field]').forEach(input=>input.oninput=input.onchange);document.querySelectorAll('[data-remove-room]').forEach(button=>button.onclick=()=>{draft.rooms.splice(Number(button.dataset.removeRoom),1);renderRooms();preview();});document.querySelectorAll('[data-add-door]').forEach(button=>button.onclick=()=>{const[ri,edge]=button.dataset.addDoor.split(':');draft.rooms[Number(ri)].openings.push({kind:'door',edge,offset:.4,width:.2});renderRooms();preview();});document.querySelectorAll('[data-remove-opening]').forEach(button=>button.onclick=()=>{const[ri,oi]=button.dataset.removeOpening.split(':');draft.rooms[Number(ri)].openings.splice(Number(oi),1);renderRooms();preview();});}
  async function detectImageWalls(upload, ticket){
   try{
    const model=await loadWallModel(new URL('./models/unet-int8.onnx',import.meta.url).href);
@@ -45,9 +45,22 @@ export function createHomeStudio({modal,setCleanup,createHome,notify}){
    // 房間輪廓：AI 只回 4 點矩形，形狀失真且面積虛增 13–14%（2026-11-10 實測：
    // 客廳 L 形連通域 90,970 px、外接矩形 103,085 px）。mask 的 floor 連通域才是真實形狀，
    // 包括 L 形客廳與開放式客廳+餐廳+走廊（它們之間沒門沒牆，本來就該合成一間）。
-   let polygons=null;
+   let polygons=null,doors=null;
+   // 門要在地板吸收之前抽：吸收會把門洞按最近的房間填平（讓地板連續），
+   // 之後 mask 上就分不出哪裡原本是門了。
+   try{doors=doorsFromMask(result.mask,result.width,result.height);}catch(e){console.warn('[door-mask] skipped:',e);}
    try{polygons=roomsFromMask(result.mask,result.width,result.height);}catch(e){console.warn('[room-polygon] skipped:',e);}
-   return {lines:wallLinesFromMask(result.mask,result.width,result.height,{minLenH:minLength,minLenV:minLength,gap:8}),source:result.calibrated?'Domira 牆體模型':'基礎牆體模型',polygons,segWidth:result.width,segHeight:result.height};
+   // 房子外框＝非「屋外」（類別 4）像素的外框，當比例尺基準。
+   // 比用「房間多邊形聯集」穩：模型漏切一間房（陽台、儲物室）時聯集會縮，
+   // 整屋比例尺就跟著全錯；非屋外像素的外框不受影響。
+   let fx0=Infinity,fy0=Infinity,fx1=-Infinity,fy1=-Infinity;
+   for(let i=0;i<result.mask.length;i++){
+    if(result.mask[i]===4)continue;
+    const x=i%result.width,y=(i-x)/result.width;
+    if(x<fx0)fx0=x;if(x>fx1)fx1=x;if(y<fy0)fy0=y;if(y>fy1)fy1=y;
+   }
+   const frame=Number.isFinite(fx0)?{x:fx0,y:fy0,w:Math.max(1,fx1-fx0),h:Math.max(1,fy1-fy0)}:null;
+   return {lines:wallLinesFromMask(result.mask,result.width,result.height,{minLenH:minLength,minLenV:minLength,gap:8}),source:result.calibrated?'Domira 牆體模型':'基礎牆體模型',polygons,doors,frame,segWidth:result.width,segHeight:result.height};
   }catch(error){
    console.warn('[wall-model]',error);
    if(live&&ticket===sequence&&upload===image)hs('#floorplan-wall-status').textContent='牆體預覽暫時無法載入，仍可分析房間與尺寸。';
@@ -231,9 +244,23 @@ upload.wallPromise=detectImageWalls(upload,ticket).then(result=>{upload.wallResu
     if(!predicted||!Array.isArray(predicted.polygons)||!predicted.polygons.length)
      throw new Error('模型沒有辨識出房間；請換一張更清晰的單層圖紙，或改用 AI 分析。');
     const known=hs('#floorplan-known-width').value;
-    const W=known?Number(known):Math.max(3,Math.min(20,Math.sqrt(60*(image.width/image.height))));
-    const D=Math.round(W*image.height/image.width*100)/100;
-    draft=roomsFromPolygons(predicted.polygons,predicted.segWidth,predicted.segHeight,W,D,{height:Number(hs('#home-height').value)||2.7});
+    // 全屋寬高比取「房子外框」（非屋外像素的外框），不是整張圖片。
+    // 圖片四周常有留白、圖框與尺寸標註，用整圖比例推深度會讓整屋偏胖或偏瘦
+    // （2026-11-11 使用者實測回報「大小不对」）。
+    const fr=predicted.frame;
+    let bw=fr&&fr.w>0?fr.w:0,bh=fr&&fr.h>0?fr.h:0;
+    if(!(bw>0&&bh>0)){
+     let bx0=Infinity,by0=Infinity,bx1=-Infinity,by1=-Infinity;
+     for(const p of predicted.polygons)for(const q of (p.polygon||[])){
+      if(q[0]<bx0)bx0=q[0];if(q[0]>bx1)bx1=q[0];
+      if(q[1]<by0)by0=q[1];if(q[1]>by1)by1=q[1];
+     }
+     if(Number.isFinite(bx0)){bw=bx1-bx0;bh=by1-by0;}
+    }
+    const aspect=bw>0&&bh>0?Math.max(.2,bw/bh):Math.max(.2,image.width/image.height);
+    const W=known?Number(known):Math.round(Math.max(3,Math.min(20,Math.sqrt(60*aspect)))*100)/100;
+    const D=Math.round(W/aspect*100)/100;
+    draft=roomsFromPolygons(predicted.polygons,predicted.segWidth,predicted.segHeight,W,D,{height:Number(hs('#home-height').value)||2.7,frame:predicted.frame});
     hs('#floorplan-review').hidden=false;hs('#floorplan-upload').hidden=true;
     hs('#floorplan-summary').textContent=draft.summary;
     hs('#floorplan-review-image').src=image.data;

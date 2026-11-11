@@ -63,7 +63,7 @@ export function syncHomeProject(project){if(!project.home)return;const active=pr
 export function homeItems(project,world=false){if(!project.home)return project.items;return project.home.rooms.flatMap(r=>(r.id===project.activeRoomId?project.items:r.items).map(i=>({...i,...(world?{x:i.x+r.x,z:i.z+r.z}:{}),roomId:r.id,roomName:r.name})));}
 export function planWalls(home){const lines=new Map();for(const room of home.rooms){const x=room.x-room.width/2,z=room.z-room.depth/2;for(const edge of ['top','bottom','left','right']){if((room.adjacent||[]).some(a=>a.edge===edge&&a.wall===false))continue;const axis=['top','bottom'].includes(edge)?'x':'z',coordinate=axis==='x'?z+(edge==='bottom'?room.depth:0):x+(edge==='right'?room.width:0),start=axis==='x'?x:z,length=axis==='x'?room.width:room.depth,key=axis+':'+Math.round(coordinate*100),openings=room.openings.filter(o=>o.edge===edge).map(o=>({start:start+o.offset*length,end:start+(o.offset+o.width)*length,kind:o.kind}));if(!lines.has(key))lines.set(key,{axis,coordinate,edges:[]});lines.get(key).edges.push({start,end:start+length,height:room.height,openings});}}
  const segments=[];for(const {axis,coordinate,edges} of lines.values()){const cuts=[...new Set(edges.flatMap(e=>[e.start,e.end,...e.openings.flatMap(o=>[o.start,o.end])]).map(n=>Math.round(n*1000)/1000))].sort((a,b)=>a-b);for(let i=1;i<cuts.length;i++){const start=cuts[i-1],end=cuts[i],middle=(start+end)/2,cover=edges.filter(e=>middle>=e.start-.001&&middle<=e.end+.001);if(!cover.length||end-start<.015)continue;const openings=cover.flatMap(e=>e.openings).filter(o=>middle>=o.start&&middle<=o.end),kind=openings.some(o=>o.kind==='door')?'door':openings.length?'window':'wall';segments.push({axis,x:axis==='x'?middle:coordinate,z:axis==='z'?middle:coordinate,length:end-start,height:Math.max(...cover.map(e=>e.height)),kind});}}return mergeNearbyWalls(segments);}
-export function homePlanSVG(home){const width=900,scale=780/Math.max(home.width,home.depth),w=home.width*scale,h=home.depth*scale,ox=(width-w)/2,oy=65;const safe=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));return `<svg xmlns="http://www.w3.org/2000/svg" width="900" height="${h+140}" viewBox="0 0 900 ${h+140}" role="img" aria-label="全屋平面圖"><rect width="100%" height="100%" fill="#10171b"/><text x="50" y="32" fill="#d1e4d7" font-size="17" font-family="sans-serif">DOMIRA / ${home.rooms.length} 個空間 · ${home.width.toFixed(2)} × ${home.depth.toFixed(2)} m</text>${home.rooms.map(r=>{const fill=HOME_COLORS[r.kind]||HOME_COLORS.other;if(Array.isArray(r.polygon)&&r.polygon.length>=3){const pts=r.polygon.map(pt=>`${(ox+(r.x+pt[0]+home.width/2)*scale).toFixed(1)},${(oy+(r.z+pt[1]+home.depth/2)*scale).toFixed(1)}`).join(' ');return `<polygon points="${pts}" fill="${fill}" opacity=".24"/>`;}return `<rect x="${ox+(r.x-r.width/2+home.width/2)*scale}" y="${oy+(r.z-r.depth/2+home.depth/2)*scale}" width="${r.width*scale}" height="${r.depth*scale}" fill="${fill}" opacity=".24"/>`;}).join('')}${planWalls(home).map(s=>{const x=ox+(s.x+home.width/2)*scale,y=oy+(s.z+home.depth/2)*scale,half=s.length*scale/2;return `<line x1="${s.axis==='x'?x-half:x}" x2="${s.axis==='x'?x+half:x}" y1="${s.axis==='z'?y-half:y}" y2="${s.axis==='z'?y+half:y}" stroke="${s.kind==='door'?'#d2b77f':s.kind==='window'?'#7eafbf':'#d5ddd4'}" stroke-width="${s.kind==='wall'?3:2}" ${s.kind==='door'?'stroke-dasharray="4 5"':''}/>`;}).join('')}${home.rooms.flatMap(r=>(r.items||[]).map(i=>{const color=/^#[0-9a-f]{6}$/i.test(i.color||'')?i.color:'#8fa68f';return `<g transform="translate(${ox+(r.x+i.x+home.width/2)*scale} ${oy+(r.z+i.z+home.depth/2)*scale}) rotate(${i.rotation})"><rect x="${-i.w*scale/2}" y="${-i.d*scale/2}" width="${i.w*scale}" height="${i.d*scale}" rx="3" fill="${color}" fill-opacity="${i.type==='rug'?.2:.7}" stroke="#d0e1d8" stroke-opacity=".4"/><title>${safe(i.name||i.type)}</title></g>`;})).join('')}${home.rooms.map(r=>`<text x="${ox+(r.x+home.width/2)*scale}" y="${oy+(r.z+home.depth/2)*scale-4}" text-anchor="middle" fill="#fff" stroke="#10171b" stroke-width="3" paint-order="stroke" font-size="${Math.min(30,Math.round(r.width*scale/Math.max(2,[...r.name].length)),Math.round(r.depth*scale/3))}" font-weight="700" font-family="sans-serif">${safe(r.name)}<tspan x="${ox+(r.x+home.width/2)*scale}" dy="25" font-size="${Math.min(21,Math.round(r.width*scale/8),Math.round(r.depth*scale/4))}" fill="#e4eee7">${r.width.toFixed(2)} × ${r.depth.toFixed(2)} m</tspan></text>`).join('')}<text x="50" y="${h+115}" fill="#a7bbae" font-size="11" font-family="sans-serif">${home.source==='care-manual'?'手動配置':'AI 矩形近似'} · 金色虛線為門洞 / 藍線為窗 · 需實測核對，非施工圖</text></svg>`;}
+export function homePlanSVG(home){const width=900,scale=780/Math.max(home.width,home.depth),w=home.width*scale,h=home.depth*scale,ox=(width-w)/2,oy=65;const safe=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));return `<svg xmlns="http://www.w3.org/2000/svg" width="900" height="${h+140}" viewBox="0 0 900 ${h+140}" role="img" aria-label="全屋平面圖"><rect width="100%" height="100%" fill="#10171b"/><text x="50" y="32" fill="#d1e4d7" font-size="17" font-family="sans-serif">DOMIRA / ${home.rooms.length} 個空間 · ${home.width.toFixed(2)} × ${home.depth.toFixed(2)} m</text>${home.rooms.map(r=>{const fill=HOME_COLORS[r.kind]||HOME_COLORS.other;if(Array.isArray(r.polygon)&&r.polygon.length>=3){const pts=r.polygon.map(pt=>`${(ox+(r.x+pt[0]+home.width/2)*scale).toFixed(1)},${(oy+(r.z+pt[1]+home.depth/2)*scale).toFixed(1)}`).join(' ');return `<polygon points="${pts}" fill="${fill}" opacity=".24"/>`;}return `<rect x="${ox+(r.x-r.width/2+home.width/2)*scale}" y="${oy+(r.z-r.depth/2+home.depth/2)*scale}" width="${r.width*scale}" height="${r.depth*scale}" fill="${fill}" opacity=".24"/>`;}).join('')}${planWalls(home).map(s=>{const x=ox+(s.x+home.width/2)*scale,y=oy+(s.z+home.depth/2)*scale,half=s.length*scale/2;return `<line x1="${s.axis==='x'?x-half:x}" x2="${s.axis==='x'?x+half:x}" y1="${s.axis==='z'?y-half:y}" y2="${s.axis==='z'?y+half:y}" stroke="${s.kind==='door'?'#d2b77f':s.kind==='window'?'#7eafbf':'#d5ddd4'}" stroke-width="${s.kind==='wall'?3:2}" ${s.kind==='door'?'stroke-dasharray="4 5"':''}/>`;}).join('')}${(home.doors||[]).map(d=>{const dcx=ox+(d.x+home.width/2)*scale,dcy=oy+(d.z+home.depth/2)*scale;return `<rect x="${(dcx-d.w*scale/2).toFixed(1)}" y="${(dcy-d.d*scale/2).toFixed(1)}" width="${Math.max(2,d.w*scale).toFixed(1)}" height="${Math.max(2,d.d*scale).toFixed(1)}" fill="#d2b77f" opacity=".85"/>`;}).join('')}${home.rooms.flatMap(r=>(r.items||[]).map(i=>{const color=/^#[0-9a-f]{6}$/i.test(i.color||'')?i.color:'#8fa68f';return `<g transform="translate(${ox+(r.x+i.x+home.width/2)*scale} ${oy+(r.z+i.z+home.depth/2)*scale}) rotate(${i.rotation})"><rect x="${-i.w*scale/2}" y="${-i.d*scale/2}" width="${i.w*scale}" height="${i.d*scale}" rx="3" fill="${color}" fill-opacity="${i.type==='rug'?.2:.7}" stroke="#d0e1d8" stroke-opacity=".4"/><title>${safe(i.name||i.type)}</title></g>`;})).join('')}${home.rooms.map(r=>`<text x="${ox+(r.x+home.width/2)*scale}" y="${oy+(r.z+home.depth/2)*scale-4}" text-anchor="middle" fill="#fff" stroke="#10171b" stroke-width="3" paint-order="stroke" font-size="${Math.min(30,Math.round(r.width*scale/Math.max(2,[...r.name].length)),Math.round(r.depth*scale/3))}" font-weight="700" font-family="sans-serif">${safe(r.name)}<tspan x="${ox+(r.x+home.width/2)*scale}" dy="25" font-size="${Math.min(21,Math.round(r.width*scale/8),Math.round(r.depth*scale/4))}" fill="#e4eee7">${r.width.toFixed(2)} × ${r.depth.toFixed(2)} m</tspan></text>`).join('')}<text x="50" y="${h+115}" fill="#a7bbae" font-size="11" font-family="sans-serif">${home.source==='care-manual'?'手動配置':'AI 矩形近似'} · 金色虛線為門洞 / 藍線為窗 · 需實測核對，非施工圖</text></svg>`;}
 
 // ── 房間相鄰圖：方向 3 的前置 ──────────────────────────────────────────
 // 為什麼必須先做這個：openings 只記錄「哪面牆有門」，不知道門通往哪一間房。
@@ -550,12 +550,27 @@ export function roomsFromPolygons(polys,segW,segH,width,depth,options={}){
  if(!(segW>0)||!(segH>0))throw new Error('影像尺寸無效。');
  const W=Number(width),D=Number(depth);
  if(!(W>0)||!(D>0))throw new Error('請先填入全屋寬度與深度。');
- const sx=W/segW,sy=D/segH;
  const namePrefix=options.namePrefix||'空間';
+ const use=polys.filter(p=>Array.isArray(p.polygon)&&p.polygon.length>=3);
+ if(!use.length)throw new Error('模型的連通域都不足 3 點，無法建立房間。');
+ // 房子外框＝所有房間多邊形的聯集，不是整張圖片。
+ // 為什麼（2026-11-11 使用者回報「大小不对」）：圖片四周常有留白、尺寸標註與圖框，
+  // 整圖的寬高比根本不是房子的寬高比。拿它推深度，整屋就會偏胖或偏瘦。
+ let bx0=Infinity,by0=Infinity,bx1=-Infinity,by1=-Infinity;
+ for(const p of use)for(const [x,y] of p.polygon){
+  if(x<bx0)bx0=x;if(x>bx1)bx1=x;if(y<by0)by0=y;if(y>by1)by1=y;
+ }
+ // options.frame（像素 bbox）優先：那是「非屋外像素」的外框，比房間聯集更穩
+ // ——模型漏切一間房時，房間聯集會縮小，比例尺跟著整體失真。
+ const frame=options.frame&&Number(options.frame.w)>0&&Number(options.frame.h)>0?options.frame:null;
+ const bw=frame?Number(frame.w):Math.max(1,bx1-bx0);
+ const bh=frame?Number(frame.h):Math.max(1,by1-by0);
+ const bcx=frame?Number(frame.x)+bw/2:(bx0+bx1)/2;
+ const bcy=frame?Number(frame.y)+bh/2:(by0+by1)/2;
+ const sx=W/bw,sy=D/bh;
  const rooms=[];
- polys.forEach((p,index)=>{
-  const pts=Array.isArray(p.polygon)?p.polygon:null;
-  if(!pts||pts.length<3)return;
+ use.forEach((p,index)=>{
+  const pts=p.polygon;
   // 質心（多邊形面積加權，不是頂點平均——L 形用頂點平均會偏）
   let a2=0,cx=0,cy=0;
   for(let i=0;i<pts.length;i++){
@@ -576,8 +591,8 @@ export function roomsFromPolygons(polys,segW,segH,width,depth,options={}){
    name:namePrefix+(index+1),
    kind:'other',
    purpose:'living',
-   x:roundHome((gx/segW-.5)*W),
-   z:roundHome((gy/segH-.5)*D),
+   x:roundHome((gx-bcx)*sx),
+   z:roundHome((gy-bcy)*sy),
    width:roundHome(rw),
    depth:roundHome(rd),
    height:Number(options.height)||2.7,
@@ -603,6 +618,15 @@ export function roomsFromPolygons(polys,segW,segH,width,depth,options={}){
   scaleConfirmed:!!options.scaleConfirmed,
   summary:'房間位置與形狀由分割模型直接從圖上辨識（'+rooms.length+' 間），不是 AI 目測的矩形。',
   warnings:['房間名稱、用途與門窗按鈕位置請逐一核對；座標來自模型分割，未經 AI 覆核。'],
+  // 門的位置（像素 → 公尺、以房子中心為原點）。門洞本身已被吸收進地板
+  // （門是通道，地板該連續），這份資料只負責「在哪裡畫一扇門」。
+  doors:(Array.isArray(options.doors)?options.doors:[]).map(d=>({
+   x:roundHome((Number(d.cx)-bcx)*sx),
+   z:roundHome((Number(d.cy)-bcy)*sy),
+   w:roundHome(Math.max(.05,Number(d.w)*sx)),
+   d:roundHome(Math.max(.05,Number(d.h)*sy)),
+   horizontal:!!d.horizontal,
+  })).filter(d=>Number.isFinite(d.x)&&Number.isFinite(d.z)),
   rooms,
  };
 }

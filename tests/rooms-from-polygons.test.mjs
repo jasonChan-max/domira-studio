@@ -27,7 +27,9 @@ const polys = [
 ];
 
 console.log('=== 測試 1：基本建構（10 m × 10 m 全屋）===');
-const home = roomsFromPolygons(polys, 512, 512, 10, 10);
+// frame 指定「房子外框」＝整張 512×512 圖，所以比例尺是 10/512 m/px。
+// 不給 frame 的話會退化成「所有房間多邊形的聯集」當外框（見測試 6）。
+const home = roomsFromPolygons(polys, 512, 512, 10, 10, { frame: { x: 0, y: 0, w: 512, h: 512 } });
 check('切出 2 間', home.rooms.length === 2, `實際 ${home.rooms.length}`);
 check('format 正確', home.format === 'domira.home.v1');
 check('source 標記為模型', home.source === 'onnx-floorplan');
@@ -79,6 +81,23 @@ const totalArea = home.rooms.reduce((s, r) => s + r.area_sqm, 0);
 console.log(`    兩間總面積 ${totalArea.toFixed(2)} m²`);
 check('總面積小於全屋（10×10=100）', totalArea < 100);
 check('總面積大於 0', totalArea > 0);
+
+console.log('\n=== 測試 5：沒有 frame 時，用房間聯集當房子外框 ===');
+// 這條守的是「大小不对」那類回歸：比例尺必須跟房子走，不能跟整張圖走。
+// 同一組房間，圖從 512×512 換成 2000×2000（大量留白），房間的實際尺寸不該改變。
+const padded = roomsFromPolygons(polys, 2000, 2000, 10, 10);
+const paddedBig = padded.rooms.find(r => r.name === '空間1');
+check('留白不改變房間面積', Math.abs(paddedBig.area_sqm - 38.1) < 4,
+  `實際 ${paddedBig.area_sqm} m²（聯集外框 350×300 px，房 1 佔 40000 px²）`);
+check('留白不改變全屋寬高比', Math.abs((padded.width / padded.depth) - (10 / 10)) < 0.01,
+  `${padded.width}×${padded.depth}`);
+
+console.log('\n=== 測試 6：frame 比房間聯集更穩 ===');
+// 模型漏切一間房時，房間聯集會縮小；指定 frame 後比例尺不動。
+const dropped = roomsFromPolygons([polys[0]], 512, 512, 10, 10, { frame: { x: 0, y: 0, w: 512, h: 512 } });
+check('只剩一間房時，frame 仍撐住比例尺',
+  Math.abs(dropped.rooms[0].area_sqm - 15.26) < 0.5,
+  `實際 ${dropped.rooms[0].area_sqm} m²（若用聯集會變成 38.1）`);
 
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);
