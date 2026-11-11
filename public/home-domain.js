@@ -537,6 +537,77 @@ export function polygonArea(points){
 }
 
 
+// 純用分割模型建整屋：不吃 AI 的矩形，直接用模型的房間連通域。
+//
+// 2026-11-11 新增。起因：AI 回的四點矩形和原圖對不上（實測客餐廚框整個偏右上），
+// 連帶讓「把 polygon 配給 AI 房間」那一步也跟著錯位。既然模型切出來的連通域本身就是
+// 正確的房間形狀，那就別繞這圈——直接拿它當房間。
+//
+// 座標：polys 是「原圖像素座標」，這裡按比例尺換成公尺，並以房子中心為原點。
+// 面積：直接對 polygon 跑鞋帶公式，不是 AI 目測的比例。
+export function roomsFromPolygons(polys,segW,segH,width,depth,options={}){
+ if(!Array.isArray(polys)||!polys.length)throw new Error('模型沒有辨識出任何房間。');
+ if(!(segW>0)||!(segH>0))throw new Error('影像尺寸無效。');
+ const W=Number(width),D=Number(depth);
+ if(!(W>0)||!(D>0))throw new Error('請先填入全屋寬度與深度。');
+ const sx=W/segW,sy=D/segH;
+ const namePrefix=options.namePrefix||'空間';
+ const rooms=[];
+ polys.forEach((p,index)=>{
+  const pts=Array.isArray(p.polygon)?p.polygon:null;
+  if(!pts||pts.length<3)return;
+  // 質心（多邊形面積加權，不是頂點平均——L 形用頂點平均會偏）
+  let a2=0,cx=0,cy=0;
+  for(let i=0;i<pts.length;i++){
+   const [x0,y0]=pts[i],[x1,y1]=pts[(i+1)%pts.length];
+   const cross=x0*y1-x1*y0;
+   a2+=cross;cx+=(x0+x1)*cross;cy+=(y0+y1)*cross;
+  }
+  if(Math.abs(a2)<1e-6)return;
+  const gx=cx/(3*a2),gy=cy/(3*a2);
+  // 轉公尺、以房子中心為原點
+  const toM=([x,y])=>[roundHome((x-gx)*sx),roundHome((y-gy)*sy)];
+  const poly=pts.map(toM);
+  const xs=poly.map(q=>q[0]),ys=poly.map(q=>q[1]);
+  const rw=Math.max(.4,Math.max(...xs)-Math.min(...xs));
+  const rd=Math.max(.4,Math.max(...ys)-Math.min(...ys));
+  rooms.push({
+   id:'space-'+index,
+   name:namePrefix+(index+1),
+   kind:'other',
+   purpose:'living',
+   x:roundHome((gx/segW-.5)*W),
+   z:roundHome((gy/segH-.5)*D),
+   width:roundHome(rw),
+   depth:roundHome(rd),
+   height:Number(options.height)||2.7,
+   confidence:'medium',
+   notes:'形狀取自模型辨識的房間輪廓；名稱與用途請自行核對。',
+   openings:[],
+   adjacent:[],
+   area_sqm:roundHome(polygonArea(poly)),
+   polygon:poly,
+   items:[],
+  });
+ });
+ if(!rooms.length)throw new Error('模型的連通域都不足 3 點，無法建立房間。');
+ rooms.sort((a,b)=>b.area_sqm-a.area_sqm);
+ rooms.forEach((r,i)=>{r.id='space-'+i;});
+ return {
+  format:'domira.home.v1',
+  width:roundHome(W),
+  depth:roundHome(D),
+  height:Number(options.height)||2.7,
+  source:'onnx-floorplan',
+  model:'cubicsa-v7-unet',
+  scaleConfirmed:!!options.scaleConfirmed,
+  summary:'房間位置與形狀由分割模型直接從圖上辨識（'+rooms.length+' 間），不是 AI 目測的矩形。',
+  warnings:['房間名稱、用途與門窗按鈕位置請逐一核對；座標來自模型分割，未經 AI 覆核。'],
+  rooms,
+ };
+}
+
+
 // 自動補門：AI 常常漏掉門。對「一道門都沒有」的房間，挑一個 wall:true 的相鄰房間，
 // 在共享牆的 40% 位置補一道門。位置是猜的，但總比 3D 裡整間沒門好；使用者可用門編輯器改。
 function autofillDoors(rooms){
