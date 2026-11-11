@@ -2,6 +2,7 @@ import {API_BASE} from './api-config.js';
 import {HOME_KINDS,HOME_COLORS,homeFromAnalysis,validateHome,homePlanSVG,readPlanDimensions} from './home-domain.js';
 import {imageToPixels,detectWalls,snapRoomsToWalls} from './wall-detect.js';
 import {loadWallModel,segmentWalls,wallLinesFromMask} from './wall-onnx.js';
+import {roomsFromMask} from './room-polygon.js';
 const hs=s=>document.querySelector(s),homeEscape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export function createHomeStudio({modal,setCleanup,createHome,notify}){
  let sequence=0,controller=null,image=null,analysis=null,draft=null,live=false;
@@ -41,14 +42,35 @@ export function createHomeStudio({modal,setCleanup,createHome,notify}){
     ?(result.calibrated?'Domira 牆體模型已完成辨識。':'基礎牆體模型已完成辨識。')+' 紅色為候選牆體。'
     :'模型未辨識到牆體，請改用更清晰的單層圖紙。';
    const minLength=Math.max(18,Math.round(Math.max(result.width,result.height)*.03));
-   return {lines:wallLinesFromMask(result.mask,result.width,result.height,{minLenH:minLength,minLenV:minLength,gap:8}),source:result.calibrated?'Domira 牆體模型':'基礎牆體模型'};
+   // 房間輪廓：AI 只回 4 點矩形，形狀失真且面積虛增 13–14%（2026-11-10 實測：
+   // 客廳 L 形連通域 90,970 px、外接矩形 103,085 px）。mask 的 floor 連通域才是真實形狀，
+   // 包括 L 形客廳與開放式客廳+餐廳+走廊（它們之間沒門沒牆，本來就該合成一間）。
+   let polygons=null;
+   try{polygons=roomsFromMask(result.mask,result.width,result.height);}catch(e){console.warn('[room-polygon] skipped:',e);}
+   return {lines:wallLinesFromMask(result.mask,result.width,result.height,{minLenH:minLength,minLenV:minLength,gap:8}),source:result.calibrated?'Domira 牆體模型':'基礎牆體模型',polygons,segWidth:result.width,segHeight:result.height};
   }catch(error){
    console.warn('[wall-model]',error);
    if(live&&ticket===sequence&&upload===image)hs('#floorplan-wall-status').textContent='牆體預覽暫時無法載入，仍可分析房間與尺寸。';
    return null;
   }
  }
- async function snapWithWalls(data, upload){
+   // 把 mask 的房間輪廓按中心點匹配到 AI 房間，寫成 0-1000 座標的 polygon。
+  // homeFromAnalysis 收到 polygon 會轉成「相對房間中心」的公尺位移，3D 用 ShapeGeometry 畫真實形狀。
+  function attachPolygons(rooms,polys,segW,segH){
+   if(!Array.isArray(polys)||!polys.length||!segW||!segH)return rooms;
+   return rooms.map(room=>{
+    const b=room.rect;if(!b)return room;
+    const cx=(b.x+b.w/2)/1000*segW,cy=(b.y+b.h/2)/1000*segH;
+    let best=null,bestD=Infinity;
+    for(const p of polys){
+     const d=Math.hypot(p.center[0]-cx,p.center[1]-cy);
+     if(d<bestD){bestD=d;best=p;}
+    }
+    if(!best||best.polygon.length<3)return room;
+    return {...room,polygon:best.polygon.map(([x,y])=>[x/segW*1000,y/segH*1000])};
+   });
+  }
+async function snapWithWalls(data, upload){
   try{
    const predicted=upload.wallResult;
    let lines=predicted?.lines,source=predicted?.source;
@@ -65,8 +87,11 @@ export function createHomeStudio({modal,setCleanup,createHome,notify}){
    for(const line of keepV){xs.push(line.pos);ys.push(line.from,line.to);}
    const walls={hLines:lines.hLines,vLines:lines.vLines,box:{x0:Math.min(...xs),x1:Math.max(...xs),y0:Math.min(...ys),y1:Math.max(...ys)}};
    const result=snapRoomsToWalls(data.rooms,walls,{frame:data.frame});
-   if(!result.snappedEdges)return data;
-   return {...data,rooms:result.rooms,warnings:[...data.warnings,'已依'+source+'校正 '+result.snappedEdges+' 條房間邊界，請與原圖核對。']};
+   const shaped=attachPolygons(result.rooms||data.rooms,predicted?.polygons,predicted?.segWidth,predicted?.segHeight);
+   const shapedCount=shaped.filter(x=>Array.isArray(x.polygon)&&x.polygon.length>=3).length;
+   const polyNote=shapedCount?'房間形狀已改用圖上實際輪廓（'+shapedCount+'/'+shaped.length+' 間，含 L 形與開放式空間）。':'';
+   if(!result.snappedEdges)return polyNote?{...data,rooms:shaped,warnings:[...data.warnings,polyNote]}:data;
+   return {...data,rooms:shaped,warnings:[...data.warnings,'已依'+source+'校正 '+result.snappedEdges+' 條房間邊界，請與原圖核對。',...(polyNote?[polyNote]:[])]};
   }catch(error){console.warn('[wall-detect] skipped:',error);return data;}
  }
  function renderDimensions(first,second){
