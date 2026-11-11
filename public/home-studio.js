@@ -54,20 +54,38 @@ export function createHomeStudio({modal,setCleanup,createHome,notify}){
    return null;
   }
  }
-   // 把 mask 的房間輪廓按中心點匹配到 AI 房間，寫成 0-1000 座標的 polygon。
-  // homeFromAnalysis 收到 polygon 會轉成「相對房間中心」的公尺位移，3D 用 ShapeGeometry 畫真實形狀。
+   // 把 mask 的房間輪廓匹配到 AI 房間，寫成 0-1000 座標的 polygon。
+  //
+  // 用「重疊面積」而不是「中心最近」：AI 的 rect 和 mask 的連通域劃分本來就不一致
+  // （AI 把開放式客餐廳拆成客廳＋餐廳，v7 可能只認成一塊），按中心匹配會把隔壁的
+  // 輪廓安到這間身上——2026-11-11 實測臥室配到左邊那間、形狀整個錯位。
+  // polygon 只能用一次，配不到就退回矩形（寧可方，不要錯）。
   function attachPolygons(rooms,polys,segW,segH){
    if(!Array.isArray(polys)||!polys.length||!segW||!segH)return rooms;
+   const used=new Set();
    return rooms.map(room=>{
     const b=room.rect;if(!b)return room;
-    const cx=(b.x+b.w/2)/1000*segW,cy=(b.y+b.h/2)/1000*segH;
-    let best=null,bestD=Infinity;
-    for(const p of polys){
-     const d=Math.hypot(p.center[0]-cx,p.center[1]-cy);
-     if(d<bestD){bestD=d;best=p;}
+    const rx0=b.x/1000*segW,ry0=b.y/1000*segH,rx1=(b.x+b.w)/1000*segW,ry1=(b.y+b.h)/1000*segH;
+    const rectArea=Math.max(1,(rx1-rx0)*(ry1-ry0));
+    let best=null,bestScore=0;
+    for(let i=0;i<polys.length;i++){
+     if(used.has(i))continue;
+     const p=polys[i];
+     if(!p||!Array.isArray(p.polygon)||p.polygon.length<3||!Array.isArray(p.bbox))continue;
+     const [px0,py0,px1,py1]=p.bbox;
+     const ix=Math.max(0,Math.min(rx1,px1)-Math.max(rx0,px0));
+     const iy=Math.max(0,Math.min(ry1,py1)-Math.max(ry0,py0));
+     const inter=ix*iy;
+     if(inter<=0)continue;
+     // 以「與 AI 矩形重疊的比例」為主，避免大房間吃掉小房間的輪廓
+     const score=inter/rectArea;
+     if(score>bestScore){bestScore=score;best=i;}
     }
-    if(!best||best.polygon.length<3)return room;
-    return {...room,polygon:best.polygon.map(([x,y])=>[x/segW*1000,y/segH*1000])};
+    // 重疊不到一半就不配——那說明 AI 和模型的劃分差太遠
+    if(best===null||bestScore<0.5)return room;
+    used.add(best);
+    const p=polys[best];
+    return {...room,polygon:p.polygon.map(([x,y])=>[x/segW*1000,y/segH*1000])};
    });
   }
 async function snapWithWalls(data, upload){
