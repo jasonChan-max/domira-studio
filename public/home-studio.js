@@ -73,27 +73,37 @@ export function createHomeStudio({modal,setCleanup,createHome,notify}){
 async function snapWithWalls(data, upload){
   try{
    // 等牆體模型跑完（它在上傳時就啟動了）；沒有 promise 就直接用結果。
-   // 這一步是房間多邊形的前提：模型沒跑完就沒有 mask，只能退回矩形。
    const predicted=upload.wallResult ?? (upload.wallPromise ? await upload.wallPromise.catch(()=>null) : null);
+
+   // 房間輪廓先做，而且不依賴牆線——2026-11-11 的 bug：原本掛在「牆線夠長」的
+   // 檢查之後，開放式戶型的牆短，一早就 return，多邊形永遠跑不到。
+   const shaped=attachPolygons(data.rooms,predicted?.polygons,predicted?.segWidth,predicted?.segHeight);
+   const shapedCount=shaped.filter(x=>Array.isArray(x.polygon)&&x.polygon.length>=3).length;
+   const wallDiag=predicted?(Array.isArray(predicted.polygons)?'模型回報 '+predicted.polygons.length+' 個房間輪廓':'模型沒回報房間輪廓'):'牆體模型未完成（載入或推理失敗）';
+   const polyNote=shapedCount
+    ?'房間形狀已改用圖上實際輪廓（'+shapedCount+'/'+shaped.length+' 間，含 L 形與開放式空間）。'
+    :'房間形狀仍是矩形近似：'+wallDiag+'。';
+   const withPoly=shapedCount?{...data,rooms:shaped,warnings:[...data.warnings,polyNote]}:data;
+
+   // 再做牆線吸附（這部分才需要夠長的牆線）
    let lines=predicted?.lines,source=predicted?.source;
-   if(!lines?.hLines.length||!lines?.vLines.length){
+   if(!lines?.hLines?.length||!lines?.vLines?.length){
     const pixels=await imageToPixels(upload.data);
     lines=detectWalls(pixels.data,pixels.width,pixels.height);
     source='圖像閾值';
    }
    const keepH=lines.hLines.filter(line=>line.len>=80);
    const keepV=lines.vLines.filter(line=>line.len>=80);
-   if(!keepH.length||!keepV.length)return data;
+   if(!keepH.length||!keepV.length)return withPoly;
    const xs=[],ys=[];
    for(const line of keepH){xs.push(line.from,line.to);ys.push(line.pos);}
    for(const line of keepV){xs.push(line.pos);ys.push(line.from,line.to);}
    const walls={hLines:lines.hLines,vLines:lines.vLines,box:{x0:Math.min(...xs),x1:Math.max(...xs),y0:Math.min(...ys),y1:Math.max(...ys)}};
    const result=snapRoomsToWalls(data.rooms,walls,{frame:data.frame});
-   const shaped=attachPolygons(result.rooms||data.rooms,predicted?.polygons,predicted?.segWidth,predicted?.segHeight);
-   const shapedCount=shaped.filter(x=>Array.isArray(x.polygon)&&x.polygon.length>=3).length;
-   const polyNote=shapedCount?'房間形狀已改用圖上實際輪廓（'+shapedCount+'/'+shaped.length+' 間，含 L 形與開放式空間）。':'';
-   if(!result.snappedEdges)return polyNote?{...data,rooms:shaped,warnings:[...data.warnings,polyNote]}:data;
-   return {...data,rooms:shaped,warnings:[...data.warnings,'已依'+source+'校正 '+result.snappedEdges+' 條房間邊界，請與原圖核對。',...(polyNote?[polyNote]:[])]};
+   if(!result.snappedEdges)return withPoly;
+   const snapped=attachPolygons(result.rooms,data.polygonsForSnap||predicted?.polygons,predicted?.segWidth,predicted?.segHeight);
+   const snappedCount=snapped.filter(x=>Array.isArray(x.polygon)&&x.polygon.length>=3).length;
+   return {...data,rooms:snapped,warnings:[...data.warnings,'已依'+source+'校正 '+result.snappedEdges+' 條房間邊界，請與原圖核對。',...(snappedCount?[polyNote]:[])]};
   }catch(error){console.warn('[wall-detect] skipped:',error);return data;}
  }
  function renderDimensions(first,second){
