@@ -45,7 +45,7 @@ export function careGeometry(project, options){
 export function careReview(p){const geometry=careGeometry(p,{includePaths:true}),pending=FIELD_CHECKS.filter(([id])=>p.fieldChecks?.[id]!==true).map(([id,label])=>({id,label}));for(const r of CARE_DATA.sheets[0].records)if(p.fieldChecks?.[r.id]!==true)pending.push({id:r.id,label:r.fields['指标项']+'：需現場核對原表參考及適用性'});if(!p.doorConfirmed&&careDoors(p).length)pending.unshift({id:'door-confirmation',label:'請核對圖上的門位及實測淨寬。'});pending.unshift(...(geometry.access?.pending||[]));if(p.room.source==='demo')pending.unshift({id:'measurement',label:'示範房間需以真實測量取代'});if(p.room.measurement?.geometry==='wall-aligned-bounding-rectangle')pending.unshift({id:'irregular-room',label:'RoomPlan包絡矩形內的不規則／凹位須另行核對'});if(p.items.some(i=>i.dimensionSource!=='user-confirmed'))pending.push({id:'furniture-dimensions',label:'所有家具示意尺寸需實物覆核'});const unplaced=remainingRequestedItems(p);if(unplaced.length)pending.push({id:'unplaced-products',label:unplaced.length+'件所選產品尚未放入空間'});return {...geometry,pending,status:!geometry.ok?'blocked':pending.length?'review-required':'checks-recorded',certified:false};}
 export function newCareProject(room={width:6,depth:4.5,height:2.7,source:'demo'},name='我的樂齡空間'){return {format:CARE_VERSION,id:crypto.randomUUID(),name,room,profile:'wheelchair',purpose:'living',style:'warm',doorWidth:.9,doorConfirmed:false,items:[],fieldChecks:{},updatedAt:new Date().toISOString()};}
 export const SAMPLE_ITEMS=[{type:'chair',name:'扶手座椅',w:.7,d:.72,h:.95,color:'#c7b29a'},{type:'cabinet',name:'可及收納櫃',w:1.2,d:.4,h:.8,color:'#a59176'},{type:'bed',name:'睡床',w:1.1,d:2,h:.65,color:'#d7cdbb'}];
-export function placeCareItem(project,raw,index=project.items.length){
+export function placeCareItem(project,raw,index=project.items.length,{variant=0}={}){
  validateCareProject(project);if(project.items.length>=40)return null;
  if(!raw||!['w','d','h'].every(k=>Number.isFinite(raw[k])&&raw[k]>0&&raw[k]<=8))return null;
  const item={...raw,id:raw.id||crypto.randomUUID(),name:String(raw.name||'候選家具').slice(0,100),color:/^#[a-f0-9]{6}$/i.test(raw.color)?raw.color:'#b5aaa0',dimensionSource:raw.dimensionSource||'concept',x:0,z:0,rotation:0};
@@ -53,14 +53,16 @@ export function placeCareItem(project,raw,index=project.items.length){
  if(['x','z','rotation'].every(k=>Number.isFinite(raw[k]))){const preferred={...item,x:raw.x,z:raw.z,rotation:raw.rotation};if(careGeometry({...project,items:[...project.items,preferred]}).ok)return preferred;}
  const room=project.room;
  const alongWall=(min,max)=>Array.from({length:Math.max(0,Math.ceil((max-min)/.2)+1)},(_,n)=>Math.min(max,min+n*.2));
- for(const rotation of (item.type==='bed'?[0,180,90,270]:[index%2?270:90,0,180,index%2?90:270])){
+ const rotations=item.type==='bed'?[0,180,90,270]:[index%2?270:90,0,180,index%2?90:270];
+ for(const rotation of [...rotations.slice(variant),...rotations.slice(0,variant)]){
   const bounds=itemBounds({...item,rotation});
   const xLimit=room.width/2-bounds.w/2-.015,zLimit=room.depth/2-bounds.d/2-.015;
   if(xLimit<0||zLimit<0)continue;
   const candidates=[];
-  for(const side of (index%2?[-1,1]:[1,-1])){
-   for(const z of alongWall(-zLimit,zLimit))candidates.push([side*xLimit,z]);
-   for(const x of alongWall(-xLimit,xLimit))candidates.push([x,side*zLimit]);
+  const order=(min,max)=>{const values=alongWall(min,max);return variant>=2?values.reverse():values;};
+  for(const side of ((index+variant)%2?[-1,1]:[1,-1])){
+   for(const z of order(-zLimit,zLimit))candidates.push([side*xLimit,z]);
+   for(const x of order(-xLimit,xLimit))candidates.push([x,side*zLimit]);
   }
   if(item.type==='bed'){
    const behind=(x,z)=>Math.sin(rotation*Math.PI/180)*x-Math.cos(rotation*Math.PI/180)*z;
@@ -74,7 +76,7 @@ export function placeCareItem(project,raw,index=project.items.length){
 
  return null;
 }
-export function safeCareLayout(project,proposal=[]){
+export function safeCareLayout(project,proposal=[],{variant=0}={}){
  validateCareProject(project);
  const candidates=(proposal.length?proposal:SAMPLE_ITEMS).slice(0,40).sort((a,b)=>Number(b?.type==='bed')-Number(a?.type==='bed'));
  const plan=(order,usePreferred)=>{
@@ -82,7 +84,7 @@ export function safeCareLayout(project,proposal=[]){
   for(const [index,raw] of order.entries()){
    const input=usePreferred?raw:{...raw,x:undefined,z:undefined,rotation:undefined};
    let found;
-   try{found=placeCareItem(p,input,index);}catch{}
+   try{found=placeCareItem(p,input,index,{variant});}catch{}
    if(found)p.items.push(found);else skipped.push(String(raw?.name||'無效候選家具'));
   }
   return {p,skipped};

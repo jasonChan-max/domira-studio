@@ -8,6 +8,7 @@ import {careGeometry} from './care-domain.js';
 import {ALL_CARE_PRODUCTS} from './care-catalog.js';
 import {CARE_CASES,CARE_TEMPLATES,makeCareTemplate} from './care-templates.js';
 import {careNightRoute,careNightRouteOverlay} from './care-night-route.js';
+import {planCareNightAccess} from './care-home-planner.js';
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export function createCareWholeHome({scene,getState,replaceState,refresh,modal,closeModal,setCleanup,notify,api,checkpoint,stopAR,propose}){
  let busy=false,planning=false,epoch=0;const $=s=>document.querySelector(s);
@@ -81,9 +82,16 @@ export function createCareWholeHome({scene,getState,replaceState,refresh,modal,c
     }
     next.projects[room.id]=project;room.items=project.items;
    }
-   validateCareWhole(next);
-   checkpoint();replaceState({...next.projects[next.activeRoomId],wholeHome:{...next,view:'whole'}});
-   refresh({room:true});const message=`全屋規劃完成。已規劃 ${planned} 間房，${unplaced} 件產品待擺放。`;notify(message);return message;
+   button.textContent='正在比較夜間路線…';
+   const checkRevision=()=>{if(token!==epoch||getState()!==base||base.updatedAt!==revision)throw Error('房間或需求已變更，已保留目前設計。');};
+   const result=await planCareNightAccess(next,{profile:base.profile,yieldFrame:async()=>{await new Promise(resolve=>setTimeout(resolve,0));checkRevision();}});
+   checkRevision();
+   const chosen=result.whole;
+   validateCareWhole(chosen);
+   checkpoint();replaceState({...chosen.projects[chosen.activeRoomId],wholeHome:{...chosen,view:'whole'}});
+   refresh({room:true});
+   const routeMessage=result.route.status==='route-found'?(result.changedRooms.length?'已按床邊到浴室的路線調整擺位。':'已找到床邊到浴室的圖面路線。'):'夜間路線仍需核對。';
+   const message=`全屋規劃完成。已規劃 ${planned} 間房，${unplaced} 件產品待擺放。${routeMessage}`;notify(message);return message;
   }catch(error){notify(error.message);return error.message;}
   finally{planning=false;button.disabled=false;button.textContent='分配產品並規劃全屋';}
  }
