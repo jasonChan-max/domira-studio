@@ -1,0 +1,12 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {PRODUCTS} from '../public/products.js';
+import {furnitureOptions} from '../public/furniture-options.js';
+import {ALL_CARE_PRODUCTS,INNOVATIVE_FURNITURE,careFurnitureOptions} from '../public/care-catalog.js';
+import {requestedItems,BRIEF_VERSION} from '../public/care-brief.js';
+test('every studio product opens multiple compatible choices, including itself',()=>{for(const p of PRODUCTS){const options=furnitureOptions(p);assert.ok(options.length>=3,p.id);assert.equal(options[0].id,p.id);assert.ok(options.every(o=>o.type===p.type));}});
+test('every care product has a compatible alternative without changing workbook provenance',()=>{for(const p of ALL_CARE_PRODUCTS){const options=careFurnitureOptions(p);assert.ok(options.length>=2,p.productId);assert.ok(options.includes(p));assert.ok(options.every(o=>o.type===p.type&&o.careKind===p.careKind));}for(const p of INNOVATIVE_FURNITURE){assert.equal(p.sourceRecordId,null);assert.equal(p.sku,null);assert.equal(p.dimensionSource,'concept');}});
+test('original care choices retain model and dimensions through planning',()=>{for(const p of INNOVATIVE_FURNITURE){const [item]=requestedItems({version:BRIEF_VERSION,confirmed:true,selections:[{productId:p.productId,quantity:1,w:p.w,d:p.d,h:p.h,dimensionSource:'concept'}],preferences:[],notes:''});assert.equal(item.modelStyle,p.modelStyle);assert.equal(item.careModel,p.careModel);assert.equal(item.w,p.w);}});
+import {newCareProject,validateCareProject,careExport} from '../public/care-domain.js';
+import worker from '../worker/index.js';
+test('original care choices survive automatic placement, validation and export',async()=>{for(const p of INNOVATIVE_FURNITURE){const brief={version:BRIEF_VERSION,confirmed:true,selections:[{productId:p.productId,quantity:1,w:p.w,d:p.d,h:p.h,dimensionSource:'concept'}],preferences:[],notes:''},project={...newCareProject(),profile:['cane','walker'].includes(p.careKind)?'walker':'wheelchair',brief};const response=await worker.fetch(new Request('https://domira.test/api/care/layout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({project,purpose:'living',style:'warm'})}),{});assert.equal(response.status,200,p.productId);const result=await response.json();assert.equal(result.items.length,1,p.productId);const placed={...project,items:result.items};validateCareProject(placed);assert.equal(careExport(placed).brief.selections[0].productId,p.productId);assert.equal(result.items[0].modelStyle,p.modelStyle);}});

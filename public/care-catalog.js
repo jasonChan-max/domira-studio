@@ -47,7 +47,21 @@ export const HOME_FURNITURE=Object.freeze(homeDefinitions.map(([productId,name,t
  productId,name,type,w,d,h,color,category,description,sourceRecordId:null,relatedSourceRecordIds:Object.freeze(relatedSourceRecordIds),
  dimensionSource:'concept',dimensionLabel,conceptDimensions:Object.freeze({w,d,h,units:'m',basis:'authored-home-furniture-illustration'}),sku:null,
 })));
-export const ALL_CARE_PRODUCTS=Object.freeze([...CARE_PRODUCTS,...HOME_FURNITURE]);
+// Original alternatives are separate from imported workbook records.
+const innovations=[
+ ['HOME-CHAIR','DOMIRA 安心閱讀扶手椅','cantilever',.70,.78,1.02,'#879a8c','高背閱讀與雙側扶手概念，配清晰的握持色彩；坐起動作及穩定性需實物驗證。'],
+ ['HOME-SOFA','DOMIRA 分區陪伴沙發','timber',1.72,.82,.90,'#b8ac94','木框雙人座與獨立坐墊概念，為照顧者陪坐及換洗預留設計方向。'],
+ ['HOME-BED','DOMIRA 柔背起居床','upholstered',1.20,2.12,.98,'#b3b8a0','軟包床頭與對比床框概念；轉移高度需按使用者與床褥核對。'],
+ ['HOME-CABINET','DOMIRA 易見分區收納櫃','fluted',1.0,.38,.78,'#9d947b','低身分區收納及清楚門面紋理概念，常用物品集中在易見位置。'],
+ ['HOME-DINING','DOMIRA 圓桌共餐島','round',1.10,1.10,.76,'#b8a886','中央柱腳圓桌概念，減少外側桌腳；膝部淨空與抗傾覆需核實。'],
+ ['HOME-DESK','DOMIRA 輕盈共用書桌','trestle',1.20,.65,.76,'#a7b6a1','開放桌下空間與對比桌緣概念；輪椅膝部淨空需按實物檢查。'],
+];
+export const INNOVATIVE_FURNITURE=Object.freeze([
+ ...innovations.map(([baseId,name,modelStyle,w,d,h,color,description])=>{const base=HOME_FURNITURE.find(p=>p.productId===baseId);return Object.freeze({...base,productId:'DESIGN-'+baseId,optionFamily:baseId,name,modelStyle,w,d,h,color,description,relatedSourceRecordIds:[],conceptDimensions:Object.freeze({w,d,h,units:'m',basis:'authored-home-furniture-illustration'})});}),
+ ...CARE_PRODUCTS.map(p=>{const w=Number((p.w*.94).toFixed(3)),d=Number((p.d*.96).toFixed(3));return Object.freeze({...p,productId:'DESIGN-'+p.productId,optionFamily:p.careKind,name:'DOMIRA '+p.name+' · 清晰綠調',w,d,color:'#88a69a',sourceRecordId:null,sourceSheet:null,sourceRow:null,sourceFields:null,description:'原創配色與較窄整體包絡的設計探索；'+p.description+' 並非原表商品或已驗證規格，承重與操作須另行核實。',conceptDimensions:Object.freeze({w,d,h:p.h,units:'m',basis:'authored-category-illustration'})});})
+]);
+export function careFurnitureOptions(product){const family=p=>p.optionFamily||p.careKind||p.productId;return ALL_CARE_PRODUCTS.filter(p=>family(p)===family(product));}
+export const ALL_CARE_PRODUCTS=Object.freeze([...CARE_PRODUCTS,...HOME_FURNITURE,...INNOVATIVE_FURNITURE]);
 
 export function productFitsProfile(product, profile){
  return profile!=='wheelchair'||!['walker','cane'].includes(product?.careKind);

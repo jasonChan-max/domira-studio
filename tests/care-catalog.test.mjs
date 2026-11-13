@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import * as THREE from '../public/vendor/three.module.js';
 import {CARE_DATA} from '../public/care-data.js';
-import {CARE_PRODUCTS,HOME_FURNITURE,ALL_CARE_PRODUCTS} from '../public/care-catalog.js';
+import {CARE_PRODUCTS,HOME_FURNITURE,INNOVATIVE_FURNITURE,ALL_CARE_PRODUCTS} from '../public/care-catalog.js';
 import {careFurniture} from '../public/care-furniture.js';
 import {furniture} from '../public/furniture.js';
 
@@ -22,7 +22,7 @@ test('all sixteen workbook product rows map once to explicit concept envelopes w
   assert.ok(['w','d','h'].every(key=>Number.isFinite(product[key])&&product[key]>0));assert.match(product.color,/^#[a-f\d]{6}$/i);assert.ok(product.description);
   if(product.role==='surface'){assert.equal(product.type,'rug');assert.equal(product.careKind,'surface');assert.ok(product.h<=.03);}
  }
- assert.equal(HOME_FURNITURE.length,6);assert.equal(ALL_CARE_PRODUCTS.length,22);assert.equal(new Set(ALL_CARE_PRODUCTS.map(product=>product.productId)).size,22);
+ assert.equal(HOME_FURNITURE.length,6);assert.equal(ALL_CARE_PRODUCTS.length,44);assert.equal(new Set(ALL_CARE_PRODUCTS.map(product=>product.productId)).size,44);
  assert.deepEqual(HOME_FURNITURE.map(product=>product.type),['chair','sofa','bed','cabinet','dining','desk']);
 });
 
