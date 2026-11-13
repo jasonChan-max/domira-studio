@@ -5,8 +5,8 @@ export function chatScene(project){
  const {width,depth,height,source,planRoom}=project.room;
  return {format:project.format,id,name,profile,doorWidth,doorConfirmed,style,purpose,brief,
   room:{width,depth,height,source,planRoom},
-  items:project.items.map(({id,name,type,x,z,w,d,h,rotation,color,role,careKind,careModel,productId,sourceRecordId,dimensionSource,requestKey,locked,transferSide})=>
-   ({id,name,type,x,z,w,d,h,rotation,color,role,careKind,careModel,productId,sourceRecordId,dimensionSource,requestKey,locked,transferSide}))};
+  items:project.items.map(({id,name,type,x,z,w,d,h,rotation,color,role,careKind,careModel,modelStyle,productId,sourceRecordId,dimensionSource,requestKey,locked,transferSide})=>
+   ({id,name,type,x,z,w,d,h,rotation,color,role,careKind,careModel,modelStyle,productId,sourceRecordId,dimensionSource,requestKey,locked,transferSide}))};
 }
 
 export function validateChatMoves(project,moves){

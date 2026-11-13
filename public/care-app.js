@@ -4,6 +4,7 @@ import {CARE_FLOORING,flooringAdvice} from './care-flooring.js';
 import {previewCareReplacement,replacementProducts} from './care-replacement.js';
 import {careDoors} from './care-access.js';
 import {careCommand} from './care-commands.js';
+import {CARE_GUIDANCE_SOURCES,careGuidance} from './care-needs.js';
 import {createCareWholeHome} from './care-whole-home.js';
 import {roomCareProject,validateCareWhole} from './care-home-domain.js';
 let wholeStudio=null;
@@ -64,7 +65,17 @@ function update({room=false}={}){
  $('#project-name').textContent=state.name;$('#room-size').textContent=`${state.room.width.toFixed(2)} × ${state.room.depth.toFixed(2)}m · ${(state.room.width*state.room.depth).toFixed(1)}m²`;
  $('#capture-source').textContent=({demo:'示範房間 · 請先測量你的空間','webxr-measured':'WebXR三點測量 · 矩形參數模型','roomplan-imported':'RoomPlan匯入 · 請核對不規則區域','manual-guided':'實測尺寸 · 參數化房間','camera-guided':'攝像頭參考＋實測尺寸','measured-adjusted':'已人工修正測量尺寸','remote-reconstruction':'重建服務結果'})[state.room.source]||'匯入的房間';
  for(const k of ['width','depth','height'])$('#room-'+k).value=state.room[k];$('#profile').value=state.profile;$('#purpose').value=state.purpose||'living';$('#style').value=state.style||'warm';$('#door-width').value=state.doorWidth;$('#door-confirmed').checked=!!state.doorConfirmed;$('#door-confirmed').disabled=!careDoors(state).length;$('#door-width').disabled=careDoors(state).length>0;$('#door-position-open').textContent=careDoors(state).length?'查看或修改門位':'標記房間的門';$('#care-flooring').value=state.room.flooring||'';$('#care-flooring-advice').textContent=flooringAdvice(state.room.flooring,state.room.planRoom?.kind,state.profile);
- $('#xr-item').innerHTML='<option value="">選擇家具</option>'+state.items.map(i=>`<option value="${esc(i.id)}">${esc(i.name)}</option>`).join('');select(selected);review();renderChecks();renderBriefSummary();wholeStudio?.sync();renderLibrary();persist();}
+ $('#xr-item').innerHTML='<option value="">選擇家具</option>'+state.items.map(i=>`<option value="${esc(i.id)}">${esc(i.name)}</option>`).join('');select(selected);review();renderChecks();renderBriefSummary();renderDailyGuidance();wholeStudio?.sync();renderLibrary();persist();}
+function renderDailyGuidance(){
+ const daily=(state.wholeHome?.brief||state.brief)?.daily;
+ const {age,advice}=careGuidance(daily,state.room.planRoom?.kind||state.purpose);
+ const target=$('#care-daily-guidance');
+ target.hidden=!age&&!advice.length;
+ target.innerHTML=`<h3>按你的日常需要</h3>${age?`<p>${esc(age)}</p>`:''}${advice.length?`<ul>${advice.map(item=>{
+  const source=CARE_GUIDANCE_SOURCES[item.source];
+  return `<li><strong>${esc(item.label)}</strong><p>${esc(item.text)}</p><a href="${source.url}" target="_blank" rel="noopener noreferrer">${esc(source.label)} ↗</a></li>`;
+ }).join('')}</ul>`:''}`;
+}
 function renderBriefSummary(){const rows=state.brief?.selections||[];$('#brief-summary').innerHTML=rows.length?`<strong>你的需要 · ${rows.reduce((n,r)=>n+r.quantity,0)}件</strong><p>${rows.map(r=>esc(ALL_CARE_PRODUCTS.find(p=>p.productId===r.productId)?.name)+' × '+r.quantity).join('、')}</p><button id="brief-edit" class="secondary">修改產品與偏好</button>`:'<p>先選擇需要的器具、家具與偏好，再開始規劃。</p><button id="brief-edit" class="secondary">開始選擇 →</button>';$('#brief-edit').onclick=()=>onboarding.open();const remaining=state.unplaced||[];$('#unplaced-items').innerHTML=remaining.length?'<p class="catalog-warning">仍有'+remaining.length+'件未能放入目前空間，已保留在需要清單：'+remaining.map(i=>esc(i.name)).join('、')+'。可移動或移除家具，再重新規劃。</p>':'';}
 function renderChecks(){state.fieldChecks=state.fieldChecks||{};$('#field-checks').innerHTML=[...FIELD_CHECKS,...CARE_DATA.sheets[0].records.map(r=>[r.id,r.fields['指标项']+'（'+r.fields['推荐/法定值']+'）'])].map(([id,label])=>`<label class="check"><input type="checkbox" data-check="${id}" ${state.fieldChecks?.[id]?'checked':''}>${esc(label)}</label>`).join('');$$('[data-check]').forEach(e=>e.onchange=()=>{state.fieldChecks[e.dataset.check]=e.checked;review();persist();});}
 try{scene=new StudioScene($('#scene'),select,transform);scene.scene.traverse(o=>{if(o.isDirectionalLight&&o.shadow)o.shadow.mapSize.set(1024,1024);});const render=scene.animate.bind(scene);let lastFrame=0;scene.animate=(t,f)=>{if(!f&&!scene.down&&t-lastFrame<100)return;lastFrame=t;render(t,f);};scene.syncStretchHandles=()=>{if(scene.stretchGroup)scene.stretchGroup.visible=false;};}catch{$('#render-error').hidden=false;}

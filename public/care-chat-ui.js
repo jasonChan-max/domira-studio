@@ -1,6 +1,7 @@
 import {connectCareVoice} from './care-voice.js';
 import {chatScene,validateChatMoves} from './care-chat-layout.js';
 import {API_BASE} from './api-config.js';
+import {careGuidance} from './care-needs.js';
 
 export function createCareChat({getState,apply,notify,propose}){
  const $=id=>document.getElementById(id);
@@ -64,7 +65,8 @@ export function createCareChat({getState,apply,notify,propose}){
   status.textContent=layout?'正在規劃並驗算擺位…':'正在整理建議…';
   try{
    const {room,profile,doorWidth,style,purpose}=scene;
-   const context={room,profile,doorWidth,style,purpose,items:scene.items.map(({name,w,d,h,x,z,rotation})=>({name,w,d,h,x,z,rotation}))};
+   const daily=(state.wholeHome?.brief||state.brief)?.daily;
+   const context={room,profile,doorWidth,style,purpose,guidance:careGuidance(daily,room.planRoom?.kind||purpose).advice.map(({text})=>text),items:scene.items.map(({name,w,d,h,x,z,rotation})=>({name,w,d,h,x,z,rotation}))};
    const payload={messages:messages.slice(-6).map(m=>({...m,content:m.content.slice(0,1800)})),context};
    if(layout){payload.mode='layout';payload.scene=scene;payload.context={};}
    const response=await fetch(API_BASE+'/api/care/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload),signal:AbortSignal.any([controller.signal,AbortSignal.timeout(24000)])});

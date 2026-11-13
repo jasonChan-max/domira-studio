@@ -1,6 +1,7 @@
 import {HOME_KINDS,validateHome} from './home-domain.js';
 import {newCareProject,validateCareProject,careReview} from './care-domain.js';
 import {ALL_CARE_PRODUCTS} from './care-catalog.js';
+import {validateBrief} from './care-brief.js';
 export const HK_SOURCE='https://www.censtatd.gov.hk/en/data/stat_report/product/B1120118/att/B11201182021XXXXB0100.pdf';
 export function hkCareHome(){
  const w=6.4,d=6.40625,top=3.8,bottom=d-top;
@@ -47,5 +48,5 @@ export function careRoomAssignments(home,brief,overrides={}){
  }
  return allocations;
 }
-export function validateCareWhole(whole){if(!whole||whole.format!=='domira.care.home.v1')throw Error('全屋格式不正確');validateHome(whole.home);if(!whole.home.rooms.some(r=>r.id===whole.activeRoomId))throw Error('目前房間不存在');for(const r of whole.home.rooms){const p=whole.projects[r.id];if(p){validateCareProject(p);if(Math.abs(p.room.width-r.width)>.001||Math.abs(p.room.depth-r.depth)>.001)throw Error('房間尺寸不一致');}}return whole;}
+export function validateCareWhole(whole){if(!whole||whole.format!=='domira.care.home.v1')throw Error('全屋格式不正確');validateHome(whole.home);if(whole.brief)validateBrief(whole.brief);if(!whole.home.rooms.some(r=>r.id===whole.activeRoomId))throw Error('目前房間不存在');for(const r of whole.home.rooms){const p=whole.projects[r.id];if(p){validateCareProject(p);if(Math.abs(p.room.width-r.width)>.001||Math.abs(p.room.depth-r.depth)>.001)throw Error('房間尺寸不一致');}}return whole;}
 export function wholeReview(whole){return whole.home.rooms.map(r=>({id:r.id,name:r.name,area:r.width*r.depth,review:whole.projects[r.id]?careReview(whole.projects[r.id]):null}));}
