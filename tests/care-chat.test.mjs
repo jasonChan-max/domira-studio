@@ -128,7 +128,7 @@ test('DeepSeek layout chat only returns validated movement and keeps project fur
  const accepted=await (await handleCareChat(request(body),env)).json();
  assert.deepEqual(accepted.moves,moves);assert.equal(scene.items[0].z,-1);
  assert.deepEqual(validateChatMoves(scene,moves).items[0],{...scene.items[0],z:0});
- for(const move of [{...moves[0],x:0},{...moves[0],id:'fake'},{...moves[0],w:.1}]){
+ for(const move of [{...moves[0],x:4},{...moves[0],id:'fake'},{...moves[0],w:.1}]){
   moves=[move];const refused=await (await handleCareChat(request(body),env)).json();assert.deepEqual(refused.moves,[]);assert.match(refused.reply,/未通過/);
  }
  assert.equal(calls,4);

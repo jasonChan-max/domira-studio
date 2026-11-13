@@ -1,8 +1,9 @@
+import {CARE_FLOORING} from './care-flooring.js';
 import * as THREE from './vendor/three.module.js';
 import {box} from './furniture.js';
 import {planWalls,HOME_COLORS} from './home-domain.js';
 export function buildHomeGeometry(home,overview=true){const group=new THREE.Group();const slab=box(group,home.width,.06,home.depth,'#ece9e1',0,-.07,0);slab.userData.slab=true;for(const r of home.rooms){
-  const color=HOME_COLORS[r.kind]||'#b4baa9';
+  const color=CARE_FLOORING[r.flooring]?.color||HOME_COLORS[r.kind]||'#b4baa9';
   if(Array.isArray(r.polygon)&&r.polygon.length>=3){
    // 多邊形房間（梯形陽台、L 形客廳）：用 ShapeGeometry 畫出真實輪廓，而不是外接矩形。
    // polygon 的點是相對房間中心的公尺座標，ShapeGeometry 在 XY 平面，rotateX(-90°) 後對應 XZ。

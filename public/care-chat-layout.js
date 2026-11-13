@@ -2,11 +2,11 @@ import {careGeometry,validateCareProject} from './care-domain.js';
 
 export function chatScene(project){
  const {id,name,profile,doorWidth,doorConfirmed,style,purpose,brief}=project;
- const {width,depth,height,source}=project.room;
+ const {width,depth,height,source,planRoom}=project.room;
  return {format:project.format,id,name,profile,doorWidth,doorConfirmed,style,purpose,brief,
-  room:{width,depth,height,source},
-  items:project.items.map(({id,name,type,x,z,w,d,h,rotation,color,role,careKind,careModel,productId,sourceRecordId,dimensionSource,requestKey,locked})=>
-   ({id,name,type,x,z,w,d,h,rotation,color,role,careKind,careModel,productId,sourceRecordId,dimensionSource,requestKey,locked}))};
+  room:{width,depth,height,source,planRoom},
+  items:project.items.map(({id,name,type,x,z,w,d,h,rotation,color,role,careKind,careModel,productId,sourceRecordId,dimensionSource,requestKey,locked,transferSide})=>
+   ({id,name,type,x,z,w,d,h,rotation,color,role,careKind,careModel,productId,sourceRecordId,dimensionSource,requestKey,locked,transferSide}))};
 }
 
 export function validateChatMoves(project,moves){

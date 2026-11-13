@@ -12,7 +12,7 @@ export function hkCareHome(){
 }
 export function roomCareProject(home,room){
  const purpose=['bedroom','dining'].includes(room.kind)?room.kind:'living';
- return {...newCareProject({width:room.width,depth:room.depth,height:room.height,source:home.source==='hk-elderly-demo'?'demo':'manual-guided',units:'m'},room.name),purpose};
+ return {...newCareProject({width:room.width,depth:room.depth,height:room.height,source:home.source==='hk-elderly-demo'?'demo':'manual-guided',units:'m',planRoom:{name:room.name,kind:room.kind,openings:room.openings||[],polygon:room.polygon}},room.name),purpose};
 }
 
 export const canPlanCareRoom=room=>[room.width,room.depth].every(value=>value>=2&&value<=15);
@@ -38,9 +38,9 @@ export function careRoomAssignments(home,brief,overrides={}){
  const allocations={};
  for(const selection of brief.selections){
   const {productId}=selection,product=ALL_CARE_PRODUCTS.find(p=>p.productId===productId);
-  const kinds=product?.careKind==='care-bed'||productId==='HOME-BED'||productId==='AID-019'?['bedroom']:
+  const kinds=product?.type==='bed'||product?.careKind==='pillbox'?['bedroom']:
    ['stool','shower','folding','swivel','commode','toilet','rail','surface'].includes(product?.careKind)?['bathroom']:
-   productId==='HOME-DINING'?['dining','living']:['living','dining'];
+   product?.type==='dining'?['dining','living']:['living','dining'];
   const chosen=rooms.find(room=>room.id===overrides?.[productId]);
   const recommended=kinds.map(kind=>rooms.find(room=>room.kind===kind)).find(Boolean);
   allocations[productId]=(chosen||recommended||rooms[0])?.id;

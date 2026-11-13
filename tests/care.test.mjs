@@ -17,10 +17,11 @@ test('Excel import preserves every source row and field in all four sheets',()=>
 test('planner never changes dimensions and returns valid placements in small and large rooms',()=>{
  for(const width of [2,2.5,3.2,4.5,6,10])for(const depth of [2,3,4.5,8]){const p=newCareProject({width,depth,height:2.7,source:'manual-guided'}),r=safeCareLayout(p);assert.ok(r.review.ok,JSON.stringify(r.review.failures));for(const i of r.items){const source=SAMPLE_ITEMS.find(s=>s.name===i.name);for(const k of ['w','d','h'])assert.equal(i[k],source[k]);}}
 });
-test('rotation, intrusion, bounds, height and physical overlap are rejected',()=>{
+test('central furniture is allowed when door positions are unknown, while physical limits still apply',()=>{
  const p=newCareProject();const i={...SAMPLE_ITEMS[0],id:'one',x:2,z:0,rotation:0};assert.ok(careGeometry({...p,items:[i]}).ok);
- for(const patch of [{x:0},{x:3},{h:4}])assert.equal(careGeometry({...p,items:[{...i,...patch}]}).ok,false);
- const near={...i,x:1.2,w:.7,d:1.7};assert.ok(careGeometry({...p,items:[near]}).ok);assert.equal(careGeometry({...p,items:[{...near,rotation:90}]}).ok,false);
+ assert.ok(careGeometry({...p,items:[{...i,x:0}]}).ok);
+ for(const patch of [{x:3},{h:4}])assert.equal(careGeometry({...p,items:[{...i,...patch}]}).ok,false);
+ const near={...i,x:2.35,w:.7,d:1.7};assert.ok(careGeometry({...p,items:[near]}).ok);assert.equal(careGeometry({...p,items:[{...near,rotation:90}]}).ok,false);
  assert.ok(careGeometry({...p,items:[i,{...i,id:'two'}]}).failures.some(f=>f.rule==='collision'));
 });
 test('import cannot bypass geometry with rug, surface or unknown renderer types',()=>{
@@ -54,7 +55,7 @@ test('all category illustrations have finite exact overall envelopes at supplied
 test('care API returns a checked local plan and rejects invalid/malformed projects',async()=>{
  const project=newCareProject(),r=await post('care/layout',{project,purpose:'bedroom'});assert.equal(r.status,200);const d=await r.json();assert.equal(d.engine,'local-care-rules');assert.ok(d.review.ok);assert.ok(d.items.some(i=>i.type==='bed'));
  assert.equal((await post('care/validate',{project:{...project,profile:'invalid'}})).status,400);assert.equal((await post('care/layout',{project,purpose:'unknown'})).status,400);
- const invalid={...project,items:[{...SAMPLE_ITEMS[0],id:'a',x:0,z:0,rotation:0}]};const review=await(await post('care/validate',{project:invalid})).json();assert.equal(review.status,'blocked');
+ const invalid={...project,items:[{...SAMPLE_ITEMS[0],id:'a',x:4,z:0,rotation:0}]};const review=await(await post('care/validate',{project:invalid})).json();assert.equal(review.status,'blocked');
 });
 
 function d1(){const sql=new DatabaseSync(':memory:');return {sql,prepare(query){const statement=sql.prepare(query);let values=[];return {bind(...args){values=args;return this;},run(){statement.run(...values);return Promise.resolve({success:true});},first(){return Promise.resolve(statement.get(...values)||null);}};},batch(statements){return Promise.all(statements.map(s=>s.run()));}};}

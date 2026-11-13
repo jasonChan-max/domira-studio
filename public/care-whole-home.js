@@ -6,21 +6,34 @@ import {createHomeStudio} from './home-studio.js';
 import {createRenderStudio} from './render-studio.js';
 import {careGeometry} from './care-domain.js';
 import {ALL_CARE_PRODUCTS} from './care-catalog.js';
+import {CARE_CASES,CARE_TEMPLATES,makeCareTemplate} from './care-templates.js';
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-export function createCareWholeHome({scene,getState,replaceState,refresh,modal,closeModal,setCleanup,notify,api,checkpoint,stopAR}){
+export function createCareWholeHome({scene,getState,replaceState,refresh,modal,closeModal,setCleanup,notify,api,checkpoint,stopAR,propose}){
  let busy=false,planning=false,epoch=0;const $=s=>document.querySelector(s);
  const clean=p=>{const {wholeHome,...rest}=p;return structuredClone(rest);};
- function saveRoom(){const p=getState(),w=p.wholeHome;if(!w)return;w.projects[w.activeRoomId]=clean(p);const r=w.home.rooms.find(r=>r.id===w.activeRoomId);r.items=p.items;}
+ function saveRoom(){const p=getState(),w=p.wholeHome;if(!w)return;w.projects[w.activeRoomId]=clean(p);const r=w.home.rooms.find(r=>r.id===w.activeRoomId);r.items=p.items;r.flooring=p.room.flooring;if(p.room.planRoom)r.openings=p.room.planRoom.openings;}
  function install(home,name){epoch++;const p=getState(),projects={};for(const r of home.rooms)projects[r.id]=canPlanCareRoom(r)?{...roomCareProject(home,r),profile:p.profile,style:p.style}:null;const active=home.rooms.find(r=>r.kind==='living'&&projects[r.id])||home.rooms.find(r=>projects[r.id]);if(!active)throw Error('此戶型沒有長寬均為 2–15 m 的可規劃房間。');const w={format:'domira.care.home.v1',home,projects,activeRoomId:active.id,view:'whole',name};replaceState({...projects[active.id],wholeHome:w});refresh({room:true});}
- function openRoom(id){if(busy)return;saveRoom();const w=getState().wholeHome;if(!w?.projects[id])return notify('此房間超出可規劃尺寸，已保留建築模型。');epoch++;w.activeRoomId=id;w.view='room';replaceState({...structuredClone(w.projects[id]),wholeHome:w});refresh({room:true});}
+ function openRoom(id){if(busy)return;saveRoom();const w=getState().wholeHome;if(!w?.projects[id])return notify('此房間超出可規劃尺寸，已保留建築模型。');epoch++;w.activeRoomId=id;w.view='room';const room=w.home.rooms.find(r=>r.id===id),project=structuredClone(w.projects[id]);project.room.planRoom??=roomCareProject(w.home,room).room.planRoom;replaceState({...project,wholeHome:w});refresh({room:true});}
  function sync(){if(busy)return;busy=true;try{let p=getState();if(!p.wholeHome){if(p.room.source==='demo'&&!p.brief){install(hkCareHome(),'香港長者家居展示');p=getState();}else{const home={format:'domira.home.v1',width:p.room.width,depth:p.room.depth,height:p.room.height,source:p.room.source,rooms:[{id:'existing',name:p.name,kind:'living',purpose:p.purpose,width:p.room.width,depth:p.room.depth,height:p.room.height,x:0,z:0,items:p.items,openings:[]}]};p.wholeHome={format:'domira.care.home.v1',home,projects:{existing:clean(p)},activeRoomId:'existing',view:'room',name:p.name};}}saveRoom();const w=p.wholeHome,rooms=w.home.rooms;$('#whole-room').innerHTML=rooms.map(r=>`<option value="${esc(r.id)}" ${w.projects[r.id]?'':'disabled'}>${esc(r.name)} · ${(r.width*r.depth).toFixed(2)}㎡</option>`).join('');$('#whole-room').value=w.activeRoomId;$('#whole-status').textContent=`${w.name||'全屋設計'} · ${rooms.length}個空間 · ${rooms.reduce((s,r)=>s+r.width*r.depth,0).toFixed(2)}㎡`;
  $('#whole-plan-preview').innerHTML=homePlanSVG(w.home);$('#whole-review').innerHTML=wholeReview(w).map(r=>`<button data-care-room="${esc(r.id)}"><strong>${esc(r.name)}</strong><span>${r.area.toFixed(2)}㎡ · ${w.projects[r.id]?.engine?(r.review?.ok?'幾何檢查通過':'需調整'):w.projects[r.id]?'待規劃':'僅建築模型'} · ${w.projects[r.id]?.items.length||0}件${w.projects[r.id]?.unplaced?.length?' · '+w.projects[r.id].unplaced.length+'件待擺放':''}</span></button>`).join('');document.querySelectorAll('[data-care-room]').forEach(b=>b.onclick=()=>openRoom(b.dataset.careRoom));
  if(w.view==='whole'&&scene){scene.showHome(w.home,openRoom);scene.update(homeItems({home:w.home},true));scene.setView('3d');scene.clearCirculation();}$('#whole-overview').setAttribute('aria-pressed',String(w.view==='whole'));}finally{busy=false;}}
  const importer=createHomeStudio({modal,setCleanup,notify,createHome:(name,home)=>{checkpoint();install(home,name);closeModal();notify('全屋已建立，請逐間核對尺寸及適老需要。');}});
  $('#whole-manual').onclick=()=>openCareHomeBuilder(modal,(name,home)=>{checkpoint();stopAR();install(home,name);closeModal();notify('已建立全屋。選擇產品後即可逐房規劃。');});
  $('#care-floorplan').onclick=()=>{epoch++;importer.open();};$('#whole-room').onchange=e=>openRoom(e.target.value);$('#whole-overview').onclick=()=>{saveRoom();getState().wholeHome.view='whole';refresh();};$('#hk-example').onclick=()=>{checkpoint();install(hkCareHome(),'香港長者家居展示');};
+ $('#care-templates-open').onclick=()=>{
+  modal('找一個接近你屋企的方案',`<div class="care-template-list">${CARE_TEMPLATES.map(template=>`<article><h3>${esc(template.name)}</h3><p>${esc(template.description)}</p><button type="button" data-care-template="${template.id}" class="primary">用這個模板</button></article>`).join('')}</div><h3>真實改造參考</h3><div class="care-template-list">${CARE_CASES.map(example=>`<article><h4>${esc(example.name)}</h4><p>${esc(example.detail)}</p><a href="${esc(example.url)}" target="_blank" rel="noopener noreferrer">查看${esc(example.source)}資料 ↗</a></article>`).join('')}</div>`);
+  for(const button of document.querySelectorAll('[data-care-template]'))button.onclick=()=>{
+   try{
+    const template=CARE_TEMPLATES.find(entry=>entry.id===button.dataset.careTemplate);
+    const project=makeCareTemplate(template);
+    validateCareWhole(project.wholeHome);
+    epoch++;checkpoint();stopAR();replaceState(project);closeModal();refresh({room:true});
+    notify('已開啟模板草稿。可選房間改家具和地面。');
+   }catch(error){notify(error.message);}
+  };
+ };
  async function generateAll(overrides){
-  if(planning)return;
+  if(planning)return '正在規劃全屋。請等目前方案完成。';
   saveRoom();
   const base=getState(),revision=base.updatedAt,snapshot=structuredClone(base.wholeHome),brief=snapshot.brief||base.brief;
   if(!brief){$('#needs-open').click();return;}
@@ -35,12 +48,12 @@ export function createCareWholeHome({scene,getState,replaceState,refresh,modal,c
     const selections=brief.selections.filter(selection=>allocations[selection.productId]===room.id);
     const previous=next.projects[room.id]||roomCareProject(next.home,room);
     const {brief:oldBrief,unplaced:oldUnplaced,engine:oldEngine,...savedRoom}=previous;
-    const project={...savedRoom,items:[],fieldChecks:{},profile:base.profile,style:base.style};
+    const project={...savedRoom,room:{...savedRoom.room,planRoom:savedRoom.room.planRoom||roomCareProject(next.home,room).room.planRoom},items:[],fieldChecks:{},profile:base.profile,style:base.style};
     if(selections.length){
      button.textContent=`正在規劃 · ${room.name}`;
      project.brief={...brief,selections};
      const data=await api('care/layout',{project,purpose:project.purpose,style:project.style});
-     if(token!==epoch||getState()!==base||base.updatedAt!==revision)return notify('房間或需求已變更，已保留目前設計。');
+     if(token!==epoch||getState()!==base||base.updatedAt!==revision)throw Error('房間或需求已變更，已保留目前設計。');
      project.items=data.items;project.engine=data.engine;project.unplaced=data.unplaced||[];
      if(!careGeometry(project).ok)throw Error(room.name+'的方案未通過幾何檢查，已保留原設計。');
      unplaced+=project.unplaced.length;planned++;
@@ -49,8 +62,8 @@ export function createCareWholeHome({scene,getState,replaceState,refresh,modal,c
    }
    validateCareWhole(next);
    checkpoint();replaceState({...next.projects[next.activeRoomId],wholeHome:{...next,view:'whole'}});
-   refresh({room:true});notify(`全屋規劃完成 · ${planned} 間房 · ${unplaced} 件待擺放。`);
-  }catch(error){notify(error.message);}
+   refresh({room:true});const message=`全屋規劃完成。已規劃 ${planned} 間房，${unplaced} 件產品待擺放。`;notify(message);return message;
+  }catch(error){notify(error.message);return error.message;}
   finally{planning=false;button.disabled=false;button.textContent='分配產品並規劃全屋';}
  }
  $('#whole-generate').onclick=()=>{
@@ -68,7 +81,7 @@ export function createCareWholeHome({scene,getState,replaceState,refresh,modal,c
  $('#whole-export').onclick=exportWhole;
  const renderer=createRenderStudio({scene,getState:()=>{const p=getState();return {schemaVersion:1,id:p.id,name:p.name,room:p.room,items:p.items,style:p.style,purpose:p.purpose,preferences:['flow'],mobility:p.profile==='wheelchair'?'wheelchair':'senior'};},modal,closeModal,notify,icons:()=>{}});$('#care-render').onclick=()=>{const w=getState().wholeHome;if(w?.view==='whole')openRoom(w.activeRoomId);if(!scene)return notify('此裝置未啟用3D');renderer.open();};
  const oldTransform=scene?.onTransform,oldSelect=scene?.onSelect;if(scene){scene.onTransform=(...args)=>{if(getState().wholeHome?.view==='whole')return notify('請先進入房間，再調整家具。');epoch++;oldTransform(...args);};scene.onSelect=id=>{const w=getState().wholeHome;if(w?.view==='whole'){const r=w.home.rooms.find(r=>r.items.some(i=>i.id===id));if(r)openRoom(r.id);return;}oldSelect(id);};}
- createCareChat({getState,notify,apply:items=>{
+ createCareChat({getState,notify,propose,apply:items=>{
   stopAR();epoch++;checkpoint();const p=getState();
   p.items=items;p.fieldChecks={};if(p.wholeHome)p.wholeHome.view='room';
   refresh({room:true});
