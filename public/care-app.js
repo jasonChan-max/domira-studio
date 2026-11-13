@@ -34,7 +34,7 @@ function persist(){state.updatedAt=new Date().toISOString();careProjects?.autosa
 function stage(step){const active=step==='scan'?'layout':step;$$('[data-step]').forEach(e=>e.classList.toggle('active',e.dataset.step===active));}
 async function api(path,body){const r=await fetch(API_BASE+'/api/'+path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});const d=await r.json();if(!r.ok)throw Error(d.error||'服務暫時無法使用');return d;}
 function select(id){selected=id;scene?.highlight(id);const i=state.items.find(x=>x.id===id);$('#selection').hidden=!i;if(i){$('#selected-name').textContent=i.name;$('#replace-item').hidden=!!i.locked||!replacementProducts(i,state.profile).length;$('#remove-item').textContent=i.requestKey?'暫不擺放':'移除';for(const k of ['x','z','rotation'])$('#item-'+k).value=Number(i[k].toFixed(3));}$('#xr-item').value=id||'';}
-function transform(id,delta,done){const index=state.items.findIndex(i=>i.id===id);if(index<0)return;if(delta){const candidate={...state.items[index],...delta};if('w'in delta||'d'in delta){if(Date.now()-lastWarn>2500){notify('家具尺寸已鎖定；請移除後按實物尺寸重新加入。');lastWarn=Date.now();}return;}const items=state.items.map((i,n)=>n===index?candidate:i),result=careGeometry({...state,items});if(!result.ok){if(Date.now()-lastWarn>2200){notify(result.failures[0].message+' 已保留有效位置。');lastWarn=Date.now();}scene?.update(state.items);return;}if(!dragBefore){invalidateGeneration();dragBefore=structuredClone(state);}state.items=items;state.fieldChecks={};scene?.update(items);select(id);review();}if(done&&dragBefore){history.push(dragBefore);dragBefore=null;persist();}}
+function transform(id,delta,done){const index=state.items.findIndex(i=>i.id===id);if(index<0)return;if(delta){const candidate={...state.items[index],...delta};if('w'in delta||'d'in delta){if(Date.now()-lastWarn>2500){notify('家具尺寸已鎖定；請移除後按實物尺寸重新加入。');lastWarn=Date.now();}return;}const items=state.items.map((i,n)=>n===index?candidate:i),result=careGeometry({...state,items});if(!result.ok){if(Date.now()-lastWarn>2200){notify(result.failures[0].message+' 已保留有效位置。');lastWarn=Date.now();}scene?.update(state.items);}else{if(!dragBefore){invalidateGeneration();dragBefore=structuredClone(state);}state.items=items;state.fieldChecks={};scene?.update(items);select(id);if(!done)scene?.clearCirculation();}}if(done&&dragBefore){history.push(dragBefore);if(history.length>30)history.shift();dragBefore=null;review();wholeStudio?.refreshNightRoute();persist();}}
 function review(){ $$('[data-check]').forEach(e=>e.checked=state.fieldChecks?.[e.dataset.check]===true);const r=careReview(state);drawAccess(r.access);$('#review').innerHTML=`<strong class="${r.ok?'':'blocked'}">${r.ok?'✓ 已檢查目前擺位':'需要調整配置'}</strong><p class="note">通道目標 ${r.profile.corridor.toFixed(2)} m · 門洞目標 ${r.profile.door} m${r.access?.turningPoint?` · 可轉向 Ø${r.profile.turning} m`:``}</p><ul>${r.failures.slice(0,3).map(f=>'<li class="blocked">'+esc(f.message)+'</li>').join('')}${r.pending.slice(0,3).map(p=>'<li>'+esc(p.label)+'</li>').join('')}</ul><p class="note">${r.pending.length}項待核對 · 幾何結果不等於全屋法定合規。</p><a href="#field-review">查看現場核對項目 ↓</a>`;$('#export-open').disabled=!r.ok;$('#export-open').textContent=r.ok?(r.pending.length?'匯出設計草案 ↗':'匯出設計與核對記錄 ↗'):'請先修正幾何問題';}
 function drawAccess(access){
  if(!scene)return;
@@ -85,14 +85,28 @@ function setFlooring(material){
  update({room:true});notify(material?`已換成${CARE_FLOORING[material].name}。按「復原」可換回。`:'已恢復原有地面。');
 }
 $('#care-flooring').onchange=event=>setFlooring(event.target.value);
-$('#door-position-open').onclick=()=>{
+function showDoorEditor(index){
+ const existing=Array.isArray(state.room.planRoom?.openings)?state.room.planRoom.openings:[];
  const doors=careDoors(state);
- const door=doors[0];
- modal('這間房的門在哪裡？',`<form id="care-door-form"><p>用平面圖上的方向，填寫門洞淨寬和門洞中心位置。其餘門洞會保留。</p><label>哪一面牆？<select id="care-door-edge"><option value="top">上方</option><option value="right">右方</option><option value="bottom">下方</option><option value="left">左方</option></select></label><label>門洞中心距牆邊起點（m）<input id="care-door-center" type="number" min=".15" step="any" required></label><p class="note">上下兩面從左端量。左右兩面從上端量。</p><label>門洞淨寬（m）<input id="care-door-net" type="number" min=".3" max="3" step="any" required></label><label>門向哪邊開？<select id="care-door-swing"><option value="">待核對</option><option value="inward-start">向內開，鉸鏈在起點一側</option><option value="inward-end">向內開，鉸鏈在另一側</option><option value="outward">向外開</option><option value="sliding">趟門</option></select></label><p id="care-door-error" role="alert"></p><button class="primary">儲存門位</button></form>`);
+ const door=doors[index];
+ const wallLabel={top:'上方',right:'右方',bottom:'下方',left:'左方'};
+ const original=door?existing.findIndex(item=>item?.kind==='door'&&item.edge===door.edge&&item.offset===door.offset):-1;
+ const list=`<div class="care-door-list">${doors.map((entry,n)=>`<button type="button" data-care-door="${n}" ${n===index?'aria-current="true"':''}>門 ${n+1} · ${wallLabel[entry.edge]}牆 · ${entry.width.toFixed(2)} m</button>`).join('')}<button type="button" id="care-add-door" ${existing.length>=12?'disabled':''}>＋ 新增一道門</button></div>`;
+ modal(`標記${state.name}的門`,`${list}<form id="care-door-form"><p>按全屋平面圖的方向量度門洞。若門連接兩個房間，請在兩邊記錄同一個門洞。</p><label>哪一面牆？<select id="care-door-edge"><option value="top">上方</option><option value="right">右方</option><option value="bottom">下方</option><option value="left">左方</option></select></label><label>門洞中心距牆邊起點（m）<input id="care-door-center" type="number" min=".15" step="any" required></label><p class="note">上下兩面從左端量。左右兩面從上端量。</p><label>門洞淨寬（m）<input id="care-door-net" type="number" min=".3" max="3" step="any" required></label><label>門向哪邊開？<select id="care-door-swing"><option value="">待核對</option><option value="inward-start">向內開，鉸鏈在起點一側</option><option value="inward-end">向內開，鉸鏈在另一側</option><option value="outward">向外開</option><option value="sliding">趟門</option></select></label><p id="care-door-error" role="alert"></p><button class="primary">儲存門位</button>${door?'<button type="button" id="care-remove-door">移除這道門</button>':''}</form>`);
+ for(const button of $$('[data-care-door]'))button.onclick=()=>showDoorEditor(Number(button.dataset.careDoor));
+ $('#care-add-door').onclick=()=>showDoorEditor(-1);
  $('#care-door-edge').value=door?.edge||'bottom';
  $('#care-door-center').value=door?Number((door.center[door.horizontal?0:1]+(door.horizontal?state.room.width:state.room.depth)/2).toFixed(3)):state.room.width/2;
  $('#care-door-net').value=door?Number(door.width.toFixed(3)):state.doorWidth;
  $('#care-door-swing').value=door?.swing||'';
+ function saveOpenings(openings){
+  checkpoint();stopAR();
+  state.room={...state.room,planRoom:{name:state.name,kind:state.purpose,...state.room.planRoom,openings}};
+  state.doorConfirmed=false;
+  if(state.wholeHome)state.wholeHome.view='room';
+  closeModal();update({room:true});notify('已更新門位及夜間路線。');
+ }
+ if(door)$('#care-remove-door').onclick=()=>saveOpenings(existing.filter((_,n)=>n!==original));
  $('#care-door-form').onsubmit=event=>{
   event.preventDefault();
   const edge=$('#care-door-edge').value, center=Number($('#care-door-center').value), width=Number($('#care-door-net').value);
@@ -100,16 +114,14 @@ $('#door-position-open').onclick=()=>{
   const from=center-width/2;
   if(from<0||center+width/2>wall){$('#care-door-error').textContent='門洞超出牆的長度，請再核對。';return;}
   const opening={kind:'door',edge,offset:from/wall,width:width/wall,swing:$('#care-door-swing').value||undefined};
-  const existing=state.room.planRoom?.openings||[];
-  const first=existing.findIndex(item=>item?.kind==='door');
-  const openings=first<0?[...existing,opening]:existing.map((item,index)=>index===first?opening:item);
-  checkpoint();stopAR();
-  state.room={...state.room,planRoom:{name:state.name,kind:state.purpose,...state.room.planRoom,openings}};
-  state.doorConfirmed=false;
-  if(state.wholeHome)state.wholeHome.view='room';
-  closeModal();update({room:true});notify('已儲存門位。請核對開門方向及實測淨寬。');
+  if(original<0&&existing.length>=12){$('#care-door-error').textContent='這間房最多記錄十二個門窗。請先修正現有門窗。';return;}
+  if(existing.some((item,n)=>n!==original&&item?.kind==='door'&&item.edge===edge&&Math.min(item.offset+item.width,opening.offset+opening.width)-Math.max(item.offset,opening.offset)>.001)){
+   $('#care-door-error').textContent='與這面牆上已有的門重疊，請修改原本的門位。';return;
+  }
+  saveOpenings(original<0?[...existing,opening]:existing.map((item,n)=>n===original?opening:item));
  };
-};
+}
+$('#door-position-open').onclick=()=>showDoorEditor(0);
 for(const k of ['x','z','rotation'])$('#item-'+k).onchange=()=>{const value=Number($('#item-'+k).value);if(!Number.isFinite(value))return;transform(selected,{[k]:value},true);select(selected);};
 function rotate(){const i=state.items.find(i=>i.id===selected);if(i)transform(i.id,{rotation:(i.rotation+15)%360},true);else notify('請先選取一件家具。');}
 function openReplacement(){
@@ -167,6 +179,10 @@ function proposeChatAction(text,base){
  if(command.error)return {reply:command.error};
  const whole=base.wholeHome;
  const action=(reply,details,label,run)=>({reply,details,label,run});
+ if(command.type==='night-route'){
+  const detail=$('#care-night-detail').textContent;
+  return action(detail,['在全屋平面圖查看路線及待核對位置'],'查看路線',()=>$('#care-night-heading').scrollIntoView({block:'center'}));
+ }
  if(command.type==='floor')return action('先看看這次會改哪些房間的地面。',command.changes.map(change=>{
   const kind=whole?.home.rooms.find(room=>room.id===change.roomId)?.kind||base.purpose;
   return `${change.name} · ${CARE_FLOORING[change.material].name}。${flooringAdvice(change.material,kind,base.profile)}`;

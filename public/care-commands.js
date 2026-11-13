@@ -15,6 +15,7 @@ const sideOf = clause => /右側|右侧|右邊|右边/.test(clause) ? 'right' : 
 
 export function careCommand(text, state) {
  const input = text.normalize('NFKC').trim().replace(/[。！!]+$/, '');
+ if(/^(?:幫我|帮我|請|请)?\s*(?:睇|看|查看|檢查|检查|顯示|显示)\s*(?:夜晚|夜間|夜间)(?:由床邊去浴室|從床邊去浴室|从床边到浴室|去廁所|去厕所)?(?:的)?(?:路線|路线|動線|动线)[?？]?$/.test(input))return {type:'night-route'};
  if (ask.test(input)) return null;
  const rooms = state.wholeHome?.home.rooms || [];
  const active = rooms.find(room => room.id === state.wholeHome.activeRoomId);
