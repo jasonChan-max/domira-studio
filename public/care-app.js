@@ -4,6 +4,8 @@ import {CARE_FLOORING,flooringAdvice} from './care-flooring.js';
 import {previewCareReplacement,replacementProducts} from './care-replacement.js';
 import {careDoors} from './care-access.js';
 import {careCommand} from './care-commands.js';
+import {previewCarePosition} from './care-chat-position.js';
+import {careNightRoute} from './care-night-route.js';
 import {CARE_GUIDANCE_SOURCES,careGuidance} from './care-needs.js';
 import {createCareWholeHome} from './care-whole-home.js';
 import {roomCareProject,validateCareWhole} from './care-home-domain.js';
@@ -227,12 +229,31 @@ function proposeChatAction(text,base){
   if(!brief)return action('先選想要的家具和輔具，選好就可以規劃。',['選擇器具與偏好'],'開始選擇',()=>$('#needs-open').click());
   return action('可以用已選的家具和輔具規劃全屋。',[whole.name||base.name,'重新計算各房間的擺位'],'開始規劃',()=>{stopAR();return wholeStudio.generateAll();});
  }
- if(command.type!=='bed')return null;
+ if(command.type!=='bed'&&command.type!=='position')return null;
  const id=command.roomId||whole?.activeRoomId;
  const room=whole?.home.rooms.find(entry=>entry.id===id);
  const source=id&&id!==whole?.activeRoomId?whole.projects[id]:base;
- if(!source)return {reply:'這間房的尺寸未能用來擺床。請先核對平面圖。'};
+ if(!source)return {reply:'這間房目前未能調整家具。請先核對平面圖。'};
  const target=id&&whole?{...source,room:{...source.room,planRoom:source.room.planRoom||roomCareProject(whole.home,room).room.planRoom},wholeHome:{...whole,activeRoomId:id,view:'room'}}:source;
+ if(command.type==='position'){
+  try{
+   const {items,item}=previewCarePosition(target,command,source===base?selected:null);
+   const details=[`${room?.name||base.name} · ${item.name} · ${command.label}`];
+   if(whole){
+    const options={profile:$('#care-night-profile').value,bedId:whole.nightBedId};
+    const before=careNightRoute(whole,options);
+    if(before.status==='route-found'&&before.roomIds.includes(id)){
+     const candidate={...whole,home:{...whole.home,rooms:whole.home.rooms.map(entry=>entry.id===id?{...entry,items}:entry)}};
+     if(careNightRoute(candidate,options).status!=='route-found')return {reply:'這樣移會截斷目前的床邊到浴室路線。試試移少一點，或換個方向。'};
+     details.push('床邊到浴室的路線仍可在圖上連通。');
+    }
+   }
+   return action('這個擺位已通過圖面檢查。確認後即可套用。',details,'套用擺位',()=>{
+    checkpoint();stopAR();state={...target,items,fieldChecks:{}};update({room:true});select(item.id);
+    return `已調整${item.name}。想換回原位，可以講「復原」。`;
+   });
+  }catch(error){return {reply:error.message};}
+ }
  const beds=target.items.filter(item=>item.type==='bed'&&!item.locked);
  const bed=beds.find(item=>item.id===selected&&source===base)||(beds.length===1?beds[0]:null);
  if(!bed)return {reply:beds.length?'這間房有多張床。請先點選想換的那張床。':'這間房暫時沒有可換的床。可以在「選擇器具與偏好」加入睡床或護理床。'};

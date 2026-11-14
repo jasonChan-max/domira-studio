@@ -1,4 +1,5 @@
 import {CARE_FLOORING} from './care-flooring.js';
+import {carePositionCommand} from './care-chat-position.js';
 
 const roomAliases = {
  bedroom: /睡房|臥室|卧室|房間|房间/,
@@ -19,6 +20,15 @@ export function careCommand(text, state) {
  if (ask.test(input)) return null;
  const rooms = state.wholeHome?.home.rooms || [];
  const active = rooms.find(room => room.id === state.wholeHome.activeRoomId);
+ const position=carePositionCommand(input);
+ if(position){
+  if(position.error)return position;
+  const named=rooms.filter(room=>room.name.length>=2&&position.subject.includes(room.name));
+  const kind=Object.keys(roomAliases).find(key=>roomAliases[key].test(position.subject));
+  const matches=named.length?named:kind?rooms.filter(room=>room.kind===kind):[];
+  if(rooms.length&&(named.length||kind)&&matches.length!==1)return {error:'請說出一個房間名稱，例如「主人房的床往左移 20 公分」。'};
+  return {type:'position',roomId:matches[0]?.id,...position};
+ }
  const clauses = input.split(/[，,、；;。]|同埋|以及|並且|并且|然後|然后/).map(clause=>clause.trim()).filter(Boolean);
  const changes = [];
  let command;
