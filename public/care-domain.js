@@ -4,6 +4,7 @@ import {checkCareAccess,careDoors} from './care-access.js';
 import {CARE_DATA} from './care-data.js';
 import {validateBrief,remainingRequestedItems,requestedItems} from './care-brief.js';
 import {CARE_PRODUCTS,ALL_CARE_PRODUCTS} from './care-catalog.js';
+import {careToiletObstacle,validateCareToilet} from './care-toilet.js';
 
 export const CARE_VERSION='domira.care.v1';
 export const CARE_PROFILES={walker:{name:'步行／助行器',corridor:.9,door:.8,turning:1.5},wheelchair:{name:'輪椅／照顧協助',corridor:1.2,door:.85,turning:1.5}};
@@ -27,6 +28,7 @@ export function validateCareProject(p){
   if((i.role&&i.role!=='solid'&&!surface)||(i.type==='rug'&&!surface)||i.careKind==='surface'&&!surface)throw Error('僅目錄防滑薄層可使用地面薄層規則，厚度上限0.03m。');
   ids.add(i.id);}
  if(!Number.isFinite(p.doorWidth)||p.doorWidth<.3||p.doorWidth>3||p.doorWidth>p.room.width)throw Error('入口淨寬不正確。');
+ validateCareToilet(p.room,p.room.planRoom?.toilet);
  return p;
 }
 export function careGeometry(project, options){
@@ -37,7 +39,8 @@ export function careGeometry(project, options){
   if(Math.abs(item.x)+bounds.w/2>room.width/2+.001||Math.abs(item.z)+bounds.d/2>room.depth/2+.001)failures.push({rule:'bounds',id:item.id,message:item.name+'超出房間邊界。'});
   if(item.h>room.height)failures.push({rule:'height',id:item.id,message:item.name+'高於房間層高。'});
  }
- for(const pair of careCollisions(items))failures.push({rule:'collision',message:'家具佔地重疊，請移動或減少家具。',pair});
+ const toilet=room.planRoom?.toilet;
+ for(const pair of careCollisions(toilet?[...items,careToiletObstacle(toilet)]:items))failures.push({rule:'collision',message:pair.includes('fixed-toilet')?'家具與固定座廁重疊，請調整家具。':'家具佔地重疊，請移動或減少家具。',pair});
  const access=failures.length?null:checkCareAccess(project,profile,options);
  if(access)failures.push(...access.failures);
  return {ok:!failures.length,failures,profile,access,scope:'房間邊界、家具碰撞、已標門口、床側空間與輪椅轉向位置',rulesVersion:CARE_RULES_VERSION};

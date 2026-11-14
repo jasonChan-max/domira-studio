@@ -1,5 +1,6 @@
 import {layoutOpenings} from './domain.js';
 import {pointClearance, segmentClearance} from './circulation-domain.js';
+import {careToiletObstacle,validateCareToilet} from './care-toilet.js';
 
 const TOLERANCE = .001;
 const WALLS = {
@@ -83,8 +84,10 @@ function bedAccessAreas(bed, room, obstacles, width, outline) {
 
 export function checkCareAccess(project, profile, {includePaths = false, transit = false} = {}) {
  const {room} = project;
- const outline=transit?outlineGeometry(room):null;
+ const outline=transit||room.planRoom?.toilet?outlineGeometry(room):null;
  const obstacles = project.items.filter(item => item.role !== 'surface');
+ const toilet=room.planRoom?.toilet;
+ if(toilet){validateCareToilet(room,toilet);obstacles.push(careToiletObstacle(toilet));}
  const doors = careDoors(project);
  const usable = new Set();
  const failures = [];
@@ -94,6 +97,17 @@ export function checkCareAccess(project, profile, {includePaths = false, transit
  const transfers = [];
  const result = () => ({failures, pending, paths, ...(transit?{connections}:{}), transfers, turningPoint, doors, status: failures.length ? 'blocked' : pending.length ? 'review-required' : 'checked'});
  let turningPoint = null;
+ if(toilet&&outline){
+  const angle=toilet.rotation*Math.PI/180;
+  const corners=[[-1,-1],[-1,1],[1,1],[1,-1]].map(([a,b])=>{
+   const x=a*(toilet.w/2-.001),z=b*(toilet.d/2-.001);
+   return [toilet.x+x*Math.cos(angle)-z*Math.sin(angle),toilet.z+x*Math.sin(angle)+z*Math.cos(angle)];
+  });
+  if(corners.some((point,index)=>!outline.inside(point)||outline.wallClearance(point,corners[(index+1)%4])<1e-6)){
+   failures.push({rule:'toilet-outline',message:'座廁與牆線或凹位重疊，請核對座廁標記。'});
+   return result();
+  }
+ }
  if (!doors.length) pending.push({id: 'door-position', label: '請在平面圖標出門位，才可核對入口路線。'});
  if (doors.some(door => !['inward-start','inward-end','outward','sliding'].includes(door.swing))) pending.push({id: 'door-swing', label: '請核對開門方向及門扇是否會碰到家具。'});
  if (room.planRoom?.polygon?.length) pending.push({id: 'room-outline', label: outline?'請核對匯入的牆線及凹位。':'路線暫按矩形範圍驗算，請核對凹位及斜牆。'});
@@ -113,7 +127,7 @@ export function checkCareAccess(project, profile, {includePaths = false, transit
   if (!areas.length) failures.push({rule: 'bed-access', id: bed.id, message: `${bed.name}旁邊沒有足夠的上落床空間。試把床移向另一面牆。`});
  }
  if ((!transit&&failures.length) || (!doors.length && !beds.length)) return result();
- if (!transit&&!beds.length && doors.length === 1 && project.profile !== 'wheelchair') {
+ if (!transit&&!toilet&&!beds.length && doors.length === 1 && project.profile !== 'wheelchair') {
   const door = doors[0];
   const point = door.center.map((coordinate, axis) => coordinate + door.inward[axis] * (profile.corridor/2 + .005));
   if (Math.abs(point[0]) + profile.corridor/2 > room.width/2 + TOLERANCE || Math.abs(point[1]) + profile.corridor/2 > room.depth/2 + TOLERANCE ||
@@ -175,6 +189,15 @@ export function checkCareAccess(project, profile, {includePaths = false, transit
   if(!transit)return result();
  }
  for (const entry of bedAreas) for (const area of entry.areas) area.node = attach(area.point);
+ const toiletGoals=[];
+ if(toilet){
+  if(project.profile==='wheelchair'){
+   for(const area of bedAccessAreas(toilet,room,obstacles,profile.corridor,outline))toiletGoals.push({node:attach(area.point),key:`toilet:${area.side}`});
+  }else{
+   const angle=toilet.rotation*Math.PI/180,reach=toilet.d/2+radius+.005;
+   toiletGoals.push({node:attach([toilet.x-Math.sin(angle)*reach,toilet.z+Math.cos(angle)*reach]),key:'toilet:front'});
+  }
+ }
  const requiresTurn = project.profile === 'wheelchair' && (!transit || beds.length || room.planRoom?.kind === 'bathroom');
  const turningCandidates = requiresTurn ? nodes.map(({point}, n) => freePoint(point, turningRadius) ? n : -1).filter(n => n >= 0) : [];
  const origins = entrances.length ? (transit?entrances.filter(id=>id!==undefined):[entrances[0]]) : (bedAreas[0]?.areas||[]).map(area => area.node).filter(id => id !== undefined);
@@ -188,6 +211,10 @@ export function checkCareAccess(project, profile, {includePaths = false, transit
   if (!transit&&chosen.some(({area}) => !area)) continue;
   const turn = turningCandidates.find(id => parents.has(id));
   if (!transit&&requiresTurn && turn === undefined) continue;
+  if(!transit&&toilet&&!toiletGoals.some(goal=>parents.has(goal.node))){
+   failures.push({rule:'toilet-access',message:'找不到通往座廁使用位置的路線。請核對前方或所選轉移側的淨空。'});
+   return result();
+  }
   turningPoint = turn === undefined ? null : nodes[turn].point;
   for (const {bed, area} of chosen) if(area)transfers.push({id: bed.id, side: area.side, point: area.point});
   const entryIndex=entrances.indexOf(origin);
@@ -198,6 +225,7 @@ export function checkCareAccess(project, profile, {includePaths = false, transit
     : chosen.filter(({area})=>area).map(({bed,area})=>({node:area.node,key:`bed:${bed.id}`}))),
    {node:transit&&room.planRoom?.kind==='bathroom'&&!requiresTurn?origin:turn,key:'arrival'}
   ];
+  if(!requiresTurn||turn!==undefined)destinations.push(...toiletGoals);
   if (includePaths) for (const {node:destination,key,center} of destinations) {
    if(!parents.has(destination) || (!transit&&destination===origin))continue;
    const path = [];
@@ -216,6 +244,7 @@ export function checkCareAccess(project, profile, {includePaths = false, transit
   }
   if(!transit)return result();
  }
+ if(transit&&toilet&&!connections.some(connection=>connection.to.startsWith('toilet:')))failures.push({rule:'toilet-access',message:'找不到通往座廁使用位置的路線。請核對前方或所選轉移側的淨空。'});
  if(transit&&connections.length)return result();
  failures.push({rule:'route',message:beds.length ? '找不到通往床側、各門口及所需轉向位置的連續路線。試轉床或移走阻擋的家具。' : '門口之間或輪椅轉向位置被擋住，請調整家具。'});
  return result();

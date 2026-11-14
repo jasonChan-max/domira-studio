@@ -72,3 +72,32 @@ test('a narrow unused branch does not stop a valid selected route',()=>{
  assert.equal(careNightRoute(whole).status,'route-found');
  assert.deepEqual(careCommand('幫我睇夜晚去廁所路線',{}),{type:'night-route'});
 });
+
+test('a marked toilet changes the endpoint to the correct walking or wheelchair approach',()=>{
+ for(const [index,toilet,destination] of [
+  [0,{x:0,z:.9,transferSide:'either'},'座廁前方'],
+  [1,{x:-.8,z:0,transferSide:'left'},'座廁左側']
+ ]){
+  const template=CARE_TEMPLATES[index],{wholeHome}=makeCareTemplate(template);
+  const bathroom=wholeHome.home.rooms.find(room=>room.kind==='bathroom');
+  bathroom.toilet={...toilet,w:.36,d:.66,rotation:180};
+  const route=careNightRoute(wholeHome,{profile:template.profile});
+  assert.equal(route.destination,destination);
+  assert.match(route.issues.join(' '),/現場試行/);
+  if(index===1){
+   bathroom.toilet.transferSide='right';
+   const blocked=careNightRoute(wholeHome,{profile:template.profile});
+   assert.equal(blocked.status,'pending');
+   assert.match(blocked.detail,/座廁使用位置/);
+   assert.deepEqual(blocked.points,[]);
+  }
+ }
+});
+
+test('known overlaps with the toilet prevent drawing a misleading route',()=>{
+ const whole=small(),bathroom=whole.home.rooms.find(room=>room.kind==='bathroom');
+ bathroom.toilet={x:bathroom.items[0].x*.8,z:bathroom.items[0].z*.8,w:.36,d:.66,rotation:0,transferSide:'either'};
+ const blocked=careNightRoute(whole);
+ assert.equal(blocked.status,'pending');
+ assert.match(blocked.issues.join(' '),/與固定座廁重疊/);
+});

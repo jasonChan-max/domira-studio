@@ -1,5 +1,6 @@
 import {careDoors,checkCareAccess} from './care-access.js';
-import {CARE_PROFILES} from './care-domain.js';
+import {CARE_PROFILES,careCollisions} from './care-domain.js';
+import {careToiletObstacle,validateCareToilet} from './care-toilet.js';
 
 const opposite={top:'bottom',bottom:'top',left:'right',right:'left'};
 const separation=(a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1]);
@@ -18,7 +19,9 @@ export function careNightRoute(whole, {profile='walker',bedId} = {}) {
  if(!rooms.some(room=>room.kind==='bathroom'))return empty('pending','請先在全屋平面圖標記浴室。');
 
  const roomMap=new Map(rooms.map(room=>[room.id,room]));
+ const marked=rooms.some(room=>room.kind==='bathroom'&&room.toilet);
  const adj=new Map(),issues=new Map(),doors=[],starts=new Set();
+ const goals=new Map();
  const issue=(room,text)=>issues.set(`${room.id}:${text}`,`${room.name}：${text}`);
  function add(from,to,room,path,door=null,{oneWay=false}={}) {
   const length=path.slice(1).reduce((sum,point,index)=>sum+separation(point,path[index]),0);
@@ -38,6 +41,10 @@ export function careNightRoute(whole, {profile='walker',bedId} = {}) {
   if(Array.isArray(room.polygon)&&room.polygon.length>=3&&room.polygon.some(point=>!Array.isArray(point)||point.length!==2||!point.every(Number.isFinite))){issue(room,'牆線資料不完整，請核對平面圖。');continue;}
   if(Math.min(room.width,room.depth)<preset.corridor-.001){issue(room,`房間的短邊小於 ${m(preset.corridor)} 的通道目標。`);continue;}
   if(!openings.length){issue(room,'請標記門位。');continue;}
+  if(room.toilet){
+   try{validateCareToilet(room,room.toilet);}catch(error){issue(room,error.message);continue;}
+   if(careCollisions([...room.items,careToiletObstacle(room.toilet)]).some(pair=>pair.includes('fixed-toilet'))){issue(room,'家具與固定座廁重疊，請調整擺位。');continue;}
+  }
   const access=checkCareAccess(project,preset,{includePaths:true,transit:true});
   for(const failure of access.failures.slice(0,3))issue(room,failure.message);
   if(!access.connections.length)continue;
@@ -46,8 +53,11 @@ export function careNightRoute(whole, {profile='walker',bedId} = {}) {
     if(room.id!==bed.roomId||!['left','right'].some(side=>connection.to===`bed:${bed.id}:${side}`))continue;
     starts.add(routeKey(room.id,connection.to));
    }
-   if(connection.to==='arrival'&&room.kind!=='bathroom')continue;
-   add(routeKey(room.id,connection.from),routeKey(room.id,connection.to),room.id,connection.path.map(world),null,{oneWay:connection.to==='arrival'});
+   const endpoint=connection.to==='arrival'||connection.to.startsWith('toilet:');
+   if(endpoint&&(room.kind!=='bathroom'||(marked&&connection.to==='arrival')))continue;
+   const to=routeKey(room.id,connection.to);
+   if(endpoint)goals.set(to,connection.to);
+   add(routeKey(room.id,connection.from),to,room.id,connection.path.map(world),null,{oneWay:endpoint});
   }
  }
 
@@ -67,7 +77,6 @@ export function careNightRoute(whole, {profile='walker',bedId} = {}) {
   add(doorKey(a.roomId,a.index),doorKey(b.roomId,b.index),null,[a.center,b.center],{from:a.roomId,to:b.roomId,width:safeWidth,confirmed});
  }
 
- const goals=new Set(rooms.filter(room=>room.kind==='bathroom').map(room=>routeKey(room.id,'arrival')));
  const costs=new Map([...starts].map(start=>[start,0])),previous=new Map(),unvisited=new Set(starts);
  let end;
  while(unvisited.size){
@@ -80,23 +89,30 @@ export function careNightRoute(whole, {profile='walker',bedId} = {}) {
    costs.set(edge.to,cost);previous.set(edge.to,{node,edge});unvisited.add(edge.to);
   }
  }
- if(!end)return empty('pending','暫未找到從床邊到浴室內的連續路線。請核對相連房間的兩側門位、門寬及家具位置。',[...issues.values()]);
+ if(!end)return empty('pending',marked?'暫未找到從床邊到座廁使用位置的連續路線。請核對門位及座廁淨空。':'暫未找到從床邊到浴室內的連續路線。請核對相連房間的兩側門位、門寬及家具位置。',[...issues.values()]);
  const steps=[];
  for(let node=end;!starts.has(node);){const step=previous.get(node);steps.unshift(step.edge);node=step.node;}
  const roomIds=[...new Set(steps.filter(step=>step.room).map(step=>step.room))];
  const crossings=steps.filter(step=>step.door).map(step=>step.door);
  const points=steps.flatMap(step=>step.path).filter((point,index,all)=>index===0||separation(point,all[index-1])>1e-6);
- const pending=['請實測門檻高差、防滑和夜間照明。','請標記座廁位置及轉移側，並核對浴室內的實際如廁空間。'];
+ const side=goals.get(end).split(':')[1];
+ const destination=side?{front:'座廁前方',left:'座廁左側',right:'座廁右側'}[side]:'浴室內';
+ const pending=['請實測門檻高差、防滑和夜間照明。',side?'請按使用者及輔具在現場試行，核對座高、扶手握位及照顧者站位。':'請標記座廁位置及轉移側，並核對浴室內的實際如廁空間。'];
  if(!whole.home.scaleConfirmed)pending.unshift('平面圖比例及尺寸有待確認。');
  if(roomIds.some(id=>roomMap.get(id).polygon?.length>=3))pending.unshift('請核對匯入的牆線及凹位。');
  if(crossings.some(door=>!door.confirmed))pending.unshift('請核對路線上各門的實測淨寬、門位與開門方向。');
- return {status:'route-found',detail:`${roomIds.map(id=>roomMap.get(id).name).join(' → ')} · 約 ${m(costs.get(end))}`,issues:pending,beds,bedId:bed.id,profile,points,roomIds,crossings,doorWidth:Math.min(...crossings.map(door=>door.width)),corridorTarget:preset.corridor,distance:costs.get(end)};
+ return {status:'route-found',detail:`${roomIds.map(id=>roomMap.get(id).name).join(' → ')}${side?` → ${destination}`:''} · 約 ${m(costs.get(end))}`,destination,issues:pending,beds,bedId:bed.id,profile,points,roomIds,crossings,doorWidth:Math.min(...crossings.map(door=>door.width)),corridorTarget:preset.corridor,distance:costs.get(end)};
 }
 
-export function careNightRouteOverlay(route, projectPoint) {
- if(route.points.length<2)return '';
+export function careNightRouteOverlay(route, projectPoint, rooms=[]) {
+ const fixtures=rooms.filter(room=>room.toilet).map(({x,z,toilet:t})=>{
+  const [cx,cy]=projectPoint([x+t.x,z+t.z]),[x1]=projectPoint([x+t.x+t.w,z]),[,y1]=projectPoint([x,z+t.z+t.d]);
+  const w=x1-cx,d=y1-projectPoint([x,z])[1];
+  return `<g transform="translate(${cx} ${cy}) rotate(${t.rotation})"><rect x="${-w/2}" y="${-d/2}" width="${w}" height="${d}" rx="4" fill="#dce8dc" stroke="#172b26"/><title>固定座廁</title></g>`;
+ }).join('');
+ if(route.points.length<2)return fixtures;
  const points=route.points.map(projectPoint);
  const [start,end]=[points[0],points.at(-1)];
  const line=points.map(point=>point.map(value=>value.toFixed(2)).join(',')).join(' ');
- return `<g aria-label="床邊至浴室內的夜間路線"><polyline points="${line}" fill="none" stroke="#172b26" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/><polyline points="${line}" fill="none" stroke="#86f4c3" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>${[start,end].map(([x,y],index)=>`<circle cx="${x}" cy="${y}" r="13" fill="#86f4c3" stroke="#172b26" stroke-width="3"/><text x="${x}" y="${y+5}" text-anchor="middle" font-family="sans-serif" font-weight="700" font-size="14" fill="#172b26">${index+1}</text>`).join('')}</g>`;
+ return `${fixtures}<g aria-label="床邊至${route.destination||'浴室內'}的夜間路線"><polyline points="${line}" fill="none" stroke="#172b26" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/><polyline points="${line}" fill="none" stroke="#86f4c3" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>${[start,end].map(([x,y],index)=>`<circle cx="${x}" cy="${y}" r="13" fill="#86f4c3" stroke="#172b26" stroke-width="3"/><text x="${x}" y="${y+5}" text-anchor="middle" font-family="sans-serif" font-weight="700" font-size="14" fill="#172b26">${index+1}</text>`).join('')}</g>`;
 }

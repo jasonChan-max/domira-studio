@@ -9,6 +9,7 @@ import {ALL_CARE_PRODUCTS} from './care-catalog.js';
 import {CARE_CASES,CARE_TEMPLATES,makeCareTemplate} from './care-templates.js';
 import {careNightRoute,careNightRouteOverlay} from './care-night-route.js';
 import {planCareNightAccess} from './care-home-planner.js';
+import {validateCareToilet} from './care-toilet.js';
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export function createCareWholeHome({scene,getState,replaceState,refresh,modal,closeModal,setCleanup,notify,api,checkpoint,stopAR,propose}){
  let busy=false,planning=false,epoch=0;const $=s=>document.querySelector(s);
@@ -24,14 +25,46 @@ export function createCareWholeHome({scene,getState,replaceState,refresh,modal,c
   select.value=route.bedId||'';select.disabled=route.beds.length<2;
   $('#care-night-bed-field').hidden=route.beds.length<2;
   $('#care-night-detail').textContent=route.detail;
-  $('#care-night-width').textContent=route.status==='route-found'?`① 床邊　② 浴室內 · 最窄圖上門洞 ${route.doorWidth.toFixed(2)} m · 房內通道目標 ${route.corridorTarget.toFixed(2)} m`:'';
+  $('#care-night-width').textContent=route.status==='route-found'?`① 床邊　② ${route.destination} · 最窄圖上門洞 ${route.doorWidth.toFixed(2)} m · 房內通道目標 ${route.corridorTarget.toFixed(2)} m`:'';
+  $('#care-toilet-open').hidden=!whole.home.rooms.some(room=>room.kind==='bathroom');
   $('#care-night-issues').innerHTML=route.issues.map(issue=>`<li>${esc(issue)}</li>`).join('');
   $('#whole-plan-preview').innerHTML=nightPlan(whole.home);
  }
- function nightPlan(home){return homePlanSVG(home,{overlay:point=>careNightRouteOverlay(route,point)});}
+ function nightPlan(home){return homePlanSVG(home,{overlay:point=>careNightRouteOverlay(route,point,home.rooms)});}
  $('#care-night-bed').onchange=event=>{checkpoint();getState().wholeHome.nightBedId=event.target.value;refresh();};
  $('#care-night-profile').onchange=event=>{checkpoint();getState().wholeHome.nightProfile=event.target.value;refresh();};
  const clean=p=>{const {wholeHome,...rest}=p;return structuredClone(rest);};
+ function showToiletEditor(id){
+  const p=getState(),whole=p.wholeHome;
+  const bathrooms=whole.home.rooms.filter(room=>room.kind==='bathroom');
+  const room=bathrooms.find(room=>room.id===id)||bathrooms[0];
+  if(!room)return;
+  const toilet=room.toilet;
+  const number=(key,label,value)=>`<label>${label}<input type="number" step="any" required name="${key}" value="${value??''}"></label>`;
+  modal('標記浴室的固定座廁',`<form id="care-toilet-form"><label>浴室<select id="care-toilet-room">${bathrooms.map(r=>`<option value="${esc(r.id)}" ${r===room?'selected':''}>${esc(r.name)}</option>`).join('')}</select></label><p>沿平面圖方向，量度座廁本體中心離房間左牆及上牆的距離。圖面尺寸只供核對擺位。</p>${number('left','中心距左牆（m）',toilet?Number((toilet.x+room.width/2).toFixed(3)):undefined)}${number('top','中心距上牆（m）',toilet?Number((toilet.z+room.depth/2).toFixed(3)):undefined)}${number('w','座廁本體寬度（m）',toilet?.w)}${number('d','座廁本體深度（m）',toilet?.d)}<label>座廁前端指向<select name="rotation"><option value="0">下方</option><option value="90">左方</option><option value="180">上方</option><option value="270">右方</option></select></label><label>輪椅轉移側（面向座廁時）<select name="transferSide"><option value="either">任一側</option><option value="left">左側</option><option value="right">右側</option></select></label><p id="care-toilet-error" role="alert"></p><button class="primary">儲存座廁位置</button>${toilet?'<button type="button" id="care-toilet-remove">移除座廁標記</button>':''}</form>`);
+  const form=$('#care-toilet-form');
+  form.elements.rotation.value=toilet?.rotation??0;
+  form.elements.transferSide.value=toilet?.transferSide||'either';
+  $('#care-toilet-room').onchange=event=>showToiletEditor(event.target.value);
+  function save(next){
+   checkpoint();stopAR();
+   if(next)room.toilet=next;else delete room.toilet;
+   const project=whole.activeRoomId===room.id?p:whole.projects[room.id];
+   if(project){
+    project.room.planRoom={...(project.room.planRoom||roomCareProject(whole.home,room).room.planRoom),toilet:next};
+    project.fieldChecks={};
+   }
+   closeModal();refresh({room:true});
+  }
+  if(toilet)$('#care-toilet-remove').onclick=()=>save(undefined);
+  form.onsubmit=event=>{
+   event.preventDefault();
+   const data=new FormData(form);
+   const next={x:Number(data.get('left'))-room.width/2,z:Number(data.get('top'))-room.depth/2,w:Number(data.get('w')),d:Number(data.get('d')),rotation:Number(data.get('rotation')),transferSide:data.get('transferSide')};
+   try{validateCareToilet(room,next);save(next);}catch(error){$('#care-toilet-error').textContent=error.message;}
+  };
+ }
+ $('#care-toilet-open').onclick=()=>showToiletEditor(getState().wholeHome.activeRoomId);
  function saveRoom(){const p=getState(),w=p.wholeHome;if(!w)return;w.projects[w.activeRoomId]=clean(p);const r=w.home.rooms.find(r=>r.id===w.activeRoomId);r.items=p.items;r.flooring=p.room.flooring;if(Array.isArray(p.room.planRoom?.openings))r.openings=p.room.planRoom.openings;}
  function refreshNightRoute(){const p=getState();if(!p.wholeHome)return;saveRoom();drawNightRoute(p.wholeHome,p.profile);}
  function install(home,name){epoch++;const p=getState(),projects={};for(const r of home.rooms)projects[r.id]=canPlanCareRoom(r)?{...roomCareProject(home,r),profile:p.profile,style:p.style}:null;const active=home.rooms.find(r=>r.kind==='living'&&projects[r.id])||home.rooms.find(r=>projects[r.id]);if(!active)throw Error('此戶型沒有長寬均為 2–15 m 的可規劃房間。');const w={format:'domira.care.home.v1',home,projects,activeRoomId:active.id,view:'whole',name};replaceState({...projects[active.id],wholeHome:w});refresh({room:true});}
