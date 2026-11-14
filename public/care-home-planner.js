@@ -1,6 +1,8 @@
 import {careNightRoute} from './care-night-route.js';
 import {remainingRequestedItems,requestedItems} from './care-brief.js';
 import {careGeometry,safeCareLayout} from './care-domain.js';
+import {careLayoutFeatures} from './care-layout-features.js';
+import {CARE_LAYOUT_MODEL} from './care-layout-model.js';
 
 const VARIANTS=[1,2,3];
 const MAX_CHECKS=16;
@@ -16,11 +18,14 @@ function applyLayouts(whole,layouts){
  return {...whole,projects,home:{...whole.home,rooms}};
 }
 
-export async function planCareNightAccess(whole,{profile,yieldFrame=()=>Promise.resolve()}={}){
+export async function planCareNightAccess(whole,{profile,yieldFrame=()=>Promise.resolve(),onCandidate,rank=true}={}){
  const routeProfile=whole.nightProfile||profile;
  const options={profile:routeProfile,bedId:whole.nightBedId};
  const original=careNightRoute(whole,options);
  let best={whole,route:original,changedRooms:[],checks:0};
+ const weights=rank&&CARE_LAYOUT_MODEL.results[original.profile]?.weights;
+ const score=candidate=>careLayoutFeatures(whole,candidate).reduce((sum,value,index)=>sum+value*weights[index]/CARE_LAYOUT_MODEL.scale[index],0);
+ onCandidate?.(best);
  if(!original.bedId||!whole.home.rooms.some(room=>room.kind==='bathroom'))return best;
 
  const goals=whole.brief?.preferences||[];
@@ -44,8 +49,14 @@ export async function planCareNightAccess(whole,{profile,yieldFrame=()=>Promise.
   const candidate=applyLayouts(whole,layouts);
   const route=careNightRoute(candidate,options);
   if(route.status!=='route-found')return;
-  const improvement=best.route.status!=='route-found'||(shorten&&route.distance<best.route.distance-.10&&route.doorWidth>=best.route.doorWidth-.001);
-  if(improvement)best={whole:candidate,route,changedRooms:[...layouts.keys()]};
+  const proposal={whole:candidate,route,changedRooms:[...layouts.keys()]};
+  onCandidate?.(proposal);
+  if(original.status==='route-found'&&(route.distance>original.distance-.10||route.doorWidth<original.doorWidth-.001))return;
+  if(best.route.status==='route-found'){
+   if(route.doorWidth<best.route.doorWidth-.001)return;
+   if(weights?score(proposal)>=score(best)-1e-8:!(shorten&&route.distance<best.route.distance-.10))return;
+  }
+  best=proposal;
  }
 
  for(const variant of VARIANTS){
@@ -70,7 +81,7 @@ export async function planCareNightAccess(whole,{profile,yieldFrame=()=>Promise.
    if(checks>=MAX_CHECKS)break;
   }
   await consider(alternatives);
-  if(best.changedRooms.length&&original.status!=='route-found'&&!shorten)break;
+  if(!weights&&best.changedRooms.length&&original.status!=='route-found'&&!shorten)break;
  }
- return {...best,checks};
+ return {...best,checks,...(weights&&best.changedRooms.length?{modelVersion:CARE_LAYOUT_MODEL.version}:{})};
 }

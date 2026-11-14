@@ -119,7 +119,8 @@ export function createCareWholeHome({scene,getState,replaceState,refresh,modal,c
    const checkRevision=()=>{if(token!==epoch||getState()!==base||base.updatedAt!==revision)throw Error('房間或需求已變更，已保留目前設計。');};
    const result=await planCareNightAccess(next,{profile:base.profile,yieldFrame:async()=>{await new Promise(resolve=>setTimeout(resolve,0));checkRevision();}});
    checkRevision();
-   const chosen=result.whole;
+   const {layoutModelVersion:previousModel,...chosen}=result.whole;
+   if(result.modelVersion)chosen.layoutModelVersion=result.modelVersion;
    validateCareWhole(chosen);
    checkpoint();replaceState({...chosen.projects[chosen.activeRoomId],wholeHome:{...chosen,view:'whole'}});
    refresh({room:true});

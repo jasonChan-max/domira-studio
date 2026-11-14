@@ -20,6 +20,7 @@ test('whole-home generation can shorten the actual night path without moving inv
   assert.deepEqual(inventory(result.whole),inventory(before));
   assert.ok(Object.values(result.whole.projects).filter(Boolean).every(project=>careGeometry(project).ok));
   assert.ok(result.checks<=16);
+  assert.equal(result.modelVersion,1);
  }
 });
 
