@@ -20,42 +20,86 @@ export function roomsFromMask(mask, width, height, options = {}) {
 
   const n = width * height;
   const label = new Int32Array(n).fill(-1);
-  const sizes = [];
   const stack = new Int32Array(n);
-  let next = 0;
-
-  for (let start = 0; start < n; start++) {
-    if (label[start] !== -1 || mask[start] !== FLOOR_CLASS) continue;
-    let sp = 0;
-    stack[sp++] = start;
-    label[start] = next;
-    let count = 0;
-    while (sp > 0) {
-      const p = stack[--sp];
-      count++;
-      const x = p % width;
-      const y = (p - x) / width;
-      if (x > 0) { const q = p - 1; if (label[q] === -1 && mask[q] === FLOOR_CLASS) { label[q] = next; stack[sp++] = q; } }
-      if (x < width - 1) { const q = p + 1; if (label[q] === -1 && mask[q] === FLOOR_CLASS) { label[q] = next; stack[sp++] = q; } }
-      if (y > 0) { const q = p - width; if (label[q] === -1 && mask[q] === FLOOR_CLASS) { label[q] = next; stack[sp++] = q; } }
-      if (y < height - 1) { const q = p + width; if (label[q] === -1 && mask[q] === FLOOR_CLASS) { label[q] = next; stack[sp++] = q; } }
+  const eroded = new Uint8Array(n);
+  // 3×3 腐蝕：邊界以外視為非地板，切斷 1–2px 的地板細橋。
+  for (let y = 1; y < height - 1; y++) {
+    for (let x = 1; x < width - 1; x++) {
+      const p = y * width + x;
+      let floor = true;
+      for (let dy = -1; dy <= 1 && floor; dy++) {
+        for (let dx = -1; dx <= 1; dx++) {
+          if (mask[p + dy * width + dx] !== FLOOR_CLASS) { floor = false; break; }
+        }
+      }
+      if (floor) eroded[p] = 1;
     }
-    sizes.push(count);
-    next++;
   }
 
-  const totalFloor = sizes.reduce((a, b) => a + b, 0);
+  // 檢查每個原始連通域；完全消失的那一塊改用原始地板作種子。
+  const labelFloor = (seedsOnly) => {
+    label.fill(-1);
+    const sizes = [];
+    const surviving = [];
+    for (let start = 0; start < n; start++) {
+      if (label[start] !== -1 || mask[start] !== FLOOR_CLASS || (seedsOnly && !eroded[start])) continue;
+      const id = sizes.length;
+      let sp = 0, count = 0, survives = false;
+      stack[sp++] = start;
+      label[start] = id;
+      while (sp > 0) {
+        const p = stack[--sp];
+        count++;
+        if (eroded[p]) survives = true;
+        const x = p % width;
+        const take = (q) => {
+          if (label[q] !== -1 || mask[q] !== FLOOR_CLASS || (seedsOnly && !eroded[q])) return;
+          label[q] = id;
+          stack[sp++] = q;
+        };
+        if (x > 0) take(p - 1);
+        if (x < width - 1) take(p + 1);
+        if (p >= width) take(p - width);
+        if (p + width < n) take(p + width);
+      }
+      sizes.push(count);
+      surviving.push(survives);
+    }
+    return { sizes, surviving };
+  };
+  const original = labelFloor(false);
+  const totalFloor = original.sizes.reduce((a, b) => a + b, 0);
   if (totalFloor === 0) return [];
+  // 沒有任何種子時也會還原所有原始連通域，不讓狹窄小房間消失。
+  for (let p = 0; p < n; p++) {
+    if (label[p] >= 0 && !original.surviving[label[p]]) eroded[p] = 1;
+  }
+  const sizes = labelFloor(true).sizes;
   const minArea = totalFloor * minAreaRatio;
 
-  // 把牆（1）和門（2）像素按「最近的地板連通域」分配，讓房間擴張到牆中線。
-  //
-  // 為什麼非做不可（2026-11-11 使用者實測）：只取 floor 連通域的話，
-  // 相鄰房間之間隔著一圈牆像素，誰都沒認領，畫出來就是一條條空隙；
-  // 門洞更糟——門不是 floor 也不是 wall，是一個真正的洞。
-  // 吸收之後相鄰房間正好在牆中線相接（沒有縫），門洞被填平（門是通道，地板本來就該連續）。
-  // 窗（3）與屋外（4）不吸收：窗在外牆上、屋外是房子外面，擴進去只會把形狀弄歪。
-  if (options.absorbWalls !== false) absorbWalls(mask, width, height, label);
+  // 從所有種子同時逐層擴散，還原地板並吸收牆／門到中線。
+  // sizes 只累計地板，窗（3）與屋外（4）不分配；保留 absorbWalls:false。
+  const queue = new Int32Array(n);
+  let head = 0, tail = 0;
+  for (let p = 0; p < n; p++) {
+    if (label[p] >= 0) queue[tail++] = p;
+  }
+  while (head < tail) {
+    const p = queue[head++];
+    const x = p % width;
+    const take = (q) => {
+      if (label[q] !== -1) return;
+      const c = mask[q];
+      if (c !== FLOOR_CLASS && (options.absorbWalls === false || (c !== 1 && c !== 2))) return;
+      label[q] = label[p];
+      if (c === FLOOR_CLASS) sizes[label[q]]++;
+      queue[tail++] = q;
+    };
+    if (x > 0) take(p - 1);
+    if (x < width - 1) take(p + 1);
+    if (p >= width) take(p - width);
+    if (p + width < n) take(p + width);
+  }
 
   const rooms = [];
   for (let id = 0; id < sizes.length; id++) {
