@@ -79,5 +79,57 @@ const none = estimateScale({ totalPixelArea: 94630, frameSpanPx: 400 });
 check('回傳 none 而不是編一個數字', none.source === 'none');
 check('metersPerPixel 是 0', none.metersPerPixel === 0);
 
+console.log('\n=== 測試 8：所有比例尺來源共用 15–300 m² 護欄 ===');
+const oversizedDoor = { totalPixelArea: 250000, frameSpanPx: 500, doors: [{ w: 13, h: 2 }] };
+const rejectedDoor = estimateScale(oversizedDoor);
+check('1069 m² 的門寬候選被擋掉', rejectedDoor.source === 'none' && rejectedDoor.metersPerPixel === 0);
+const fallback = estimateScale({ ...oversizedDoor, assumedMeters: 0.02 });
+check('門寬無效後降級為固定值', fallback.source === 'assumed' && fallback.metersPerPixel === 0.02);
+check('無效門寬不留在候選清單', !fallback.candidates.some(c => c.source === 'door-width'));
+for (const area of [14, 301, 1000]) {
+  const result = estimateScale({ totalPixelArea: 250000, frameSpanPx: 500, assumedMeters: Math.sqrt(area / 250000) });
+  check(`固定值推算 ${area} m² 被擋掉`, result.source === 'none');
+}
+for (const area of [15, 300]) {
+  const result = estimateScale({ totalPixelArea: 10000, frameSpanPx: 100, areas: [{ value: area }] });
+  check(`OCR 面積 ${area} m² 邊界仍可使用`, result.source === 'floor-area');
+}
+const invalidArea = estimateScale({ totalPixelArea: Infinity, frameSpanPx: 500, assumedMeters: 0.02 });
+check('非有限像素面積不能繞過護欄', invalidArea.source === 'none');
+
+console.log('\n=== 測試 9：偶數個門寬取中間兩個的平均 ===');
+const evenDoors = estimateScale({
+  totalPixelArea: 94630,
+  frameSpanPx: 400,
+  doors: [{ w: 20, h: 2 }, { w: 40, h: 2 }],
+});
+check('兩個細長門仍採用門寬來源', evenDoors.source === 'door-width');
+check('20px 與 40px 的中位數為 30px', Math.abs(evenDoors.metersPerPixel - 0.85 / 30) < 1e-9,
+  `實際 ${evenDoors.metersPerPixel}`);
+
+console.log('\n=== 測試 10：面積與門寬矛盾時改用門寬 ===');
+// 2026-11-16 實測：800×800 窄長戶型，OCR 把某處讀成 202 m²（圖上六間加起來只有 63.65 m²）。
+// 面積反推 0.0391 m/px 會得出 8.21×26.62 m＝218 m²，門寬 42px 反推 0.0202 才是真值。
+const conflict = estimateScale({
+  totalPixelArea: 132150,
+  frameSpanPx: 681,
+  areas: [{ value: 202 }],
+  doors: [{ w: 42, h: 6 }],
+  assumedMeters: 0.02,
+});
+check('矛盾時改用門寬', conflict.source === 'door-width', `實際 ${conflict.source}`);
+check('比例尺 ≈ 0.85/42', Math.abs(conflict.metersPerPixel - 0.85 / 42) < 1e-9,
+  `實際 ${conflict.metersPerPixel}`);
+check('衝突的面積候選仍留在清單裡說明原因',
+  conflict.candidates.some(c => c.source === 'floor-area-conflict' && c.detail.includes('相差')));
+// 兩者差距在 1.5 倍以內時仍以面積為準（不能為了防誤讀把正常情況也翻掉）
+const closeEnough = estimateScale({
+  totalPixelArea: 94630,
+  frameSpanPx: 400,
+  areas: [{ value: 46.03 }],
+  doors: [{ w: 29, h: 5 }],
+});
+check('差距不大時仍用面積', closeEnough.source === 'floor-area', `實際 ${closeEnough.source}`);
+
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

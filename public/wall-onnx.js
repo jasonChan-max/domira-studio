@@ -42,6 +42,49 @@ export function wallClass(logits, stride, index, calibration) {
   return (1 - blend) * margin + blend * score + offset > 0 ? 1 : alternative;
 }
 
+/**
+ * 只留下「房子本體」：非 outside 的最大連通域，其餘非 outside 像素一律改判 outside。
+ *
+ * 為什麼要這一步（2026-11-16 實測）：v19 是用「緊貼房子裁切」的 clean 圖訓練的，房子幾乎填滿
+ * 畫面；真實上傳的圖是「房子只佔一角、四周大片純白」。模型沒見過這種構圖，而酷家樂圖裡的窗
+ * 本身就是淺白色帶，於是畫布白底被整片判成窗——1200×900 驗收圖上 window 1.58%(v7)→6.50%，
+ * 房子外被拆成 12 塊假區域共 62945 px。加這一步後回到 1.71%，真窗一個沒丟；在 v7 輸出上跑
+ * 改動 0 像素（冪等）。
+ *
+ * 一張戶型圖的房子一定是一個連通塊，所以「不連著房子」的非 outside 像素必然是誤判。
+ * 已知邊界：一張圖上有兩個戶型時會只留大的那個——本管線本來就假定單戶型。
+ */
+function keepHouse(mask, width, height) {
+  const total = width * height;
+  const label = new Int32Array(total);
+  const stack = new Int32Array(total);
+  const removed = [0, 0, 0, 0, 0];
+  let best = 0, bestSize = 0, id = 0;
+  for (let start = 0; start < total; start++) {
+    if (label[start] || mask[start] === 4) continue;
+    id++;
+    let top = 0, size = 0;
+    stack[top++] = start;
+    label[start] = id;
+    while (top) {
+      const p = stack[--top];
+      size++;
+      const y = (p / width) | 0;
+      const x = p - y * width;
+      if (y > 0) { const q = p - width; if (mask[q] !== 4 && !label[q]) { label[q] = id; stack[top++] = q; } }
+      if (y < height - 1) { const q = p + width; if (mask[q] !== 4 && !label[q]) { label[q] = id; stack[top++] = q; } }
+      if (x > 0) { const q = p - 1; if (mask[q] !== 4 && !label[q]) { label[q] = id; stack[top++] = q; } }
+      if (x < width - 1) { const q = p + 1; if (mask[q] !== 4 && !label[q]) { label[q] = id; stack[top++] = q; } }
+    }
+    if (size > bestSize) { bestSize = size; best = id; }
+  }
+  if (id <= 1) return removed;
+  for (let i = 0; i < total; i++) {
+    if (mask[i] !== 4 && label[i] !== best) { removed[mask[i]]++; mask[i] = 4; }
+  }
+  return removed;
+}
+
 function loadOrt() {
   if (!ortPromise) {
     ortPromise = new Promise((resolve, reject) => {
@@ -156,7 +199,13 @@ export async function segmentWalls(source, options = {}) {
       stats[CLASSES[value]]++;
     }
   }
-  return { mask, width: source.width, height: source.height, stats, calibrated: !!calibration };
+  let dropped = 0;
+  if (options.keepHouse !== false) {
+    const removed = keepHouse(mask, source.width, source.height);
+    for (let c = 0; c < 4; c++) { stats[CLASSES[c]] -= removed[c]; dropped += removed[c]; }
+    stats.outside += dropped;
+  }
+  return { mask, width: source.width, height: source.height, stats, calibrated: !!calibration, dropped };
 }
 
 /** 把 mask 裡的牆（類別 1）抽成水平／垂直線段，供吸附使用。 */

@@ -133,6 +133,8 @@ export function estimateScale({ totalPixelArea, frameSpanPx = 0, areas = [], doo
   // 沒有這道閘，OCR 誤讀成 500 m² 也會被當真，整屋直接放大到 29 m 長邊。
   const plausible = (mpp) => {
     if (!(mpp > 0.002 && mpp < 0.2)) return false;
+    const floorArea = totalPixelArea * mpp ** 2;
+    if (!(floorArea >= 15 && floorArea <= 300)) return false;
     if (frameSpanPx > 0) {
       const span = mpp * frameSpanPx;
       if (span < 3 || span > 35) return false;
@@ -166,7 +168,10 @@ export function estimateScale({ totalPixelArea, frameSpanPx = 0, areas = [], doo
     .filter((v) => v >= 8)
     .sort((a, b) => a - b);
   if (doorSpans.length) {
-    const median = doorSpans[Math.floor(doorSpans.length / 2)];
+    const middle = Math.floor(doorSpans.length / 2);
+    const median = doorSpans.length % 2
+      ? doorSpans[middle]
+      : (doorSpans[middle - 1] + doorSpans[middle]) / 2;
     const mpp = 0.85 / median;
     if (plausible(mpp)) {
       candidates.push({
@@ -184,6 +189,23 @@ export function estimateScale({ totalPixelArea, frameSpanPx = 0, areas = [], doo
       source: 'assumed',
       detail: `固定比例尺 ${assumedMeters.toFixed(4)} m/px`,
     });
+  }
+
+  // 交叉校驗（2026-11-16）：OCR 讀到的「面積」未必是這張圖的總淨面積。
+  // 實測那張 800×800 的窄長戶型：OCR 把某處讀成 202 m²，反推 0.0391 m/px，
+  // 全屋算出 8.21×26.62 m＝218 m²；但圖上六個房間標註加起來只有 63.65 m²，
+  // 而門寬反推的 0.0202 幾乎就是真值（誤差 8%）。兩者差 1.93 倍。
+  // 所以：面積與門寬差超過 1.5 倍時，那個「面積」大概不是總面積，降到門寬後面。
+  // 只在兩者都能算出來時才比較；門寬本身被 plausible 擋掉就維持原樣。
+  const byArea = candidates.find((c) => c.source === 'floor-area');
+  const byDoor = candidates.find((c) => c.source === 'door-width');
+  if (byArea && byDoor) {
+    const ratio = Math.max(byArea.metersPerPixel, byDoor.metersPerPixel)
+      / Math.min(byArea.metersPerPixel, byDoor.metersPerPixel);
+    if (ratio > 1.5) {
+      byArea.source = 'floor-area-conflict';
+      byArea.detail += `（與門寬反推相差 ${ratio.toFixed(1)} 倍，疑非總淨面積，已改用門寬）`;
+    }
   }
 
   // 按優先級取第一個有效的

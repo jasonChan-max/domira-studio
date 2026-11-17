@@ -20,28 +20,43 @@ export function createHomeStudio({modal,setCleanup,createHome,notify}){
    if(!live||ticket!==sequence||upload!==image)return null;
    const result=await segmentWalls(upload.canvas,{session:model});
    if(!live||ticket!==sequence||upload!==image)return null;
+   // 牆體畫法預檢（2026-11-16）：v19 只認「實心牆」——訓練集 44 張的 wall 佔比中位 9.6%。
+   // 建築製圖的細線輪廓（房屋署標準型大廈、歷史圖紙）在 512 縮放下牆線不足 1 像素，
+   // 模型會把整片判成地板：實測 6 張公屋標準層 wall 只有 0.5–0.8%，輸出全廢。
+   // 裁房子放大也救不回來（letterbox 又縮回 512，1.09%→1.11%）。
+   // 3% 這條線是量出來的：能切的（印度 2BHK 3.86%、EWE 8.6%、酷家樂 6–12%）都在上面，
+   // 崩掉的（A04 2.56%、Simon 2.9%、Putnam 1.44%、公屋 0.5–0.8%）都在下面。
+   result.wallRatio=result.width*result.height?result.stats.wall/(result.width*result.height):0;
+   result.weakWalls=result.wallRatio<.03;
    const marked=document.createElement('canvas');
    marked.width=result.width;marked.height=result.height;
    const context=marked.getContext('2d');
    context.drawImage(upload.canvas,0,0);
    const overlay=context.getImageData(0,0,result.width,result.height);
+   // 五色分割預覽（2026-11-17）：原本只把牆塗紅，看不出「模型切了幾間」。
+   // 現在 floor/wall/door/window 都按標註調色盤半透明疊在原圖上，outside 保留原圖，
+   // 核對時可以直接比對「原圖這裡是甚麼」與「模型判成甚麼」。alpha：牆／門／窗 0.72、地板 0.28。
+   const OVERLAY=[[200,200,200,.28],[255,60,60,.72],[60,120,255,.72],[60,220,120,.72],[0,0,0,0]];
    for(let pixel=0;pixel<result.mask.length;pixel++){
-    if(result.mask[pixel]!==1)continue;
-    const i=pixel*4;
-    overlay.data[i]=Math.round(overlay.data[i]*.28+255*.72);
-    overlay.data[i+1]=Math.round(overlay.data[i+1]*.28+45*.72);
-    overlay.data[i+2]=Math.round(overlay.data[i+2]*.28+75*.72);
+    const spec=OVERLAY[result.mask[pixel]];
+    if(!spec[3])continue;
+    const i=pixel*4,a=spec[3],b=1-a;
+    overlay.data[i]=Math.round(overlay.data[i]*b+spec[0]*a);
+    overlay.data[i+1]=Math.round(overlay.data[i+1]*b+spec[1]*a);
+    overlay.data[i+2]=Math.round(overlay.data[i+2]*b+spec[2]*a);
    }
    context.putImageData(overlay,0,0);
    const markedUrl=marked.toDataURL('image/png');
    for(const id of ['#floorplan-wall-upload','#floorplan-wall-review']){
     const preview=hs(id);
-    preview.hidden=!result.stats.wall;
+    preview.hidden=!(result.stats.wall||result.stats.floor);
     preview.querySelector('img').src=markedUrl;
    }
-   hs('#floorplan-wall-status').textContent=result.stats.wall
-    ?(result.calibrated?'Domira 牆體模型已完成辨識。':'基礎牆體模型已完成辨識。')+' 紅色為候選牆體。'
-    :'模型未辨識到牆體，請改用更清晰的單層圖紙。';
+   hs('#floorplan-wall-status').textContent=result.weakWalls
+    ?'這張圖的牆體只佔畫面 '+(result.wallRatio*100).toFixed(1)+'%，屬於細線畫法（建築圖紙常見），模型辨識不可靠。請改用實心牆的戶型圖（設計軟體或裝修平台導出）。'
+    :result.stats.wall
+     ?(result.calibrated?'Domira 牆體模型已完成辨識。':'基礎牆體模型已完成辨識。')+' 灰＝地板、紅＝牆、藍＝門、綠＝窗（疊在原圖上，未上色處模型判為屋外）。'
+     :'模型未辨識到牆體，請改用更清晰的單層圖紙。';
    const minLength=Math.max(18,Math.round(Math.max(result.width,result.height)*.03));
    // 房間輪廓：AI 只回 4 點矩形，形狀失真且面積虛增 13–14%（2026-11-10 實測：
    // 客廳 L 形連通域 90,970 px、外接矩形 103,085 px）。mask 的 floor 連通域才是真實形狀，
@@ -61,7 +76,7 @@ export function createHomeStudio({modal,setCleanup,createHome,notify}){
     if(x<fx0)fx0=x;if(x>fx1)fx1=x;if(y<fy0)fy0=y;if(y>fy1)fy1=y;
    }
    const frame=Number.isFinite(fx0)?{x:fx0,y:fy0,w:Math.max(1,fx1-fx0),h:Math.max(1,fy1-fy0)}:null;
-   return {lines:wallLinesFromMask(result.mask,result.width,result.height,{minLenH:minLength,minLenV:minLength,gap:8}),source:result.calibrated?'Domira 牆體模型':'基礎牆體模型',polygons,doors,frame,segWidth:result.width,segHeight:result.height};
+   return {lines:wallLinesFromMask(result.mask,result.width,result.height,{minLenH:minLength,minLenV:minLength,gap:8}),source:result.calibrated?'Domira 牆體模型':'基礎牆體模型',polygons,doors,frame,segWidth:result.width,segHeight:result.height,weakWalls:result.weakWalls,wallRatio:result.wallRatio};
   }catch(error){
    console.warn('[wall-model]',error);
    if(live&&ticket===sequence&&upload===image)hs('#floorplan-wall-status').textContent='牆體預覽暫時無法載入，仍可分析房間與尺寸。';
@@ -242,6 +257,8 @@ upload.wallPromise=detectImageWalls(upload,ticket).then(result=>{upload.wallResu
     let predicted=image.wallResult;
     if(!predicted&&image.wallPromise)predicted=await image.wallPromise.catch(()=>null);
     if(!predicted)predicted=await detectImageWalls(image,++sequence).catch(()=>null);
+    if(predicted&&predicted.weakWalls)
+     throw new Error('這張圖的牆體只佔畫面 '+(predicted.wallRatio*100).toFixed(1)+'%，屬於細線畫法（建築圖紙常見），模型無法可靠辨識。請改用實心牆的戶型圖（設計軟體或裝修平台導出）。');
     if(!predicted||!Array.isArray(predicted.polygons)||!predicted.polygons.length)
      throw new Error('模型沒有辨識出房間；請換一張更清晰的單層圖紙，或改用 AI 分析。');
     const fr=predicted.frame;
@@ -276,7 +293,7 @@ upload.wallPromise=detectImageWalls(upload,ticket).then(result=>{upload.wallResu
     if(!(mpp>0)){mpp=0.02;scaleSource='固定比例尺 0.02 m/像素（圖上沒讀到數字）';}
     const W=Math.round(bw*mpp*100)/100;
     const D=Math.round(bh*mpp*100)/100;
-    draft=roomsFromPolygons(predicted.polygons,predicted.segWidth,predicted.segHeight,W,D,{height:Number(hs('#home-height').value)||2.7,frame:predicted.frame,doors:predicted.doors});
+    draft=roomsFromPolygons(predicted.polygons,predicted.segWidth,predicted.segHeight,W,D,{height:Number(hs('#home-height').value)||2.7,frame:predicted.frame,doors:predicted.doors,walls:predicted.lines});
     hs('#floorplan-review').hidden=false;hs('#floorplan-upload').hidden=true;
     hs('#floorplan-summary').textContent=draft.summary;
     hs('#floorplan-review-image').src=image.data;
