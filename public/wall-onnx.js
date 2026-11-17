@@ -85,6 +85,41 @@ function keepHouse(mask, width, height) {
   return removed;
 }
 
+/**
+ * 把「落在外牆外框之外」的地板／窗判成屋外。
+ *
+ * 為什麼（2026-11-17 實測）：R (9) 那種室內白底、室外也白底的冷色調戶型圖，模型分不清
+ * 裡外——房子左右兩側的留白被整片判成地板＋窗（兩塊合計約 59600 px，bbox 直接貼到畫面
+ * 邊緣）。keepHouse 救不了：它們通過大門缺口和室內地板連成一片，算同一個連通域。
+ *
+ * 判據：真正的外牆一定包住整棟房子，落在外牆 bbox 之外的地板不可能是房間。
+ * 只清 floor(0) 和 window(3)——wall/door 本來就可能在外沿，不能動。
+ * options.trimOutside === false 可關掉，方便對照。
+ */
+function trimOutsideFloor(mask, width, height) {
+  let x0 = width, y0 = height, x1 = -1, y1 = -1;
+  for (let i = 0; i < mask.length; i++) {
+    if (mask[i] !== 1) continue;
+    const x = i % width, y = (i - x) / width;
+    if (x < x0) x0 = x;
+    if (x > x1) x1 = x;
+    if (y < y0) y0 = y;
+    if (y > y1) y1 = y;
+  }
+  const removed = [0, 0, 0, 0, 0];
+  if (x1 < 0) return removed;
+  const pad = Math.max(4, Math.round(Math.max(width, height) * .03));
+  x0 -= pad; y0 -= pad; x1 += pad; y1 += pad;
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      if (x >= x0 && x <= x1 && y >= y0 && y <= y1) continue;
+      const i = y * width + x, c = mask[i];
+      if (c === 0 || c === 3) { removed[c]++; mask[i] = 4; }
+    }
+  }
+  return removed;
+}
+
 function loadOrt() {
   if (!ortPromise) {
     ortPromise = new Promise((resolve, reject) => {
@@ -199,13 +234,18 @@ export async function segmentWalls(source, options = {}) {
       stats[CLASSES[value]]++;
     }
   }
-  let dropped = 0;
+  let dropped = 0, trimmed = 0;
   if (options.keepHouse !== false) {
     const removed = keepHouse(mask, source.width, source.height);
     for (let c = 0; c < 4; c++) { stats[CLASSES[c]] -= removed[c]; dropped += removed[c]; }
     stats.outside += dropped;
   }
-  return { mask, width: source.width, height: source.height, stats, calibrated: !!calibration, dropped };
+  if (options.trimOutside !== false) {
+    const trimmedBy = trimOutsideFloor(mask, source.width, source.height);
+    for (let c = 0; c < 4; c++) { stats[CLASSES[c]] -= trimmedBy[c]; trimmed += trimmedBy[c]; }
+    stats.outside += trimmed;
+  }
+  return { mask, width: source.width, height: source.height, stats, calibrated: !!calibration, dropped, trimmed };
 }
 
 /** 把 mask 裡的牆（類別 1）抽成水平／垂直線段，供吸附使用。 */
