@@ -185,6 +185,8 @@ function absorbWalls(mask, width, height, label) {
  * 回傳像素座標的 {cx, cy, x, y, w, h, area, horizontal}；轉公尺由呼叫方按比例尺處理。
  */
 export function doorsFromMask(mask, width, height, options = {}) {
+  // Explicit opt-in; remove this option to return to the learned door class.
+  if (options.wallGaps === true) return doorsFromWallGaps(mask, width, height, options);
   const DOOR_CLASS = 2;
   const minAreaRatio = options.minAreaRatio ?? 0.0008;
   const n = width * height;
@@ -234,6 +236,144 @@ export function doorsFromMask(mask, width, height, options = {}) {
       area: sizes[id],
       horizontal: (x1 - x0) >= (y1 - y0),
     });
+  }
+  return out;
+}
+
+/** Infer openings from wall geometry only. Coordinates and fields match doorsFromMask.
+ * Defaults are in mask pixels. Opt in via doorsFromMask(..., {wallGaps:true}).
+ */
+export function doorsFromWallGaps(mask, width, height, options = {}) {
+  if (!Number.isInteger(width) || !Number.isInteger(height) || width <= 0 || height <= 0 || mask.length !== width * height) {
+    throw new RangeError('Invalid wall mask dimensions');
+  }
+  const minGap = options.minGap ?? 40, maxGap = options.maxGap ?? 120;
+  const n = width * height;
+  const wall = Uint8Array.from(mask, c => c === 1 ? 1 : 0);
+  const dirs = [[0,-1],[1,-1],[1,0],[1,1],[0,1],[-1,1],[-1,0],[-1,-1]];
+  const at = (a, x, y) => x >= 0 && y >= 0 && x < width && y < height ? a[y * width + x] : 0;
+  const neighbors = (a, p) => {
+    const x = p % width, y = Math.floor(p / width);
+    return dirs.map(([dx,dy]) => at(a,x+dx,y+dy) ? (y+dy)*width+x+dx : -1).filter(q => q >= 0);
+  };
+  // Zhang-Suen: simultaneous deletion in each of the two subiterations.
+  const thin = input => {
+    const a = input.slice();
+    let changed;
+    do {
+      changed = false;
+      for (let phase = 0; phase < 2; phase++) {
+        const remove = [];
+        for (let p = 0; p < n; p++) {
+          if (!a[p]) continue;
+          const x = p % width, y = Math.floor(p / width);
+          const b = dirs.map(([dx,dy]) => at(a,x+dx,y+dy));
+          const count = b.reduce((s,v) => s+v,0);
+          if (count < 2 || count > 6) continue;
+          let transitions = 0;
+          for (let k=0;k<8;k++) if (!b[k] && b[(k+1)%8]) transitions++;
+          if (transitions !== 1) continue;
+          if (phase === 0 ? b[0]*b[2]*b[4] || b[2]*b[4]*b[6] : b[0]*b[2]*b[6] || b[0]*b[4]*b[6]) continue;
+          remove.push(p);
+        }
+        for (const p of remove) a[p] = 0;
+        if (remove.length) changed = true;
+      }
+    } while (changed);
+    return a;
+  };
+  let skeleton = thin(wall);
+  const endpoints = () => Array.from(skeleton.keys()).filter(p => skeleton[p] && neighbors(skeleton,p).length === 1);
+  let ends = endpoints();
+  if (ends.length > 50) {
+    // One 3x3 opening removes edge spurs; never close gaps.
+    const eroded = new Uint8Array(n), opened = new Uint8Array(n);
+    for (let p=0;p<n;p++) {
+      const x=p%width,y=Math.floor(p/width);
+      eroded[p] = wall[p] && dirs.every(([dx,dy]) => at(wall,x+dx,y+dy)) ? 1 : 0;
+    }
+    for (let p=0;p<n;p++) {
+      const x=p%width,y=Math.floor(p/width);
+      opened[p] = eroded[p] || dirs.some(([dx,dy]) => at(eroded,x+dx,y+dy)) ? 1 : 0;
+    }
+    skeleton = thin(opened); ends = endpoints();
+  }
+  const point = p => ({x:p%width,y:Math.floor(p/width)});
+  const outward = start => {
+    let prev=-1,p=start;
+    for (let i=0;i<12;i++) {
+      const next=neighbors(skeleton,p).filter(q=>q!==prev);
+      if (next.length!==1) break;
+      prev=p;p=next[0];
+    }
+    const a=point(start),b=point(p),len=Math.hypot(a.x-b.x,a.y-b.y)||1;
+    return {x:(a.x-b.x)/len,y:(a.y-b.y)/len};
+  };
+  const tangents=ends.map(outward);
+  // Bounded Dijkstra, with Euclidean weights for diagonal skeleton edges.
+  const shortPath = (start,target,limit) => {
+    const best=new Map([[start,0]]), queue=[[0,start]];
+    while(queue.length) {
+      queue.sort((a,b)=>b[0]-a[0]);
+      const [d,p]=queue.pop();
+      if(d!==best.get(p)) continue;
+      if(p===target) return true;
+      for(const q of neighbors(skeleton,p)) {
+        const a=point(p),b=point(q),nd=d+Math.hypot(a.x-b.x,a.y-b.y);
+        if(nd<=limit && nd<(best.get(q)??Infinity)) { best.set(q,nd);queue.push([nd,q]); }
+      }
+    }
+    return false;
+  };
+  const candidates=[];
+  for(let i=0;i<ends.length;i++) for(let j=i+1;j<ends.length;j++) {
+    const a=point(ends[i]),b=point(ends[j]),dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy);
+    if(d<minGap || d>maxGap) continue;
+    const ux=dx/d,uy=dy/d;
+    // Both wall tips must face the opening, excluding cross-wall pairs.
+    if(tangents[i].x*ux+tangents[i].y*uy<0.9 || tangents[j].x*-ux+tangents[j].y*-uy<0.9) continue;
+    if(shortPath(ends[i],ends[j],d*1.3)) continue;
+    // Thinning pulls tips inside thick walls. Trim only the contiguous wall
+    // caps at either end, then check every pixel of the actual opening.
+    const samples=Math.max(60,Math.ceil(d*2)), values=[];
+    for(let k=0;k<=samples;k++) values.push(at(wall,Math.round(a.x+dx*k/samples),Math.round(a.y+dy*k/samples)));
+    let first=0,last=samples;
+    while(first<=last && values[first]) first++;
+    while(last>=first && values[last]) last--;
+    if(first>last || values.slice(first,last+1).some(Boolean)) continue;
+    const gap=(last-first+1)*d/samples;
+    if(gap<minGap || gap>maxGap) continue;
+    const thickness = p => {
+      let t=1;
+      for(const sign of [-1,1]) for(let k=1;k<=maxGap;k++) {
+        if(!at(wall,Math.round(p.x-sign*uy*k),Math.round(p.y+sign*ux*k))) break;
+        t++;
+      }
+      return t;
+    };
+    const thick=(thickness(a)+thickness(b))/2;
+    const cx=a.x+dx*(first+last)/(2*samples),cy=a.y+dy*(first+last)/(2*samples);
+    const w=Math.abs(ux)*gap+Math.abs(uy)*thick,h=Math.abs(uy)*gap+Math.abs(ux)*thick;
+    candidates.push({cx,cy,x:cx-w/2,y:cy-h/2,w,h,area:gap*thick,horizontal:Math.abs(dx)>Math.abs(dy)});
+  }
+  const out=[];
+  for(const door of candidates) {
+    let merged={...door},again=true;
+    while(again) {
+      again=false;
+      for(let i=0;i<out.length;i++) {
+        const other=out[i];
+        if(other.horizontal!==merged.horizontal) continue;
+        const overlap=Math.max(0,Math.min(other.x+other.w,merged.x+merged.w)-Math.max(other.x,merged.x))*
+          Math.max(0,Math.min(other.y+other.h,merged.y+merged.h)-Math.max(other.y,merged.y));
+        if(overlap/Math.min(other.w*other.h,merged.w*merged.h)<=0.6) continue;
+        const x=Math.min(other.x,merged.x),y=Math.min(other.y,merged.y);
+        const w=Math.max(other.x+other.w,merged.x+merged.w)-x,h=Math.max(other.y+other.h,merged.y+merged.h)-y;
+        merged={x,y,w,h,cx:x+w/2,cy:y+h/2,area:w*h,horizontal:merged.horizontal};
+        out.splice(i,1);again=true;break;
+      }
+    }
+    out.push(merged);
   }
   return out;
 }
