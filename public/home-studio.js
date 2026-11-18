@@ -4,6 +4,7 @@ import {roomsFromMask,doorsFromMask} from './room-polygon.js';
 import {readPlanNumbers,estimateScale} from './plan-ocr.js';
 import {imageToPixels,detectWalls,snapRoomsToWalls} from './wall-detect.js';
 import {loadWallModel,segmentWalls,wallLinesFromMask} from './wall-onnx.js';
+import {detectDoorsOnly} from './door-detect.js';
 const hs=s=>document.querySelector(s),homeEscape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export function createHomeStudio({modal,setCleanup,createHome,notify}){
  let sequence=0,controller=null,image=null,analysis=null,draft=null,live=false;
@@ -61,10 +62,21 @@ export function createHomeStudio({modal,setCleanup,createHome,notify}){
    // 房間輪廓：AI 只回 4 點矩形，形狀失真且面積虛增 13–14%（2026-11-10 實測：
    // 客廳 L 形連通域 90,970 px、外接矩形 103,085 px）。mask 的 floor 連通域才是真實形狀，
    // 包括 L 形客廳與開放式客廳+餐廳+走廊（它們之間沒門沒牆，本來就該合成一間）。
-   let polygons=null,doors=null;
+   let polygons=null,doors=null,doorsFromDetector=false;
+   // 門改用 YOLOv8n 檢測（2026-11-18）：分割的 door 只佔全圖 1.5% 像素、IoU 0.39–0.43，
+   // 一半門的位置不對；自訓的 YOLO（P 0.84／R 0.89，int8 只有 3.4 MB）在 R(10) 上 10 個門全對。
+   // 3D 開門洞只需要「哪面牆上有洞、洞多寬」，bbox 比像素級輪廓更適合。
+   // 檢不到門時才退回分割的 door 類（某些風格模型完全沒反應，留個兜底）。
+   try{
+    const boxes=await detectDoorsOnly(upload.canvas,{modelUrl:new URL('./models/yolo-doors-int8.onnx',import.meta.url).href});
+    if(boxes.length){
+     doors=boxes.map(b=>({cx:b.x+b.w/2,cy:b.y+b.h/2,x:b.x,y:b.y,w:b.w,h:b.h,area:b.w*b.h,horizontal:b.w>=b.h,score:b.score}));
+     doorsFromDetector=true;
+    }
+   }catch(e){console.warn('[door-detect] skipped:',e);}
    // 門要在地板吸收之前抽：吸收會把門洞按最近的房間填平（讓地板連續），
    // 之後 mask 上就分不出哪裡原本是門了。
-   try{doors=doorsFromMask(result.mask,result.width,result.height);}catch(e){console.warn('[door-mask] skipped:',e);}
+   if(!doors)try{doors=doorsFromMask(result.mask,result.width,result.height);}catch(e){console.warn('[door-mask] skipped:',e);}
    try{polygons=roomsFromMask(result.mask,result.width,result.height);}catch(e){console.warn('[room-polygon] skipped:',e);}
    // 房子外框＝非「屋外」（類別 4）像素的外框，當比例尺基準。
    // 比用「房間多邊形聯集」穩：模型漏切一間房（陽台、儲物室）時聯集會縮，
