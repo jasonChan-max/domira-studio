@@ -1,0 +1,1115 @@
+{
+  "createdAt": "2026-11-19T05:31:26.756Z",
+  "modelHashes": {
+    "yolo-doors-int8.onnx": "9363dc9a679fd5ea15e7656e9f704247009da850326f56f94e3af9341e9aece6",
+    "unet-int8.onnx": "9e639256aa950ce2a6982593a1cb8324e2acac651e8fb6bea32769f74ba6aa98"
+  },
+  "definitions": {
+    "windowPixelIoU": "Union of predicted window rectangles versus annotated green pixels; both empty = 1.",
+    "windowBoxIoU": "Union of predicted window rectangles versus 4-connected annotation bounding rectangles; both empty = 1.",
+    "doorMatching": "Greedy one-to-one bounding-box IoU >= 0.5 using 4-connected components, matching training annotation connectivity; proxy only; real-image false positives require visual review."
+  },
+  "annotated": 44,
+  "meanWindowPixelIoU": 0.5814142320524911,
+  "meanWindowBoxIoU": 0.8116818233709917,
+  "pixelWindowGatePassed": false,
+  "boxWindowGatePassed": true,
+  "thresholds": [
+    {
+      "conf": 0.25,
+      "count": 318,
+      "truth": 308,
+      "matched": 284,
+      "unmatched": 34,
+      "countRatio": 1.0324675324675325,
+      "matchedRecall": 0.922077922077922,
+      "matchedPrecision": 0.8930817610062893
+    },
+    {
+      "conf": 0.2,
+      "count": 322,
+      "truth": 308,
+      "matched": 284,
+      "unmatched": 38,
+      "countRatio": 1.0454545454545454,
+      "matchedRecall": 0.922077922077922,
+      "matchedPrecision": 0.8819875776397516
+    },
+    {
+      "conf": 0.15,
+      "count": 333,
+      "truth": 308,
+      "matched": 284,
+      "unmatched": 49,
+      "countRatio": 1.0811688311688312,
+      "matchedRecall": 0.922077922077922,
+      "matchedPrecision": 0.8528528528528528
+    },
+    {
+      "conf": 0.1,
+      "count": 341,
+      "truth": 308,
+      "matched": 285,
+      "unmatched": 56,
+      "countRatio": 1.1071428571428572,
+      "matchedRecall": 0.9253246753246753,
+      "matchedPrecision": 0.8357771260997068
+    }
+  ],
+  "real": [
+    {
+      "name": "46.03",
+      "imageSha256": "073c2aa05ca23d03d52c83fece70998fbe5fd43f561accd06b60a65d61df6691",
+      "width": 1200,
+      "height": 900,
+      "detectorMs": 316,
+      "windowCount": 11,
+      "cv": {
+        "ms": 120.30000019073486,
+        "walls": 14,
+        "gaps": 4,
+        "frame": {
+          "x": 203,
+          "y": 87,
+          "w": 794,
+          "h": 656
+        },
+        "dimensions": {
+          "top": [
+            {
+              "at": 19,
+              "ticks": [
+                31.615384615384617,
+                315.5,
+                763.5
+              ]
+            },
+            {
+              "at": 39,
+              "ticks": [
+                15.5,
+                32,
+                48.5,
+                342.5,
+                514.5,
+                541.5,
+                736.5
+              ]
+            }
+          ],
+          "bottom": [
+            {
+              "at": 809,
+              "ticks": [
+                202.5,
+                996.5
+              ]
+            },
+            {
+              "at": 789,
+              "ticks": [
+                216.5,
+                399.5,
+                413.5,
+                736.5,
+                763.5,
+                969.5
+              ]
+            }
+          ],
+          "left": [
+            {
+              "at": 126,
+              "ticks": [
+                86.5,
+                742.5,
+                872.3333333333334
+              ]
+            },
+            {
+              "at": 146,
+              "ticks": [
+                113.5,
+                417.5,
+                431.5,
+                550.5,
+                577.5,
+                715.5,
+                870.5,
+                874
+              ]
+            }
+          ],
+          "right": [
+            {
+              "at": 1073,
+              "ticks": [
+                458.5,
+                742.5
+              ]
+            },
+            {
+              "at": 1053,
+              "ticks": [
+                485.5,
+                715.5
+              ]
+            }
+          ]
+        },
+        "centerDifference": {
+          "samples": 519,
+          "mean": 2.088696432564644,
+          "p95": 1.7310898893436502,
+          "max": 233.47565411769983
+        },
+        "segMs": 13771.699999809265,
+        "scaleCrossCheck": {
+          "source": "Manually read fixture dimensions: 8883 x 7348 mm; not OCR",
+          "widthMm": 8883,
+          "heightMm": 7348,
+          "widthMmPerPx": 11.187657430730479,
+          "heightMmPerPx": 11.201219512195122,
+          "relativeDifference": 0.0012107682962446686
+        },
+        "windowComparison": [
+          {
+            "requestedSource": "segmentation",
+            "usedSource": "segmentation",
+            "count": 9,
+            "totalBoxArea": 19523
+          },
+          {
+            "requestedSource": "yolo",
+            "usedSource": "yolo",
+            "count": 11,
+            "totalBoxArea": 29156.723521825686
+          }
+        ]
+      },
+      "ocr": {
+        "ms": 1211.6999998092651,
+        "text": "4\n4 .\n20580\n5\n46.03\n",
+        "areas": [
+          {
+            "value": 46.03,
+            "raw": "46.03",
+            "digits": 4
+          }
+        ],
+        "lengths": [],
+        "rawText": "4 4 . 20580 5 46.03 "
+      },
+      "doors": [
+        {
+          "conf": 0.25,
+          "count": 3,
+          "matched": null,
+          "unmatched": null,
+          "truth": null,
+          "wallDistances": [
+            {
+              "score": 0.6948671936988831,
+              "distancePx": null
+            },
+            {
+              "score": 0.6948671936988831,
+              "distancePx": null
+            },
+            {
+              "score": 0.6588961482048035,
+              "distancePx": null
+            }
+          ],
+          "wallFilteredCount": 0
+        },
+        {
+          "conf": 0.2,
+          "count": 4,
+          "matched": null,
+          "unmatched": null,
+          "truth": null,
+          "wallDistances": [
+            {
+              "score": 0.6948671936988831,
+              "distancePx": null
+            },
+            {
+              "score": 0.6948671936988831,
+              "distancePx": null
+            },
+            {
+              "score": 0.6588961482048035,
+              "distancePx": null
+            },
+            {
+              "score": 0.2254016399383545,
+              "distancePx": null
+            }
+          ],
+          "wallFilteredCount": 0
+        },
+        {
+          "conf": 0.15,
+          "count": 4,
+          "matched": null,
+          "unmatched": null,
+          "truth": null,
+          "wallDistances": [
+            {
+              "score": 0.6948671936988831,
+              "distancePx": null
+            },
+            {
+              "score": 0.6948671936988831,
+              "distancePx": null
+            },
+            {
+              "score": 0.6588961482048035,
+              "distancePx": null
+            },
+            {
+              "score": 0.2254016399383545,
+              "distancePx": null
+            }
+          ],
+          "wallFilteredCount": 0
+        },
+        {
+          "conf": 0.1,
+          "count": 4,
+          "matched": null,
+          "unmatched": null,
+          "truth": null,
+          "wallDistances": [
+            {
+              "score": 0.6948671936988831,
+              "distancePx": null
+            },
+            {
+              "score": 0.6948671936988831,
+              "distancePx": null
+            },
+            {
+              "score": 0.6588961482048035,
+              "distancePx": null
+            },
+            {
+              "score": 0.2254016399383545,
+              "distancePx": null
+            }
+          ],
+          "wallFilteredCount": 0
+        }
+      ]
+    },
+    {
+      "name": "R (8).jpg",
+      "imageSha256": "635e142bd7a9506a9035e9708b50ddca282b234185afb50c4f20fa51f3c96707",
+      "width": 800,
+      "height": 800,
+      "detectorMs": 340,
+      "windowCount": 28,
+      "cv": {
+        "ms": 75.10000038146973,
+        "walls": 40,
+        "gaps": 19,
+        "frame": {
+          "x": 65,
+          "y": 122,
+          "w": 587,
+          "h": 626
+        },
+        "dimensions": {
+          "top": [],
+          "bottom": [
+            {
+              "at": 757,
+              "ticks": [
+                97.5,
+                210,
+                221.5,
+                230,
+                338.5
+              ]
+            }
+          ],
+          "left": [
+            {
+              "at": 56,
+              "ticks": [
+                474.5,
+                571,
+                665.5,
+                686,
+                692.5,
+                712.5
+              ]
+            }
+          ],
+          "right": [
+            {
+              "at": 654,
+              "ticks": [
+                289.5,
+                346.8,
+                389.5,
+                398,
+                402.5,
+                408,
+                416,
+                430,
+                435,
+                442,
+                454,
+                461,
+                477,
+                494,
+                506,
+                511.5,
+                525.5,
+                576.2222222222222,
+                639.5
+              ]
+            }
+          ]
+        },
+        "centerDifference": {
+          "samples": 532,
+          "mean": 9.672260118248024,
+          "p95": 57.1361166007905,
+          "max": 429.9210906174819
+        },
+        "segMs": 13617.300000190735,
+        "scaleCrossCheck": null,
+        "windowComparison": [
+          {
+            "requestedSource": "segmentation",
+            "usedSource": "segmentation",
+            "count": 29,
+            "totalBoxArea": 77011
+          },
+          {
+            "requestedSource": "yolo",
+            "usedSource": "yolo",
+            "count": 28,
+            "totalBoxArea": 129345.09201770274
+          }
+        ]
+      },
+      "ocr": {
+        "ms": 679.9000000953674,
+        "text": "1 2690\n8.8\n1\n2.71\n05\n206 1560\n680280\n3470\n0\n6220\n",
+        "areas": [
+          {
+            "value": 206,
+            "raw": "206",
+            "digits": 3
+          }
+        ],
+        "lengths": [
+          {
+            "value": 6220,
+            "raw": "6220"
+          },
+          {
+            "value": 3470,
+            "raw": "3470"
+          },
+          {
+            "value": 2690,
+            "raw": "2690"
+          },
+          {
+            "value": 1560,
+            "raw": "1560"
+          }
+        ],
+        "rawText": "1 2690 8.8 1 2.71 05 206 1560 680280 3470 0 6220 "
+      },
+      "doors": [
+        {
+          "conf": 0.25,
+          "count": 10,
+          "matched": null,
+          "unmatched": null,
+          "truth": null,
+          "wallDistances": [
+            {
+              "score": 0.8147768378257751,
+              "distancePx": null
+            },
+            {
+              "score": 0.6209974884986877,
+              "distancePx": 14.196910198897235
+            },
+            {
+              "score": 0.5815621614456177,
+              "distancePx": 14.44568461587742
+            },
+            {
+              "score": 0.5614113807678223,
+              "distancePx": 9.800150820868934
+            },
+            {
+              "score": 0.5614113807678223,
+              "distancePx": 15.303005232860453
+            },
+            {
+              "score": 0.5614113807678223,
+              "distancePx": 15.233004785757066
+            },
+            {
+              "score": 0.5410560369491577,
+              "distancePx": 15.281680334769828
+            },
+            {
+              "score": 0.4794372618198395,
+              "distancePx": 14.504705818258614
+            },
+            {
+              "score": 0.2879685163497925,
+              "distancePx": null
+            },
+            {
+              "score": 0.2713926434516907,
+              "distancePx": 15.500298989646064
+            }
+          ],
+          "wallFilteredCount": null
+        },
+        {
+          "conf": 0.2,
+          "count": 10,
+          "matched": null,
+          "unmatched": null,
+          "truth": null,
+          "wallDistances": [
+            {
+              "score": 0.8147768378257751,
+              "distancePx": null
+            },
+            {
+              "score": 0.6209974884986877,
+              "distancePx": 14.196910198897235
+            },
+            {
+              "score": 0.5815621614456177,
+              "distancePx": 14.44568461587742
+            },
+            {
+              "score": 0.5614113807678223,
+              "distancePx": 9.800150820868934
+            },
+            {
+              "score": 0.5614113807678223,
+              "distancePx": 15.303005232860453
+            },
+            {
+              "score": 0.5614113807678223,
+              "distancePx": 15.233004785757066
+            },
+            {
+              "score": 0.5410560369491577,
+              "distancePx": 15.281680334769828
+            },
+            {
+              "score": 0.4794372618198395,
+              "distancePx": 14.504705818258614
+            },
+            {
+              "score": 0.2879685163497925,
+              "distancePx": null
+            },
+            {
+              "score": 0.2713926434516907,
+              "distancePx": 15.500298989646064
+            }
+          ],
+          "wallFilteredCount": null
+        },
+        {
+          "conf": 0.15,
+          "count": 13,
+          "matched": null,
+          "unmatched": null,
+          "truth": null,
+          "wallDistances": [
+            {
+              "score": 0.8147768378257751,
+              "distancePx": null
+            },
+            {
+              "score": 0.6209974884986877,
+              "distancePx": 14.196910198897235
+            },
+            {
+              "score": 0.5815621614456177,
+              "distancePx": 14.44568461587742
+            },
+            {
+              "score": 0.5614113807678223,
+              "distancePx": 9.800150820868934
+            },
+            {
+              "score": 0.5614113807678223,
+              "distancePx": 15.303005232860453
+            },
+            {
+              "score": 0.5614113807678223,
+              "distancePx": 15.233004785757066
+            },
+            {
+              "score": 0.5410560369491577,
+              "distancePx": 15.281680334769828
+            },
+            {
+              "score": 0.4794372618198395,
+              "distancePx": 14.504705818258614
+            },
+            {
+              "score": 0.2879685163497925,
+              "distancePx": null
+            },
+            {
+              "score": 0.2713926434516907,
+              "distancePx": 15.500298989646064
+            },
+            {
+              "score": 0.18522316217422485,
+              "distancePx": 14.183257273808389
+            },
+            {
+              "score": 0.18522316217422485,
+              "distancePx": 3.9516134386902992
+            },
+            {
+              "score": 0.1616573929786682,
+              "distancePx": 0.6249745559821738
+            }
+          ],
+          "wallFilteredCount": null
+        },
+        {
+          "conf": 0.1,
+          "count": 13,
+          "matched": null,
+          "unmatched": null,
+          "truth": null,
+          "wallDistances": [
+            {
+              "score": 0.8147768378257751,
+              "distancePx": null
+            },
+            {
+              "score": 0.6209974884986877,
+              "distancePx": 14.196910198897235
+            },
+            {
+              "score": 0.5815621614456177,
+              "distancePx": 14.44568461587742
+            },
+            {
+              "score": 0.5614113807678223,
+              "distancePx": 9.800150820868934
+            },
+            {
+              "score": 0.5614113807678223,
+              "distancePx": 15.303005232860453
+            },
+            {
+              "score": 0.5614113807678223,
+              "distancePx": 15.233004785757066
+            },
+            {
+              "score": 0.5410560369491577,
+              "distancePx": 15.281680334769828
+            },
+            {
+              "score": 0.4794372618198395,
+              "distancePx": 14.504705818258614
+            },
+            {
+              "score": 0.2879685163497925,
+              "distancePx": null
+            },
+            {
+              "score": 0.2713926434516907,
+              "distancePx": 15.500298989646064
+            },
+            {
+              "score": 0.18522316217422485,
+              "distancePx": 14.183257273808389
+            },
+            {
+              "score": 0.18522316217422485,
+              "distancePx": 3.9516134386902992
+            },
+            {
+              "score": 0.1616573929786682,
+              "distancePx": 0.6249745559821738
+            }
+          ],
+          "wallFilteredCount": null
+        }
+      ]
+    },
+    {
+      "name": "R (9).jpg",
+      "imageSha256": "ff2574d477353de598292a081f30380b01c6447932de2b1c6bb6eaef0efe9b50",
+      "width": 1200,
+      "height": 900,
+      "detectorMs": 350,
+      "windowCount": 9,
+      "cv": {
+        "ms": 107.40000009536743,
+        "walls": 19,
+        "gaps": 3,
+        "frame": {
+          "x": 340,
+          "y": 80,
+          "w": 468,
+          "h": 698
+        },
+        "dimensions": {
+          "top": [],
+          "bottom": [],
+          "left": [],
+          "right": []
+        },
+        "centerDifference": {
+          "samples": 505,
+          "mean": 48.44254230584878,
+          "p95": 365.7752973432611,
+          "max": 427.9092567885732
+        },
+        "segMs": 13810,
+        "scaleCrossCheck": null,
+        "windowComparison": [
+          {
+            "requestedSource": "segmentation",
+            "usedSource": "segmentation",
+            "count": 14,
+            "totalBoxArea": 42546
+          },
+          {
+            "requestedSource": "yolo",
+            "usedSource": "yolo",
+            "count": 9,
+            "totalBoxArea": 52734.2935630405
+          }
+        ]
+      },
+      "ocr": {
+        "ms": 424,
+        "text": ".\n",
+        "areas": [],
+        "lengths": [],
+        "rawText": ". "
+      },
+      "doors": [
+        {
+          "conf": 0.25,
+          "count": 5,
+          "matched": null,
+          "unmatched": null,
+          "truth": null,
+          "wallDistances": [
+            {
+              "score": 0.5205627083778381,
+              "distancePx": 24.547541043459727
+            },
+            {
+              "score": 0.4589439630508423,
+              "distancePx": null
+            },
+            {
+              "score": 0.43858861923217773,
+              "distancePx": 9.67902150983195
+            },
+            {
+              "score": 0.2879685163497925,
+              "distancePx": 2.488614149325487
+            },
+            {
+              "score": 0.25542861223220825,
+              "distancePx": 29.168515783169248
+            }
+          ],
+          "wallFilteredCount": null
+        },
+        {
+          "conf": 0.2,
+          "count": 6,
+          "matched": null,
+          "unmatched": null,
+          "truth": null,
+          "wallDistances": [
+            {
+              "score": 0.5205627083778381,
+              "distancePx": 24.547541043459727
+            },
+            {
+              "score": 0.4589439630508423,
+              "distancePx": null
+            },
+            {
+              "score": 0.43858861923217773,
+              "distancePx": 9.67902150983195
+            },
+            {
+              "score": 0.2879685163497925,
+              "distancePx": 2.488614149325487
+            },
+            {
+              "score": 0.25542861223220825,
+              "distancePx": 29.168515783169248
+            },
+            {
+              "score": 0.2113581895828247,
+              "distancePx": 29.57987540943612
+            }
+          ],
+          "wallFilteredCount": null
+        },
+        {
+          "conf": 0.15,
+          "count": 7,
+          "matched": null,
+          "unmatched": null,
+          "truth": null,
+          "wallDistances": [
+            {
+              "score": 0.5205627083778381,
+              "distancePx": 24.547541043459727
+            },
+            {
+              "score": 0.4589439630508423,
+              "distancePx": null
+            },
+            {
+              "score": 0.43858861923217773,
+              "distancePx": 9.67902150983195
+            },
+            {
+              "score": 0.2879685163497925,
+              "distancePx": 2.488614149325487
+            },
+            {
+              "score": 0.25542861223220825,
+              "distancePx": 29.168515783169248
+            },
+            {
+              "score": 0.2113581895828247,
+              "distancePx": 29.57987540943612
+            },
+            {
+              "score": 0.1616573929786682,
+              "distancePx": 22.19349563524555
+            }
+          ],
+          "wallFilteredCount": null
+        },
+        {
+          "conf": 0.1,
+          "count": 7,
+          "matched": null,
+          "unmatched": null,
+          "truth": null,
+          "wallDistances": [
+            {
+              "score": 0.5205627083778381,
+              "distancePx": 24.547541043459727
+            },
+            {
+              "score": 0.4589439630508423,
+              "distancePx": null
+            },
+            {
+              "score": 0.43858861923217773,
+              "distancePx": 9.67902150983195
+            },
+            {
+              "score": 0.2879685163497925,
+              "distancePx": 2.488614149325487
+            },
+            {
+              "score": 0.25542861223220825,
+              "distancePx": 29.168515783169248
+            },
+            {
+              "score": 0.2113581895828247,
+              "distancePx": 29.57987540943612
+            },
+            {
+              "score": 0.1616573929786682,
+              "distancePx": 22.19349563524555
+            }
+          ],
+          "wallFilteredCount": null
+        }
+      ]
+    },
+    {
+      "name": "R (10).jpg",
+      "imageSha256": "2e6e8e701e83b8f6e6638448ae9026c0e5d332455184a5c1ae9a0e747ecfbd72",
+      "width": 800,
+      "height": 800,
+      "detectorMs": 345,
+      "windowCount": 10,
+      "cv": {
+        "ms": 44.299999713897705,
+        "walls": 40,
+        "gaps": 25,
+        "frame": {
+          "x": 42,
+          "y": 49,
+          "w": 716,
+          "h": 702
+        },
+        "dimensions": {
+          "top": [],
+          "bottom": [],
+          "left": [],
+          "right": []
+        },
+        "centerDifference": {
+          "samples": 897,
+          "mean": 6.519276408074515,
+          "p95": 2.4424849084120126,
+          "max": 489.27888686519856
+        },
+        "segMs": 13528.299999713898,
+        "scaleCrossCheck": null,
+        "windowComparison": [
+          {
+            "requestedSource": "segmentation",
+            "usedSource": "segmentation",
+            "count": 20,
+            "totalBoxArea": 5339
+          },
+          {
+            "requestedSource": "yolo",
+            "usedSource": "yolo",
+            "count": 10,
+            "totalBoxArea": 98782.79993095675
+          }
+        ]
+      },
+      "ocr": {
+        "ms": 506,
+        "text": "14.64 15.24 15.24 16.12\n0\n0\n2293\n",
+        "areas": [
+          {
+            "value": 16.12,
+            "raw": "16.12",
+            "digits": 4
+          },
+          {
+            "value": 15.24,
+            "raw": "15.24",
+            "digits": 4
+          },
+          {
+            "value": 15.24,
+            "raw": "15.24",
+            "digits": 4
+          }
+        ],
+        "lengths": [
+          {
+            "value": 2293,
+            "raw": "2293"
+          }
+        ],
+        "rawText": "14.64 15.24 15.24 16.12 0 0 2293 "
+      },
+      "doors": [
+        {
+          "conf": 0.25,
+          "count": 9,
+          "matched": null,
+          "unmatched": null,
+          "truth": null,
+          "wallDistances": [
+            {
+              "score": 0.6209974884986877,
+              "distancePx": 19.628649794445018
+            },
+            {
+              "score": 0.6014443635940552,
+              "distancePx": 21.337022608447715
+            },
+            {
+              "score": 0.5815621614456177,
+              "distancePx": 18.151432308870028
+            },
+            {
+              "score": 0.5614113807678223,
+              "distancePx": 20.338671826903767
+            },
+            {
+              "score": 0.5205627083778381,
+              "distancePx": 15.852779398949172
+            },
+            {
+              "score": 0.4589439630508423,
+              "distancePx": 17.772463681881174
+            },
+            {
+              "score": 0.34110385179519653,
+              "distancePx": 18.233193751166123
+            },
+            {
+              "score": 0.30513280630111694,
+              "distancePx": 0.3328883262257009
+            },
+            {
+              "score": 0.2879685163497925,
+              "distancePx": 0.5118997170739193
+            }
+          ],
+          "wallFilteredCount": null
+        },
+        {
+          "conf": 0.2,
+          "count": 9,
+          "matched": null,
+          "unmatched": null,
+          "truth": null,
+          "wallDistances": [
+            {
+              "score": 0.6209974884986877,
+              "distancePx": 19.628649794445018
+            },
+            {
+              "score": 0.6014443635940552,
+              "distancePx": 21.337022608447715
+            },
+            {
+              "score": 0.5815621614456177,
+              "distancePx": 18.151432308870028
+            },
+            {
+              "score": 0.5614113807678223,
+              "distancePx": 20.338671826903767
+            },
+            {
+              "score": 0.5205627083778381,
+              "distancePx": 15.852779398949172
+            },
+            {
+              "score": 0.4589439630508423,
+              "distancePx": 17.772463681881174
+            },
+            {
+              "score": 0.34110385179519653,
+              "distancePx": 18.233193751166123
+            },
+            {
+              "score": 0.30513280630111694,
+              "distancePx": 0.3328883262257009
+            },
+            {
+              "score": 0.2879685163497925,
+              "distancePx": 0.5118997170739193
+            }
+          ],
+          "wallFilteredCount": null
+        },
+        {
+          "conf": 0.15,
+          "count": 9,
+          "matched": null,
+          "unmatched": null,
+          "truth": null,
+          "wallDistances": [
+            {
+              "score": 0.6209974884986877,
+              "distancePx": 19.628649794445018
+            },
+            {
+              "score": 0.6014443635940552,
+              "distancePx": 21.337022608447715
+            },
+            {
+              "score": 0.5815621614456177,
+              "distancePx": 18.151432308870028
+            },
+            {
+              "score": 0.5614113807678223,
+              "distancePx": 20.338671826903767
+            },
+            {
+              "score": 0.5205627083778381,
+              "distancePx": 15.852779398949172
+            },
+            {
+              "score": 0.4589439630508423,
+              "distancePx": 17.772463681881174
+            },
+            {
+              "score": 0.34110385179519653,
+              "distancePx": 18.233193751166123
+            },
+            {
+              "score": 0.30513280630111694,
+              "distancePx": 0.3328883262257009
+            },
+            {
+              "score": 0.2879685163497925,
+              "distancePx": 0.5118997170739193
+            }
+          ],
+          "wallFilteredCount": null
+        },
+        {
+          "conf": 0.1,
+          "count": 9,
+          "matched": null,
+          "unmatched": null,
+          "truth": null,
+          "wallDistances": [
+            {
+              "score": 0.6209974884986877,
+              "distancePx": 19.628649794445018
+            },
+            {
+              "score": 0.6014443635940552,
+              "distancePx": 21.337022608447715
+            },
+            {
+              "score": 0.5815621614456177,
+              "distancePx": 18.151432308870028
+            },
+            {
+              "score": 0.5614113807678223,
+              "distancePx": 20.338671826903767
+            },
+            {
+              "score": 0.5205627083778381,
+              "distancePx": 15.852779398949172
+            },
+            {
+              "score": 0.4589439630508423,
+              "distancePx": 17.772463681881174
+            },
+            {
+              "score": 0.34110385179519653,
+              "distancePx": 18.233193751166123
+            },
+            {
+              "score": 0.30513280630111694,
+              "distancePx": 0.3328883262257009
+            },
+            {
+              "score": 0.2879685163497925,
+              "distancePx": 0.5118997170739193
+            }
+          ],
+          "wallFilteredCount": null
+        }
+      ]
+    }
+  ]
+}

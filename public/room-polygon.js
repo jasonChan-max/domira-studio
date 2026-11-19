@@ -187,7 +187,14 @@ function absorbWalls(mask, width, height, label) {
 export function doorsFromMask(mask, width, height, options = {}) {
   // Explicit opt-in; remove this option to return to the learned door class.
   if (options.wallGaps === true) return doorsFromWallGaps(mask, width, height, options);
-  const DOOR_CLASS = 2;
+  return openingsFromMask(mask, width, height, 2, options);
+}
+
+export function windowsFromMask(mask, width, height, options = {}) {
+  return openingsFromMask(mask, width, height, 3, options);
+}
+
+function openingsFromMask(mask, width, height, DOOR_CLASS, options) {
   const minAreaRatio = options.minAreaRatio ?? 0.0008;
   const n = width * height;
   const label = new Int32Array(n).fill(-1);

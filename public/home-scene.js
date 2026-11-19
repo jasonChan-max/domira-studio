@@ -49,7 +49,19 @@ export function buildHomeGeometry(home,overview=true){const group=new THREE.Grou
    return b-a>.15?[a,b]:null;
   }).filter(Boolean).sort((p,q)=>p[0]-q[0]);
  };
- for(const s of planWalls(home)){if(s.kind==='door'){const top=Math.min(2.1,s.height-.15);segment(s,s.height-top,(s.height+top)/2);}else if(s.kind==='window'){const top=Math.min(2.1,s.height-.15),sill=Math.min(.85,top-.2);segment(s,sill,sill/2);segment(s,s.height-top,(s.height+top)/2);const glass=new THREE.MeshPhysicalMaterial({color:'#a5c5cf',transparent:true,opacity:.22,roughness:.15,metalness:.15,side:THREE.DoubleSide});segment(s,top-sill,(top+sill)/2,glass);}else{
+ const detectedWalls=[...(home.walls?.h||[]).map(w=>({axis:'x',x:(w.x0+w.x1)/2,z:w.z,length:w.x1-w.x0,height:home.height,kind:'wall'})),...(home.walls?.v||[]).map(w=>({axis:'z',x:w.x,z:(w.z0+w.z1)/2,length:w.z1-w.z0,height:home.height,kind:'wall'}))].filter(s=>[s.x,s.z,s.length,s.height].every(Number.isFinite)&&s.length>0);
+ // Polygon homes carry measured mask walls separately from room boundaries.
+ const sceneWalls=home.rooms.every(r=>r.polygon?.length>=3)&&detectedWalls.length?detectedWalls:planWalls(home);
+ let glassMaterial;
+ for(const w of home.windows||[]){
+  if(![w.x,w.z,w.w,w.d].every(Number.isFinite)||w.w<=0||w.d<=0)continue;
+  const sill=Math.min(.85,home.height*.3),top=Math.min(2.1,home.height-.15);
+  if(top<=sill)continue;
+  const pane=box(group,w.horizontal?w.w:.07,top-sill,w.horizontal?.07:w.d,'#a5c5cf',w.x,(sill+top)/2,w.z);
+  pane.material.dispose();
+  pane.material=glassMaterial??=new THREE.MeshPhysicalMaterial({color:'#a5c5cf',transparent:true,opacity:.4,roughness:.15,metalness:.15,side:THREE.DoubleSide});pane.userData.window=true;
+ }
+ for(const s of sceneWalls){if(s.kind==='door'){const top=Math.min(2.1,s.height-.15);segment(s,s.height-top,(s.height+top)/2);}else if(s.kind==='window'){const top=Math.min(2.1,s.height-.15),sill=Math.min(.85,top-.2);segment(s,sill,sill/2);segment(s,s.height-top,(s.height+top)/2);const glass=new THREE.MeshPhysicalMaterial({color:'#a5c5cf',transparent:true,opacity:.22,roughness:.15,metalness:.15,side:THREE.DoubleSide});segment(s,top-sill,(top+sill)/2,glass);}else{
   const cuts=doorSegments(s);
   if(!cuts.length){segment(s,s.height,s.height/2);continue;}
   const along=s.axis==='x';
