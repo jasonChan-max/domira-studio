@@ -120,6 +120,76 @@ function trimOutsideFloor(mask, width, height) {
   return removed;
 }
 
+/**
+ * 窗的两端必须有墙（2026-11-19）。
+ *
+ * 为什么（实测数据）：44 张标注图逐连通域对比，模型判的窗里 40% 是假的——
+ * 图外尺寸线 14.7%、门洞 8.7%、地板 7.8%。而这些假窗全都一头没接墙：
+ * 窗在图纸上是「墙上开的洞」，两端一定连着墙垛。
+ *
+ * 规则：沿连通域长边往两端各探 15px，任一端没有 wall 就改成 floor。
+ * 实测（497 个预测窗）：精度 59.4% → 96.4%，假窗 202 → 9，
+ * 代价是漏掉 18% 的真窗（阳台转角、飘窗这种末端窗只接一端墙）。
+ * 这个权衡是有意的——漏了的窗用户点一下按钮补上，多出来的假窗会让人不信整个系统。
+ *
+ * 为什么用 wall 做参照而不是窗自己：wall IoU 0.823、窗只有 0.532。
+ * 试过「用 mask 自己的 outside/floor 类验证窗」，完全无效——同一次推理的类别
+ * 错在同一个地方，自己否不掉自己。
+ *
+ * 保护：wall 占比 < 5% 时整段跳过（R(9) 那种墙只占 3.35% 的图，墙本身不可靠）。
+ */
+function filterWindows(mask, width, height) {
+  const MIN_WALL_RATIO = .05;
+  const PROBE = 15;
+  const MIN_LONG = 25;
+  let wallCount = 0;
+  for (let i = 0; i < mask.length; i++) if (mask[i] === 1) wallCount++;
+  if (wallCount < mask.length * MIN_WALL_RATIO) return 0;
+
+  const isWall = (x, y) => x >= 0 && x < width && y >= 0 && y < height && mask[y * width + x] === 1;
+  const seen = new Uint8Array(width * height);
+  const stack = new Int32Array(width * height);
+  let removed = 0;
+
+  for (let start = 0; start < mask.length; start++) {
+    if (mask[start] !== 3 || seen[start]) continue;
+    let sp = 0, x0 = width, y0 = height, x1 = -1, y1 = -1;
+    const block = [];
+    stack[sp++] = start;
+    seen[start] = 1;
+    while (sp > 0) {
+      const p = stack[--sp];
+      block.push(p);
+      const x = p % width, y = (p - x) / width;
+      if (x < x0) x0 = x;
+      if (x > x1) x1 = x;
+      if (y < y0) y0 = y;
+      if (y > y1) y1 = y;
+      if (x > 0) { const q = p - 1; if (mask[q] === 3 && !seen[q]) { seen[q] = 1; stack[sp++] = q; } }
+      if (x < width - 1) { const q = p + 1; if (mask[q] === 3 && !seen[q]) { seen[q] = 1; stack[sp++] = q; } }
+      if (y > 0) { const q = p - width; if (mask[q] === 3 && !seen[q]) { seen[q] = 1; stack[sp++] = q; } }
+      if (y < height - 1) { const q = p + width; if (mask[q] === 3 && !seen[q]) { seen[q] = 1; stack[sp++] = q; } }
+    }
+    const bw = x1 - x0 + 1, bh = y1 - y0 + 1;
+    if (Math.max(bw, bh) < MIN_LONG) continue;
+    let endA = false, endB = false;
+    if (bw >= bh) {
+      for (let d = 1; d <= PROBE && !endA; d++)
+        for (let y = y0; y <= y1 && !endA; y++) if (isWall(x0 - d, y)) endA = true;
+      for (let d = 1; d <= PROBE && !endB; d++)
+        for (let y = y0; y <= y1 && !endB; y++) if (isWall(x1 + d, y)) endB = true;
+    } else {
+      for (let d = 1; d <= PROBE && !endA; d++)
+        for (let x = x0; x <= x1 && !endA; x++) if (isWall(x, y0 - d)) endA = true;
+      for (let d = 1; d <= PROBE && !endB; d++)
+        for (let x = x0; x <= x1 && !endB; x++) if (isWall(x, y1 + d)) endB = true;
+    }
+    if (endA && endB) continue;
+    for (const p of block) { mask[p] = 0; removed++; }
+  }
+  return removed;
+}
+
 function loadOrt() {
   if (!ortPromise) {
     ortPromise = new Promise((resolve, reject) => {
@@ -245,7 +315,15 @@ export async function segmentWalls(source, options = {}) {
     for (let c = 0; c < 4; c++) { stats[CLASSES[c]] -= trimmedBy[c]; trimmed += trimmedBy[c]; }
     stats.outside += trimmed;
   }
-  return { mask, width: source.width, height: source.height, stats, calibrated: !!calibration, dropped, trimmed };
+  let filteredWindows = 0;
+  if (options.filterWindows !== false) {
+    filteredWindows = filterWindows(mask, source.width, source.height);
+    if (filteredWindows) {
+      stats.window -= filteredWindows;
+      stats.floor += filteredWindows;
+    }
+  }
+  return { mask, width: source.width, height: source.height, stats, calibrated: !!calibration, dropped, trimmed, filteredWindows };
 }
 
 /** 把 mask 裡的牆（類別 1）抽成水平／垂直線段，供吸附使用。 */
