@@ -17,7 +17,7 @@ test('主识别入口同时保留门窗、墙轮廓，保存后 2D 与 3D 都能
  assert.equal(result.windowSource,'yolo');assert.equal(result.windows.length,1);assert.equal(result.doors.length,1);assert.ok(result.lines.contours.length);
  const home=JSON.parse(JSON.stringify(homeFromRecognition(result,8,8,{height:2.7})));
  assert.equal(home.windowSource,'yolo');assert.equal(home.windows.length,1);assert.equal(home.doors.length,1);
- assert.ok(Math.abs(home.windows[0].x-(50-49.5)*8/79)<.001);
+ assert.equal(home.windows[0].x,0);
  assert.match(homePlanSVG(home),/data-opening="window"/);
  const group=buildHomeGeometry(home,false);
  assert.equal(group.children.filter(o=>o.userData.window).length,1);
@@ -41,7 +41,9 @@ test('修改长宽时窗、门、墙轮廓与房间局部多边形按同轴缩�
  const home=homeFromRecognition(geometryFromSegmentation(fixture(),[window,door]),8,8);
  const before=structuredClone(home);scaleDetectedGeometry(home,'width',2);
  assert.equal(home.windows[0].x,before.windows[0].x*2);assert.equal(home.windows[0].w,before.windows[0].w*2);assert.equal(home.windows[0].z,before.windows[0].z);
+ assert.equal(home.windows[0].wallFootprint.x0,before.windows[0].wallFootprint.x0*2);
  assert.equal(home.walls.contours[0].outer[0][0],before.walls.contours[0].outer[0][0]*2);
  scaleDetectedGeometry(home,'depth',.5);assert.equal(home.windows[0].z,before.windows[0].z*.5);assert.equal(home.doors[0].d,before.doors[0].d*.5);
+ assert.equal(home.windows[0].wallFootprint.y1,before.windows[0].wallFootprint.y1*.5);
  assert.throws(()=>scaleDetectedGeometry(home,'height',1),/无效/);
 });

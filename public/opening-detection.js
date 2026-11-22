@@ -11,8 +11,13 @@ export function selectOpenings(boxes,mask,width,height,{windowSource='yolo'}={})
 
 export function openingsToHome(openings,frame,width,depth){
  if(!frame||!(frame.w>0&&frame.h>0))return [];
- return (openings||[]).filter(b=>[b.cx,b.cy,b.w,b.h].every(Number.isFinite)&&b.w>0&&b.h>0).map(b=>({
+ return (openings||[]).filter(b=>[b.cx,b.cy,b.w,b.h].every(Number.isFinite)&&b.w>0&&b.h>0).map(b=>{
+ const f=b.wallSupport?.footprint,wallFootprint=f?{x0:(f.x0-frame.x-frame.w/2)*width/frame.w,x1:(f.x1-frame.x-frame.w/2)*width/frame.w,y0:(f.y0-frame.y-frame.h/2)*depth/frame.h,y1:(f.y1-frame.y-frame.h/2)*depth/frame.h}:null;
+ const opening={
   x:(b.cx-frame.x-frame.w/2)*width/frame.w,z:(b.cy-frame.y-frame.h/2)*depth/frame.h,
   w:b.w*width/frame.w,d:b.h*depth/frame.h,horizontal:!!b.horizontal,
- }));
+ };
+ if(wallFootprint){opening.wallFootprint=wallFootprint;if(opening.horizontal){opening.z=(wallFootprint.y0+wallFootprint.y1)/2;opening.d=wallFootprint.y1-wallFootprint.y0;}else{opening.x=(wallFootprint.x0+wallFootprint.x1)/2;opening.w=wallFootprint.x1-wallFootprint.x0;}}
+ return opening;
+ });
 }

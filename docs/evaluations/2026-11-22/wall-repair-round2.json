@@ -1,0 +1,423 @@
+{
+  "date": "2026-11-22",
+  "sourceBaseCommit": "515e21d",
+  "fixture": "NLYIG4QKTK7UGAABAAAAACA8.jpg",
+  "fixtureSha256": "073c2aa05ca23d03d52c83fece70998fbe5fd43f561accd06b60a65d61df6691",
+  "acceptance": {
+    "userConfirmed": "以真实位置为准，剔除无墙体支持的窗候选（推荐）",
+    "originalRequestedWindowCount": 8,
+    "actualValidWindowCount": 5
+  },
+  "findings": {
+    "outsideBands": "原 SVG 的三条外围蓝带对应三个屋外窗候选；八个墙轮廓都在主体范围内，未为凑数量误删合法墙。",
+    "rooms": "检测门框只用于封闭房间分析副本的地板通道，恢复卫生间；主体范围和米制短边下限过滤窄缝。UI 不执行删除兜底。",
+    "windowGeometry": "修复一扇真窗缺少窗台和过梁的问题；由窗两端真实墙带恢复洞口物理范围。",
+    "remainingModelIssue": "人工观察：左侧另一扇真窗仍被检测器标为 door。本轮未更改模型或原有门分类逻辑。"
+  },
+  "models": {
+    "unetSha256": "9e639256aa950ce2a6982593a1cb8324e2acac651e8fb6bea32769f74ba6aa98",
+    "yoloSha256": "6f257e8060d025f233a1e525067b6a12c8807c6b3a371f989447a42fc57d82c9"
+  },
+  "tests": {
+    "total": 281,
+    "passed": 281,
+    "failed": 0,
+    "fullOutput": "npm-test-round2.txt"
+  },
+  "environment": "Node.js 24; headless Chrome; --disable-gpu --enable-unsafe-swiftshader; repeated warm timings",
+  "maskFidelityMeaning": "仅表示轮廓与分割 mask 一致，不表示模型相对原图识别准确率。",
+  "imgSize": [
+    1200,
+    900
+  ],
+  "segMs": 21569.60000038147,
+  "rooms": 4,
+  "doors": 5,
+  "windows": 5,
+  "windowMeshCount": 5,
+  "windowAudit": [
+    {
+      "index": 0,
+      "x": 3.3301732048916457,
+      "z": 0.7663316582914572,
+      "onExteriorWall": true,
+      "samples": [
+        {
+          "offset": -0.25,
+          "lowerWall": true,
+          "openingClear": true,
+          "upperWall": true
+        },
+        {
+          "offset": 0,
+          "lowerWall": true,
+          "openingClear": true,
+          "upperWall": true
+        },
+        {
+          "offset": 0.25,
+          "lowerWall": true,
+          "openingClear": true,
+          "upperWall": true
+        }
+      ],
+      "valid": true
+    },
+    {
+      "index": 1,
+      "x": -4.274452032156326,
+      "z": 1.8969849246231156,
+      "onExteriorWall": true,
+      "samples": [
+        {
+          "offset": -0.25,
+          "lowerWall": true,
+          "openingClear": true,
+          "upperWall": true
+        },
+        {
+          "offset": 0,
+          "lowerWall": true,
+          "openingClear": true,
+          "upperWall": true
+        },
+        {
+          "offset": 0.25,
+          "lowerWall": true,
+          "openingClear": true,
+          "upperWall": true
+        }
+      ],
+      "valid": true
+    },
+    {
+      "index": 2,
+      "x": -2.0710833707646508,
+      "z": -3.9321608040201004,
+      "onExteriorWall": true,
+      "samples": [
+        {
+          "offset": -0.25,
+          "lowerWall": true,
+          "openingClear": true,
+          "upperWall": true
+        },
+        {
+          "offset": 0,
+          "lowerWall": true,
+          "openingClear": true,
+          "upperWall": true
+        },
+        {
+          "offset": 0.25,
+          "lowerWall": true,
+          "openingClear": true,
+          "upperWall": true
+        }
+      ],
+      "valid": true
+    },
+    {
+      "index": 3,
+      "x": 0.35672355536839473,
+      "z": -3.10929648241206,
+      "onExteriorWall": true,
+      "samples": [
+        {
+          "offset": -0.25,
+          "lowerWall": true,
+          "openingClear": true,
+          "upperWall": true
+        },
+        {
+          "offset": 0,
+          "lowerWall": true,
+          "openingClear": true,
+          "upperWall": true
+        },
+        {
+          "offset": 0.25,
+          "lowerWall": true,
+          "openingClear": true,
+          "upperWall": true
+        }
+      ],
+      "valid": true
+    },
+    {
+      "index": 4,
+      "x": -3.3731155778894473,
+      "z": 0.4904183910120671,
+      "onExteriorWall": true,
+      "samples": [
+        {
+          "offset": -0.25,
+          "lowerWall": true,
+          "openingClear": true,
+          "upperWall": true
+        },
+        {
+          "offset": 0,
+          "lowerWall": true,
+          "openingClear": true,
+          "upperWall": true
+        },
+        {
+          "offset": 0.25,
+          "lowerWall": true,
+          "openingClear": true,
+          "upperWall": true
+        }
+      ],
+      "valid": true
+    }
+  ],
+  "selection": {
+    "contours": {
+      "raw": 8,
+      "kept": 8,
+      "rejected": []
+    },
+    "rooms": {
+      "candidates": 5,
+      "insideHouse": 4,
+      "removedBelowMinimum": [],
+      "kept": 4
+    },
+    "windows": {
+      "raw": 8,
+      "kept": 5,
+      "checks": [
+        {
+          "index": 0,
+          "valid": true,
+          "endA": true,
+          "endB": true,
+          "outsideSide": -1,
+          "sideA": 5,
+          "sideB": 0,
+          "footprint": {
+            "x0": 775.0513458251953,
+            "x1": 955.1122283935547,
+            "y0": 462,
+            "y1": 490
+          }
+        },
+        {
+          "index": 1,
+          "valid": true,
+          "endA": true,
+          "endB": true,
+          "outsideSide": -1,
+          "sideA": 5,
+          "sideB": 0,
+          "footprint": {
+            "x0": 223.82801055908203,
+            "x1": 295.67922592163086,
+            "y0": 553,
+            "y1": 579
+          }
+        },
+        {
+          "index": 2,
+          "valid": true,
+          "endA": true,
+          "endB": true,
+          "outsideSide": -1,
+          "sideA": 4,
+          "sideB": 0,
+          "footprint": {
+            "x0": 354.20093536376953,
+            "x1": 516.082592010498,
+            "y0": 89,
+            "y1": 115
+          }
+        },
+        {
+          "index": 3,
+          "valid": true,
+          "endA": true,
+          "endB": true,
+          "outsideSide": -1,
+          "sideA": 5,
+          "sideB": 0,
+          "footprint": {
+            "x0": 536.2005615234375,
+            "x1": 720.5898284912109,
+            "y0": 155,
+            "y1": 180
+          }
+        },
+        {
+          "index": 4,
+          "valid": true,
+          "endA": true,
+          "endB": true,
+          "outsideSide": -1,
+          "sideA": 5,
+          "sideB": 0,
+          "footprint": {
+            "x0": 326,
+            "x1": 337,
+            "y0": 434.9923896789551,
+            "y1": 473.082218170166
+          }
+        },
+        {
+          "index": 5,
+          "valid": false,
+          "reason": "窗中心位于房屋主体之外"
+        },
+        {
+          "index": 6,
+          "valid": false,
+          "reason": "窗中心位于房屋主体之外"
+        },
+        {
+          "index": 7,
+          "valid": false,
+          "reason": "窗中心位于房屋主体之外"
+        }
+      ],
+      "rejected": [
+        {
+          "index": 5,
+          "box": {
+            "x": 126.91781044006348,
+            "y": 578.6491584777832,
+            "w": 22.507610321044922,
+            "h": 154.090576171875,
+            "cls": "window",
+            "score": 0.5468959212303162,
+            "cx": 138.17161560058594,
+            "cy": 655.6944465637207,
+            "area": 3468.2106426218525,
+            "horizontal": false
+          },
+          "reason": "窗中心位于房屋主体之外"
+        },
+        {
+          "index": 6,
+          "box": {
+            "x": 331.1111068725586,
+            "y": 16.440246105194092,
+            "w": 190.44902801513672,
+            "h": 23.373284339904785,
+            "cls": "window",
+            "score": 0.28076231479644775,
+            "cx": 426.33562088012695,
+            "cy": 28.126888275146484,
+            "area": 4451.419284056283,
+            "horizontal": true
+          },
+          "reason": "窗中心位于房屋主体之外"
+        },
+        {
+          "index": 7,
+          "box": {
+            "x": 765.2606391906738,
+            "y": 784.0373039245605,
+            "w": 91.7618179321289,
+            "h": 6.925392150878906,
+            "cls": "window",
+            "score": 0.2621638774871826,
+            "cx": 811.1415481567383,
+            "cy": 787.5,
+            "area": 635.4865736575448,
+            "horizontal": true
+          },
+          "reason": "窗中心位于房屋主体之外"
+        }
+      ]
+    }
+  },
+  "homeBlocks": 40,
+  "homeContours": 8,
+  "holes": 0,
+  "vertices": 260,
+  "geometryMs": 126.89999961853027,
+  "contourArea": 67571,
+  "maskFidelity": {
+    "precision": 1,
+    "recall": 1,
+    "extraPixels": 0,
+    "missedPixels": 0
+  },
+  "thickness": {
+    "min": 0.02499999999999991,
+    "median": 0.18799999999999972,
+    "max": 0.3770000000000002
+  },
+  "current": {
+    "buildMs": 6,
+    "buildSamples": [
+      7.100000381469727,
+      6,
+      7.299999713897705,
+      5.900000095367432,
+      6.900000095367432,
+      4.599999904632568,
+      6
+    ],
+    "frameMs": 0.20000028610229492,
+    "frameSamples": [
+      0.20000028610229492,
+      0.2999997138977051,
+      0.20000028610229492,
+      0.2999997138977051,
+      0.40000009536743164,
+      0.09999990463256836,
+      0.20000028610229492,
+      0.19999980926513672,
+      0.3000001907348633,
+      0.19999980926513672,
+      0.20000028610229492,
+      0.19999980926513672
+    ],
+    "meshCount": 18,
+    "wallMeshes": 3,
+    "drawCalls": 27,
+    "triangles": 3217
+  },
+  "baseline": {
+    "buildMs": 1,
+    "buildSamples": [
+      2,
+      1.1000003814697266,
+      0.5999999046325684,
+      1,
+      1,
+      0.7999997138977051,
+      0.7000002861022949
+    ],
+    "frameMs": 0.40000009536743164,
+    "frameSamples": [
+      0.40000009536743164,
+      0.3000001907348633,
+      0.2999997138977051,
+      0.3000001907348633,
+      0.5,
+      0.40000009536743164,
+      0.6999998092651367,
+      0.3000001907348633,
+      0.2999997138977051,
+      0.5999999046325684,
+      0.6000003814697266,
+      0.6999998092651367
+    ],
+    "meshCount": 70,
+    "wallMeshes": 54,
+    "drawCalls": 80,
+    "triangles": 905
+  },
+  "uiFlow": {
+    "initialBuildError": "",
+    "reviewedRooms": [],
+    "rooms": 4,
+    "windows": 5,
+    "windowSource": "yolo",
+    "svgWindowCount": 5,
+    "savedContours": 8,
+    "savedWidth": 12
+  }
+}

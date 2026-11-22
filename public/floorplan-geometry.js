@@ -3,22 +3,32 @@ import {roomsFromMask} from './room-polygon.js';
 import {wallContoursFromMask} from './wall-contours.js';
 import {selectOpenings,openingsToHome} from './opening-detection.js';
 import {roomsFromPolygons} from './home-domain.js';
+import {closeDetectedDoorFloors,selectHouseContours,roomsWithinHouse,selectSupportedWindows} from './plan-selection.js';
 
 // 上传、模型识别和探针共用同一入口，避免验收时有窗、实际主流程却只取门。
 export function geometryFromSegmentation(result,boxes){
  const {mask,width,height}=result,minLength=Math.max(18,Math.round(Math.max(width,height)*.03));
  const openings=selectOpenings(boxes,mask,width,height);
  const lines=wallLinesFromMask(mask,width,height,{minLenH:minLength,minLenV:minLength,gap:8});
- const blocks=wallBlocksFromMask(mask,width,height),contours=wallContoursFromMask(mask,width,height);
- let x0=Infinity,y0=Infinity,x1=-Infinity,y1=-Infinity;
- for(let i=0;i<mask.length;i++)if(mask[i]!==4){const x=i%width,y=Math.floor(i/width);x0=Math.min(x0,x);y0=Math.min(y0,y);x1=Math.max(x1,x);y1=Math.max(y1,y);}
- const frame=Number.isFinite(x0)?{x:x0,y:y0,w:Math.max(1,x1-x0),h:Math.max(1,y1-y0)}:null;
- return {...openings,polygons:roomsFromMask(mask,width,height),lines:{...lines,blocks,contours},frame,segWidth:width,segHeight:height};
+ const blocks=wallBlocksFromMask(mask,width,height),rawContours=wallContoursFromMask(mask,width,height);
+ const closedMask=closeDetectedDoorFloors(mask,width,height,openings.doors),roomCandidates=roomsFromMask(closedMask,width,height);
+ const selection=selectHouseContours(rawContours,roomCandidates),{contours,frame}=selection;
+ const polygons=roomsWithinHouse(roomCandidates,frame),supported=selectSupportedWindows(mask,width,height,openings.windows,frame);
+ return {...openings,windows:supported.windows,polygons,lines:{...lines,blocks,contours},frame,segWidth:width,segHeight:height,
+  selection:{contours:{raw:rawContours.length,kept:contours.length,rejected:selection.removed},rooms:{candidates:roomCandidates.length,insideHouse:polygons.length},windows:{raw:openings.windows.length,kept:supported.windows.length,checks:supported.checks,rejected:supported.rejected}}};
 }
 
 export function homeFromRecognition(result,width,depth,options={}){
  const home=roomsFromPolygons(result.polygons,result.segWidth,result.segHeight,width,depth,{...options,frame:result.frame,doors:result.doors,windows:result.windows,walls:result.lines});
+ // 米制下限必须在数据层执行；不能等 UI 报错后再靠用户删掉窄缝假房间。
+ const rejected=home.rooms.filter(r=>Math.min(r.width,r.depth)<.6);
+ home.rooms=home.rooms.filter(r=>Math.min(r.width,r.depth)>=.6);
+ if(!home.rooms.length)throw new Error('没有短边达到 0.6m 的有效房间，请核对比例尺或图纸');
+ home.rooms.forEach((r,i)=>{r.id='space-'+i;});
+ home.summary='房間位置與形狀由分割模型直接從圖上辨識（'+home.rooms.length+' 間），不是 AI 目測的矩形。';
+ home.selection={...result.selection,rooms:{...result.selection?.rooms,removedBelowMinimum:rejected.map(r=>({name:r.name,width:r.width,depth:r.depth})),kept:home.rooms.length}};
  home.windowSource=result.windowSource;
+ home.windows=openingsToHome(result.windows,result.frame,width,depth);
  return home;
 }
 
@@ -34,7 +44,7 @@ export function attachDetectedOpenings(home,result){
 export function scaleDetectedGeometry(home,axis,factor){
  if(!['width','depth'].includes(axis)||!Number.isFinite(factor)||factor<=0)throw new Error('平面缩放参数无效');
  const horizontal=axis==='width',coordinate=horizontal?'x':'z',size=horizontal?'w':'d';
- for(const list of [home.doors,home.windows])for(const o of list||[]){o[coordinate]*=factor;o[size]*=factor;}
+ for(const list of [home.doors,home.windows])for(const o of list||[]){o[coordinate]*=factor;o[size]*=factor;if(o.wallFootprint){o.wallFootprint[horizontal?'x0':'y0']*=factor;o.wallFootprint[horizontal?'x1':'y1']*=factor;}}
  for(const room of home.rooms||[])for(const p of room.polygon||[])p[horizontal?0:1]*=factor;
  for(const wall of home.walls?.h||[]){if(horizontal){wall.x0*=factor;wall.x1*=factor;}else{wall.z*=factor;if(Number.isFinite(wall.thickness))wall.thickness*=factor;}}
  for(const wall of home.walls?.v||[]){if(horizontal){wall.x*=factor;if(Number.isFinite(wall.thickness))wall.thickness*=factor;}else{wall.z0*=factor;wall.z1*=factor;}}

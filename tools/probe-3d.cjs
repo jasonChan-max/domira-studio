@@ -16,12 +16,13 @@ async function main(){
   const send=(method,params={})=>new Promise((resolve,reject)=>{const id=++serial;pending.set(id,{resolve,reject});ws.send(JSON.stringify({id,method,params}));});
   await send('Page.enable');await send('Page.navigate',{url:base+'/studio.html'});await pause(1000);
   const saved=path.join(out,'blocks-fixed-scene.js'),baseline=fs.existsSync(saved)?'data:text/javascript;base64,'+Buffer.from(fs.readFileSync(saved,'utf8').replace(/from (['"])\.\/([^'"]+)\1/g,(_,q,file)=>`from '${base}/${file}'`)).toString('base64'):null;
-  const r=await send('Runtime.evaluate',{expression:`(${probeInBrowser.toString()})(${JSON.stringify(baseline)})`,awaitPromise:true,returnByValue:true,timeout:180000});if(r.exceptionDetails)throw Error(JSON.stringify(r.exceptionDetails));
+  const r=await send('Runtime.evaluate',{expression:`(${probeInBrowser.toString()})(${JSON.stringify(baseline)},${process.env.DOMIRA_EXPORT_DATA==='1'})`,awaitPromise:true,returnByValue:true,timeout:180000});if(r.exceptionDetails)throw Error(JSON.stringify(r.exceptionDetails));
+  if(r.result.value.exportData){const data=r.result.value.exportData;fs.writeFileSync(path.join(out,'raw-mask.bin'),Buffer.from(data.mask,'base64'));delete data.mask;fs.writeFileSync(path.join(out,'raw-data.json'),JSON.stringify(data,null,2));console.log(JSON.stringify({exported:out,...data}));return;}
   const report=r.result.value;for(const [name,url] of Object.entries(report.images))fs.writeFileSync(path.join(out,name+'.png'),Buffer.from(url.split(',')[1],'base64'));fs.writeFileSync(path.join(out,'plan-2d.svg'),report.svg);delete report.images;delete report.svg;
   fs.writeFileSync(path.join(out,'probe-3d.json'),JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report,null,2));
  }finally{ws?.close();proc.kill();fs.unlinkSync(staged);}
 }
-async function probeInBrowser(baselineURL){
+async function probeInBrowser(baselineURL,exportData=false){
  const onnx=await import('/wall-onnx.js'),poly=await import('/room-polygon.js'),dom=await import('/home-domain.js');
  const {signedArea,pointInRing}=await import('/wall-contours.js'),{detectDoors}=await import('/door-detect.js');
  const {geometryFromSegmentation,homeFromRecognition}=await import('/floorplan-geometry.js');
@@ -29,6 +30,7 @@ async function probeInBrowser(baselineURL){
  const img=new Image();img.src='/__probe3d-input.jpg?t='+Date.now();await img.decode();const canvas=document.createElement('canvas');canvas.width=img.width;canvas.height=img.height;canvas.getContext('2d').drawImage(img,0,0);
  const t=performance.now(),seg=await onnx.segmentWalls(canvas,{modelUrl:'/models/unet-int8.onnx'}),segMs=performance.now()-t,min=Math.max(18,Math.round(Math.max(seg.width,seg.height)*.03));
  const boxes=await detectDoors(canvas,{modelUrl:'/models/yolo-doors-int8.onnx'});
+ if(exportData){let encoded='';for(let i=0;i<seg.mask.length;i+=8192)encoded+=String.fromCharCode(...seg.mask.subarray(i,i+8192));return {exportData:{width:seg.width,height:seg.height,mask:btoa(encoded),boxes,stats:seg.stats}};}
  const traceStart=performance.now(),recognized=geometryFromSegmentation(seg,boxes),geometryMs=performance.now()-traceStart;
  const {frame}=recognized,{contours}=recognized.lines,width=10,depth=width*frame.h/frame.w;
  // JSON 往返模拟项目保存；只测内存中的对象会漏掉窗字段在保存链上的丢失。
@@ -40,6 +42,24 @@ async function probeInBrowser(baselineURL){
  function measureRender(geometry){const scene=new THREE.Scene();scene.background=new THREE.Color('#202830');scene.add(new THREE.HemisphereLight('#ffffff','#707070',2));const light=new THREE.DirectionalLight('#ffffff',2.5);light.position.set(5,12,8);scene.add(light);scene.add(geometry);const gl=renderer.getContext();for(let i=0;i<5;i++){renderer.render(scene,camera);gl.finish();}const times=[];for(let i=0;i<12;i++){const start=performance.now();renderer.render(scene,camera);gl.finish();times.push(performance.now()-start);}return {ms:median(times),samples:times,drawCalls:renderer.info.render.calls,triangles:renderer.info.render.triangles,image:renderer.domElement.toDataURL()};}
  const currentRender=measureRender(current.geometry),baselineRender=baseline?measureRender(baseline.geometry):null;
  const count=(g,predicate)=>{let n=0;g.traverse(o=>{if(predicate(o))n++;});return n;};
+ current.geometry.updateMatrixWorld(true);
+ const solidWalls=current.geometry.children.filter(m=>m.userData.wall);
+ const windowAudit=home.windows.map((w,index)=>{
+  const f=w.wallFootprint,support=recognized.windows[index].wallSupport;
+  if(!f)return {index,valid:false,reason:'缺少经过墙体支持验证的洞口'};
+  const hits=(y,offset)=>{
+   const along=w.horizontal?w.x+w.w*offset:w.z+w.d*offset;
+   const origin=w.horizontal?new THREE.Vector3(along,y,f.y0-.05):new THREE.Vector3(f.x0-.05,y,along);
+   const direction=w.horizontal?new THREE.Vector3(0,0,1):new THREE.Vector3(1,0,0);
+   const far=(w.horizontal?f.y1-f.y0:f.x1-f.x0)+.1;
+   return new THREE.Raycaster(origin,direction,0,far).intersectObjects(solidWalls).length>0;
+  };
+  const samples=[-.25,0,.25].map(offset=>({offset,lowerWall:hits(.4,offset),openingClear:!hits(1.5,offset),upperWall:hits(2.4,offset)}));
+  const onExteriorWall=!!support?.valid&&support.endA&&support.endB;
+  return {index,x:w.x,z:w.z,onExteriorWall,samples,valid:onExteriorWall&&samples.every(s=>s.lowerWall&&s.openingClear&&s.upperWall)};
+ });
+ const windowMeshCount=count(current.geometry,o=>o.userData.window);
+ if(windowMeshCount!==home.windows.length||windowAudit.some(w=>!w.valid))throw Error('窗的外墙位置或上下墙体验证失败：'+JSON.stringify({windowMeshCount,windows:home.windows.length,windowAudit}));
  const thickness=home.walls.blocks.map(b=>Math.min(b.x1-b.x0,b.y1-b.y0)).sort((a,b)=>a-b);
  let tp=0,fp=0,fn=0;for(let y=0;y<seg.height;y++)for(let x=0;x<seg.width;x++){const p=[x+.5,y+.5],predicted=contours.some(s=>pointInRing(p,s.outer)&&!s.holes.some(h=>pointInRing(p,h))),actual=seg.mask[y*seg.width+x]===1;if(predicted&&actual)tp++;else if(predicted)fp++;else if(actual)fn++;}
  const images={'contours-3d':currentRender.image};if(baselineRender)images['blocks-3d']=baselineRender.image;
@@ -60,22 +80,15 @@ async function probeInBrowser(baselineURL){
  document.querySelector('#floorplan-confirm').checked=true;document.querySelector('#floorplan-build').onclick();
  const initialBuildError=document.querySelector('#floorplan-error').textContent;
  const reviewedRooms=[];
- if(!created&&initialBuildError){
-  // 明确保留原始保存失败结果；再验证产品已有的人工核对流程，不能静默删除模型的错误候选。
-  const small=Array.from(document.querySelectorAll('[data-home-field="depth"]')).filter(e=>Number(e.value)<.6);
-  for(const e of small.reverse()){
-   const index=e.dataset.roomIndex,name=document.querySelector(`[data-home-field="name"][data-room-index="${index}"]`).value;
-   reviewedRooms.push({name,depth:Number(e.value),action:'通过房间删除按钮人工移除小于验证下限的候选'});
-   document.querySelector(`[data-remove-room="${index}"]`).onclick();
-  }
-  if(reviewedRooms.length)document.querySelector('#floorplan-build').onclick();
- }
+ // 本轮必须数据层直接产出可建房的房间，不能再让探针代替用户删掉失败候选。
+ if(initialBuildError)throw Error('未经人工删除的页面保存失败：'+initialBuildError);
  if(!created)throw Error('页面建房失败：'+document.querySelector('#floorplan-error').textContent+' '+document.querySelector('#floorplan-model-status').textContent+' '+JSON.stringify(Array.from(document.querySelectorAll('[data-home-field]')).map(e=>({room:e.dataset.roomIndex,key:e.dataset.homeField,value:e.value}))));
  if(created.windows.length!==home.windows.length||svgWindowCount!==created.windows.length||!created.walls.contours.length)throw Error('页面或保存链丢失窗/墙轮廓');
  if(Math.abs(created.width-12)>1e-6)throw Error('页面长宽修改没有保存');
+ if(created.rooms.length!==home.rooms.length)throw Error('原始图与上传后的房间数量不一致');
  const uiFlow={initialBuildError,reviewedRooms,rooms:created.rooms.length,windows:created.windows.length,windowSource:created.windowSource,svgWindowCount,savedContours:created.walls.contours.length,savedWidth:created.width};
  studio.stop();
  const metrics=(build,render)=>({buildMs:build.ms,buildSamples:build.samples,frameMs:render.ms,frameSamples:render.samples,meshCount:count(build.geometry,o=>o.isMesh),wallMeshes:count(build.geometry,o=>o.userData.wall),drawCalls:render.drawCalls,triangles:render.triangles});
- return {imgSize:[seg.width,seg.height],segMs,rooms:home.rooms.length,doors:home.doors.length,windows:home.windows.length,homeBlocks:home.walls.blocks.length,homeContours:contours.length,holes:contours.reduce((s,c)=>s+c.holes.length,0),vertices:contours.reduce((s,c)=>s+c.outer.length+c.holes.reduce((a,h)=>a+h.length,0),0),geometryMs,contourArea:contours.reduce((sum,s)=>sum+Math.abs(signedArea(s.outer))-s.holes.reduce((n,h)=>n+Math.abs(signedArea(h)),0),0),maskFidelity:{precision:tp/(tp+fp),recall:tp/(tp+fn),extraPixels:fp,missedPixels:fn},thickness:{min:thickness[0],median:median(thickness),max:thickness.at(-1)},current:metrics(current,currentRender),baseline:baseline?metrics(baseline,baselineRender):null,uiFlow,images,svg};
+ return {imgSize:[seg.width,seg.height],segMs,rooms:home.rooms.length,doors:home.doors.length,windows:home.windows.length,windowMeshCount,windowAudit,selection:home.selection,homeBlocks:home.walls.blocks.length,homeContours:contours.length,holes:contours.reduce((s,c)=>s+c.holes.length,0),vertices:contours.reduce((s,c)=>s+c.outer.length+c.holes.reduce((a,h)=>a+h.length,0),0),geometryMs,contourArea:contours.reduce((sum,s)=>sum+Math.abs(signedArea(s.outer))-s.holes.reduce((n,h)=>n+Math.abs(signedArea(h)),0),0),maskFidelity:{precision:tp/(tp+fp),recall:tp/(tp+fn),extraPixels:fp,missedPixels:fn},thickness:{min:thickness[0],median:median(thickness),max:thickness.at(-1)},current:metrics(current,currentRender),baseline:baseline?metrics(baseline,baselineRender):null,uiFlow,images,svg};
 }
 main().catch(error=>{console.error(error);process.exitCode=1;});

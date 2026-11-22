@@ -9,6 +9,11 @@ export function contourWallLayers(home){
  if(!source.length)return [];
  const height=home.height,blocks=home.walls?.blocks||[],openings=[];
  for(const [kind,list] of [['door',home.doors||[]],['window',home.windows||[]]])for(const o of list){
+  if(kind==='window'&&o.wallFootprint){
+   const f=o.wallFootprint,top=Math.min(2.1,height-.15);
+   if([f.x0,f.x1,f.y0,f.y1].every(Number.isFinite)&&f.x1>f.x0&&f.y1>f.y0)openings.push({kind,bottom:Math.min(.85,top-.2),top,polygon:rectangle(f)});
+   continue;
+  }
   const supports=blocks.flatMap(block=>{
    const match=openingsOnBlock(block,kind==='door'?[o]:[],kind==='window'?[o]:[],height)[0];
    return match?[{block,match,overlap:match.to-match.from}]:[];
