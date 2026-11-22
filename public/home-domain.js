@@ -63,7 +63,21 @@ export function syncHomeProject(project){if(!project.home)return;const active=pr
 export function homeItems(project,world=false){if(!project.home)return project.items;return project.home.rooms.flatMap(r=>(r.id===project.activeRoomId?project.items:r.items).map(i=>({...i,...(world?{x:i.x+r.x,z:i.z+r.z}:{}),roomId:r.id,roomName:r.name})));}
 export function planWalls(home){const lines=new Map();for(const room of home.rooms){if(Array.isArray(room.polygon)&&room.polygon.length>=3)continue;const x=room.x-room.width/2,z=room.z-room.depth/2;for(const edge of ['top','bottom','left','right']){if((room.adjacent||[]).some(a=>a.edge===edge&&a.wall===false))continue;const axis=['top','bottom'].includes(edge)?'x':'z',coordinate=axis==='x'?z+(edge==='bottom'?room.depth:0):x+(edge==='right'?room.width:0),start=axis==='x'?x:z,length=axis==='x'?room.width:room.depth,key=axis+':'+Math.round(coordinate*100),openings=room.openings.filter(o=>o.edge===edge).map(o=>({start:start+o.offset*length,end:start+(o.offset+o.width)*length,kind:o.kind}));if(!lines.has(key))lines.set(key,{axis,coordinate,edges:[]});lines.get(key).edges.push({start,end:start+length,height:room.height,openings});}}
  const segments=[];for(const {axis,coordinate,edges} of lines.values()){const cuts=[...new Set(edges.flatMap(e=>[e.start,e.end,...e.openings.flatMap(o=>[o.start,o.end])]).map(n=>Math.round(n*1000)/1000))].sort((a,b)=>a-b);for(let i=1;i<cuts.length;i++){const start=cuts[i-1],end=cuts[i],middle=(start+end)/2,cover=edges.filter(e=>middle>=e.start-.001&&middle<=e.end+.001);if(!cover.length||end-start<.015)continue;const openings=cover.flatMap(e=>e.openings).filter(o=>middle>=o.start&&middle<=o.end),kind=openings.some(o=>o.kind==='door')?'door':openings.length?'window':'wall';segments.push({axis,x:axis==='x'?middle:coordinate,z:axis==='z'?middle:coordinate,length:end-start,height:Math.max(...cover.map(e=>e.height)),kind});}}return mergeNearbyWalls(segments);}
-export function homePlanSVG(home,{overlay}={}){const width=900,scale=780/Math.max(home.width,home.depth),w=home.width*scale,h=home.depth*scale,ox=(width-w)/2,oy=65;const safe=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));return `<svg xmlns="http://www.w3.org/2000/svg" width="900" height="${h+140}" viewBox="0 0 900 ${h+140}" role="img" aria-label="全屋平面圖"><rect width="100%" height="100%" fill="#10171b"/><text x="50" y="32" fill="#d1e4d7" font-size="17" font-family="sans-serif">DOMIRA / ${home.rooms.length} 個空間 · ${home.width.toFixed(2)} × ${home.depth.toFixed(2)} m</text>${home.rooms.map(r=>{const fill=HOME_COLORS[r.kind]||HOME_COLORS.other;if(Array.isArray(r.polygon)&&r.polygon.length>=3){const pts=r.polygon.map(pt=>`${(ox+(r.x+pt[0]+home.width/2)*scale).toFixed(1)},${(oy+(r.z+pt[1]+home.depth/2)*scale).toFixed(1)}`).join(' ');return `<polygon points="${pts}" fill="${fill}" opacity=".24" stroke="#d5ddd4" stroke-width="2" stroke-linejoin="round"/>`;}return `<rect x="${ox+(r.x-r.width/2+home.width/2)*scale}" y="${oy+(r.z-r.depth/2+home.depth/2)*scale}" width="${r.width*scale}" height="${r.depth*scale}" fill="${fill}" opacity=".24"/>`;}).join('')}${planWalls(home).map(s=>{const x=ox+(s.x+home.width/2)*scale,y=oy+(s.z+home.depth/2)*scale,half=s.length*scale/2;return `<line x1="${s.axis==='x'?x-half:x}" x2="${s.axis==='x'?x+half:x}" y1="${s.axis==='z'?y-half:y}" y2="${s.axis==='z'?y+half:y}" stroke="${s.kind==='door'?'#d2b77f':s.kind==='window'?'#7eafbf':'#d5ddd4'}" stroke-width="${s.kind==='wall'?3:2}" ${s.kind==='door'?'stroke-dasharray="4 5"':''}/>`;}).join('')}${(home.walls?.h||[]).map(w=>`<line x1="${(ox+(w.x0+home.width/2)*scale).toFixed(1)}" y1="${(oy+(w.z+home.depth/2)*scale).toFixed(1)}" x2="${(ox+(w.x1+home.width/2)*scale).toFixed(1)}" y2="${(oy+(w.z+home.depth/2)*scale).toFixed(1)}" stroke="#d5ddd4" stroke-width="3" stroke-linecap="round"/>`).join('')}${(home.walls?.v||[]).map(w=>`<line x1="${(ox+(w.x+home.width/2)*scale).toFixed(1)}" y1="${(oy+(w.z0+home.depth/2)*scale).toFixed(1)}" x2="${(ox+(w.x+home.width/2)*scale).toFixed(1)}" y2="${(oy+(w.z1+home.depth/2)*scale).toFixed(1)}" stroke="#d5ddd4" stroke-width="3" stroke-linecap="round"/>`).join('')}${(home.doors||[]).map(d=>{const dcx=ox+(d.x+home.width/2)*scale,dcy=oy+(d.z+home.depth/2)*scale;return `<rect x="${(dcx-d.w*scale/2).toFixed(1)}" y="${(dcy-d.d*scale/2).toFixed(1)}" width="${Math.max(2,d.w*scale).toFixed(1)}" height="${Math.max(2,d.d*scale).toFixed(1)}" fill="#d2b77f" opacity=".85"/>`;}).join('')}${homeWindowsSVG(home,ox,oy,scale)}${home.rooms.flatMap(r=>(r.items||[]).map(i=>{const color=/^#[0-9a-f]{6}$/i.test(i.color||'')?i.color:'#8fa68f';return `<g transform="translate(${ox+(r.x+i.x+home.width/2)*scale} ${oy+(r.z+i.z+home.depth/2)*scale}) rotate(${i.rotation})"><rect x="${-i.w*scale/2}" y="${-i.d*scale/2}" width="${i.w*scale}" height="${i.d*scale}" rx="3" fill="${color}" fill-opacity="${i.type==='rug'?.2:.7}" stroke="#d0e1d8" stroke-opacity=".4"/><title>${safe(i.name||i.type)}</title></g>`;})).join('')}${overlay?.(([x,z])=>[ox+(x+home.width/2)*scale,oy+(z+home.depth/2)*scale])||''}${home.rooms.map(r=>`<text x="${ox+(r.x+home.width/2)*scale}" y="${oy+(r.z+home.depth/2)*scale-4}" text-anchor="middle" fill="#fff" stroke="#10171b" stroke-width="3" paint-order="stroke" font-size="${Math.min(30,Math.round(r.width*scale/Math.max(2,[...r.name].length)),Math.round(r.depth*scale/3))}" font-weight="700" font-family="sans-serif">${safe(r.name)}<tspan x="${ox+(r.x+home.width/2)*scale}" dy="25" font-size="${Math.min(21,Math.round(r.width*scale/8),Math.round(r.depth*scale/4))}" fill="#e4eee7">${r.width.toFixed(2)} × ${r.depth.toFixed(2)} m</tspan></text>`).join('')}<text x="50" y="${h+115}" fill="#a7bbae" font-size="11" font-family="sans-serif">${home.source==='care-manual'?'手動配置':'AI 矩形近似'} · 金色虛線為門洞 / 藍線為窗 · 需實測核對，非施工圖</text></svg>`;}
+// 墙的 SVG：优先画矩形块（和原图最像），没有块时才退回画线（2026-11-22）。
+function wallBlocksSVG(home,ox,oy,scale){
+ const gx=x=>(ox+(x+home.width/2)*scale).toFixed(1);
+ const gy=y=>(oy+(y+home.depth/2)*scale).toFixed(1);
+ const b=home.walls?.blocks;
+ if(Array.isArray(b)&&b.length){
+  return b.map(w=>`<rect x="${gx(w.x0)}" y="${gy(w.y0)}" width="${Math.max(1,(w.x1-w.x0)*scale).toFixed(1)}" height="${Math.max(1,(w.y1-w.y0)*scale).toFixed(1)}" fill="#d5ddd4" rx="1"/>`).join('');
+ }
+ const out=[];
+ for(const w of home.walls?.h||[]) out.push(`<line x1="${gx(w.x0)}" y1="${gy(w.z)}" x2="${gx(w.x1)}" y2="${gy(w.z)}" stroke="#d5ddd4" stroke-width="3" stroke-linecap="round"/>`);
+ for(const w of home.walls?.v||[]) out.push(`<line x1="${gx(w.x)}" y1="${gy(w.z0)}" x2="${gx(w.x)}" y2="${gy(w.z1)}" stroke="#d5ddd4" stroke-width="3" stroke-linecap="round"/>`);
+ return out.join('');
+}
+
+export function homePlanSVG(home,{overlay}={}){const width=900,scale=780/Math.max(home.width,home.depth),w=home.width*scale,h=home.depth*scale,ox=(width-w)/2,oy=65;const safe=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));return `<svg xmlns="http://www.w3.org/2000/svg" width="900" height="${h+140}" viewBox="0 0 900 ${h+140}" role="img" aria-label="全屋平面圖"><rect width="100%" height="100%" fill="#10171b"/><text x="50" y="32" fill="#d1e4d7" font-size="17" font-family="sans-serif">DOMIRA / ${home.rooms.length} 個空間 · ${home.width.toFixed(2)} × ${home.depth.toFixed(2)} m</text>${home.rooms.map(r=>{const fill=HOME_COLORS[r.kind]||HOME_COLORS.other;if(Array.isArray(r.polygon)&&r.polygon.length>=3){const pts=r.polygon.map(pt=>`${(ox+(r.x+pt[0]+home.width/2)*scale).toFixed(1)},${(oy+(r.z+pt[1]+home.depth/2)*scale).toFixed(1)}`).join(' ');return `<polygon points="${pts}" fill="${fill}" opacity=".24" stroke="#d5ddd4" stroke-width="2" stroke-linejoin="round"/>`;}return `<rect x="${ox+(r.x-r.width/2+home.width/2)*scale}" y="${oy+(r.z-r.depth/2+home.depth/2)*scale}" width="${r.width*scale}" height="${r.depth*scale}" fill="${fill}" opacity=".24"/>`;}).join('')}${planWalls(home).map(s=>{const x=ox+(s.x+home.width/2)*scale,y=oy+(s.z+home.depth/2)*scale,half=s.length*scale/2;return `<line x1="${s.axis==='x'?x-half:x}" x2="${s.axis==='x'?x+half:x}" y1="${s.axis==='z'?y-half:y}" y2="${s.axis==='z'?y+half:y}" stroke="${s.kind==='door'?'#d2b77f':s.kind==='window'?'#7eafbf':'#d5ddd4'}" stroke-width="${s.kind==='wall'?3:2}" ${s.kind==='door'?'stroke-dasharray="4 5"':''}/>`;}).join('')}${wallBlocksSVG(home,ox,oy,scale)}${(home.walls?.v||[]).map(w=>`<line x1="${(ox+(w.x+home.width/2)*scale).toFixed(1)}" y1="${(oy+(w.z0+home.depth/2)*scale).toFixed(1)}" x2="${(ox+(w.x+home.width/2)*scale).toFixed(1)}" y2="${(oy+(w.z1+home.depth/2)*scale).toFixed(1)}" stroke="#d5ddd4" stroke-width="3" stroke-linecap="round"/>`).join('')}${(home.doors||[]).map(d=>{const dcx=ox+(d.x+home.width/2)*scale,dcy=oy+(d.z+home.depth/2)*scale;return `<rect x="${(dcx-d.w*scale/2).toFixed(1)}" y="${(dcy-d.d*scale/2).toFixed(1)}" width="${Math.max(2,d.w*scale).toFixed(1)}" height="${Math.max(2,d.d*scale).toFixed(1)}" fill="#d2b77f" opacity=".85"/>`;}).join('')}${homeWindowsSVG(home,ox,oy,scale)}${home.rooms.flatMap(r=>(r.items||[]).map(i=>{const color=/^#[0-9a-f]{6}$/i.test(i.color||'')?i.color:'#8fa68f';return `<g transform="translate(${ox+(r.x+i.x+home.width/2)*scale} ${oy+(r.z+i.z+home.depth/2)*scale}) rotate(${i.rotation})"><rect x="${-i.w*scale/2}" y="${-i.d*scale/2}" width="${i.w*scale}" height="${i.d*scale}" rx="3" fill="${color}" fill-opacity="${i.type==='rug'?.2:.7}" stroke="#d0e1d8" stroke-opacity=".4"/><title>${safe(i.name||i.type)}</title></g>`;})).join('')}${overlay?.(([x,z])=>[ox+(x+home.width/2)*scale,oy+(z+home.depth/2)*scale])||''}${home.rooms.map(r=>`<text x="${ox+(r.x+home.width/2)*scale}" y="${oy+(r.z+home.depth/2)*scale-4}" text-anchor="middle" fill="#fff" stroke="#10171b" stroke-width="3" paint-order="stroke" font-size="${Math.min(30,Math.round(r.width*scale/Math.max(2,[...r.name].length)),Math.round(r.depth*scale/3))}" font-weight="700" font-family="sans-serif">${safe(r.name)}<tspan x="${ox+(r.x+home.width/2)*scale}" dy="25" font-size="${Math.min(21,Math.round(r.width*scale/8),Math.round(r.depth*scale/4))}" fill="#e4eee7">${r.width.toFixed(2)} × ${r.depth.toFixed(2)} m</tspan></text>`).join('')}<text x="50" y="${h+115}" fill="#a7bbae" font-size="11" font-family="sans-serif">${home.source==='care-manual'?'手動配置':'AI 矩形近似'} · 金色虛線為門洞 / 藍線為窗 · 需實測核對，非施工圖</text></svg>`;}
 
 // ── 房間相鄰圖：方向 3 的前置 ──────────────────────────────────────────
 // 為什麼必須先做這個：openings 只記錄「哪面牆有門」，不知道門通往哪一間房。
@@ -547,11 +561,17 @@ function mergeWallRuns(lines){
    last.posEnd=l.pos;
    last.from=Math.min(last.from,l.from);
    last.to=Math.max(last.to,l.to);
+   // 2026-11-21：厚度要继承 wallLinesFromMask 算好的值。这里自己重算只会得到
+   // posEnd-pos+1 = 1（因为上游已把同一堵墙合并成一条线），3D 于是退回默认 9cm。
+   last.thickness=Math.max(last.thickness||1,l.thickness||1);
   }else{
-   out.push({pos:l.pos,posEnd:l.pos,from:l.from,to:l.to});
+   out.push({pos:l.pos,posEnd:l.pos,from:l.from,to:l.to,thickness:l.thickness||1});
   }
  }
- return out.map(l=>({...l,pos:(l.pos+l.posEnd)/2}));
+ return out.map(l=>{
+  const thickness=Math.max(l.thickness||1,l.posEnd-l.pos+1);
+  return {...l,pos:(l.pos+l.posEnd)/2,thickness};
+ });
 }
 
 // 純用分割模型建整屋：不吃 AI 的矩形，直接用模型的房間連通域。
@@ -657,12 +677,25 @@ export function roomsFromPolygons(polys,segW,segH,width,depth,options={}){
     z:roundHome((l.pos-bcy)*sy),
     x0:roundHome((l.from-bcx)*sx),
     x1:roundHome((l.to-bcx)*sx),
+    // 2026-11-21：把墙的厚度一起带过去。不传的话 3D 只能写死 9cm，
+    // 而同一堵墙被扫描成多条 1px 线，几条 9cm 的板叠在一起就是「3D 很碎」。
+    thickness:roundHome((l.thickness||1)*Math.min(Math.abs(sx)||1,Math.abs(sy)||1)),
    })).filter(w=>Number.isFinite(w.z)&&Number.isFinite(w.x0)&&Number.isFinite(w.x1)),
    v:mergeWallRuns(options.walls.vLines||[]).map(l=>({
     x:roundHome((l.pos-bcx)*sx),
     z0:roundHome((l.from-bcy)*sy),
     z1:roundHome((l.to-bcy)*sy),
+    thickness:roundHome((l.thickness||1)*Math.min(Math.abs(sx)||1,Math.abs(sy)||1)),
    })).filter(w=>Number.isFinite(w.x)&&Number.isFinite(w.z0)&&Number.isFinite(w.z1)),
+   // 2026-11-22：新增矩形墙块。3D 优先用它（块直接画 box，厚度是自然属性），
+   // h/v 线保留给 2D 和还没迁移完的路径。
+   blocks:(options.walls.blocks||[]).map(b=>({
+    x0:roundHome((b.x0-bcx)*sx),
+    y0:roundHome((b.y0-bcy)*sy),
+    x1:roundHome((b.x1-bcx)*sx),
+    y1:roundHome((b.y1-bcy)*sy),
+    thickness:roundHome(b.thickness*Math.min(Math.abs(sx)||1,Math.abs(sy)||1)),
+   })).filter(b=>[b.x0,b.y0,b.x1,b.y1].every(Number.isFinite)&&b.x1>b.x0&&b.y1>b.y0),
   }:null,
   rooms,
  };

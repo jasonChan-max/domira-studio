@@ -358,7 +358,122 @@ export function wallLinesFromMask(mask, width, height, options = {}) {
     return out;
   };
 
-  hLines.push(...collect(true));
-  vLines.push(...collect(false));
+  /**
+   * 把「同一堵墙的多条平行线」合并成一条带厚度的墙线（2026-11-21）。
+   *
+   * 为什么必须这一步：上面按行扫描，一堵 10–20px 厚的墙会产出 10–20 条平行线
+   * （46.03㎡ 实测垂直线 904 条；R(10) 在 y≈48 附近有 20 条）。3D 照着每条线画
+   * 一片墙，结果一堵墙变成 10–20 片薄墙叠在一起——用户说的「3D 很碎、有噪点」。
+   * 模型画得对，是这里把墙的厚度当成了多层重叠。
+   *
+   * 判据：pos 相邻（差 ≤ 6px）且沿线范围重叠 → 同一条墙的下一行。
+   * 6px 是实测出来的（2026-11-21）：一开始写 2px，只降了一半（904→174），
+   * 因为模型画的墙边界每几行就抖 3–5px，差 1px 就合不上。墙本身厚 10–20px，
+   * 抖动在这个范围内，放宽到 6 不会把两堵真墙粘在一起（真墙最少隔 20px）。
+   * 合并后 pos 取中线、thickness 取厚度，from/to 取并集。
+   */
+  const collapseThickness = (lines) => {
+    if (!lines.length) return [];
+    const sorted = [...lines].sort((a, b) => a.pos - b.pos);
+    const out = [];
+    let cur = null;
+    for (const l of sorted) {
+      const sameWall = cur && l.pos - cur.posEnd <= 6 && l.to >= cur.from - 8 && l.from <= cur.to + 8;
+      if (sameWall) {
+        cur.posEnd = l.pos;
+        cur.from = Math.min(cur.from, l.from);
+        cur.to = Math.max(cur.to, l.to);
+      } else {
+        if (cur) out.push(cur);
+        cur = { posStart: l.pos, posEnd: l.pos, from: l.from, to: l.to };
+      }
+    }
+    if (cur) out.push(cur);
+    return out.map((c) => {
+      const thickness = c.posEnd - c.posStart + 1;
+      return {
+        pos: thickness > 1 ? Math.round((c.posStart + c.posEnd) / 2) : c.posStart,
+        from: c.from,
+        to: c.to,
+        len: c.to - c.from,
+        thickness,
+      };
+    })
+      // 2026-11-21 数据层体检：46.03 实测 170 条墙里 161 条厚度 ≤5px、3 条 >100px。
+      // 前者是模型把锯齿边缘也扫成了「墙线」，后者是相邻的几堵墙被误当成一堵。
+      // 真实墙厚 10–20px，所以两头都砍掉。这条过滤是权宜，根因在合并条件还不够严。
+      .filter((l) => l.thickness >= 3 && l.thickness <= 40);
+  };
+
+  hLines.push(...collapseThickness(collect(true)));
+  vLines.push(...collapseThickness(collect(false)));
+  if (options.debug) {
+    // 排查用：把合并前后的原始线一起带出去
+    const rawH = collect(true), rawV = collect(false);
+    return { hLines, vLines, rawH, rawV };
+  }
   return { hLines, vLines };
+}
+
+/**
+ * 从 wall mask 直接提取矩形墙块（2026-11-22）。
+ *
+ * 为什么要它：`wallLinesFromMask` 把墙当成「一维线」，可 mask 里的墙是**有厚度的
+ * 二维块**。逐行扫描再还原成线，永远在「太碎」和「粘成一团」之间摇摆——
+ * 46.03 实测 170 条线里 161 条厚度 ≤5px（锯齿边缘），加厚度过滤后只剩 6 条。
+ *
+ * 这个函数不做线还原：相邻行里 x 范围相近（差 ≤tol）的段直接合并成矩形，
+ * 输出 {x0,y0,x1,y1,w,h,thickness,length}。**厚度是块的自然属性，不是猜的参数。**
+ * 实测 46.03 得 36 块（厚度中位 18px）、R(10) 得 55 块（厚度中位 9px，P10 6/P90 12），
+ * 都和真实墙厚对得上，3D 拿它直接画 box 就不会碎。
+ *
+ * 为什么必须过滤 thickness：1–2px 的是掩码锯齿边缘（不是墙），>40px 的是相邻几堵墙
+ * 被误合并。真实墙厚 8–30px，两头都砍掉。
+ */
+export function wallBlocksFromMask(mask, width, height, options = {}) {
+  const TOL = options.tol ?? 2;
+  const MIN_LEN = options.minLen ?? 3;
+  const blocks = [];
+  let active = [];
+  for (let y = 0; y < height; y++) {
+    const runs = [];
+    let start = -1;
+    for (let x = 0; x <= width; x++) {
+      const on = x < width && mask[y * width + x] === 1;
+      if (on && start < 0) start = x;
+      if (!on && start >= 0) { runs.push([start, x - 1]); start = -1; }
+    }
+    const used = new Array(active.length).fill(false);
+    const next = [];
+    for (const [x0, x1] of runs) {
+      if (x1 - x0 + 1 < MIN_LEN) continue;
+      let found = -1;
+      for (let k = 0; k < active.length; k++) {
+        if (used[k]) continue;
+        const b = active[k];
+        if (Math.abs(b.x0 - x0) <= TOL && Math.abs(b.x1 - x1) <= TOL) { found = k; break; }
+      }
+      if (found >= 0) {
+        const b = active[found];
+        used[found] = true;
+        b.y1 = y;
+        b.x0 = Math.min(b.x0, x0);
+        b.x1 = Math.max(b.x1, x1);
+        next.push(b);
+      } else {
+        next.push({ y0: y, y1: y, x0, x1 });
+      }
+    }
+    for (let k = 0; k < active.length; k++) if (!used[k]) blocks.push(active[k]);
+    active = next;
+  }
+  blocks.push(...active);
+  const out = [];
+  for (const b of blocks) {
+    const w = b.x1 - b.x0 + 1, h = b.y1 - b.y0 + 1;
+    const thickness = Math.min(w, h), length = Math.max(w, h);
+    if (thickness < 3 || thickness > 40 || length < 10) continue;
+    out.push({ x0: b.x0, y0: b.y0, x1: b.x1, y1: b.y1, w, h, thickness, length });
+  }
+  return out;
 }

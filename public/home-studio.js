@@ -3,7 +3,7 @@ import {HOME_KINDS,HOME_COLORS,homeFromAnalysis,validateHome,homePlanSVG,readPla
 import {roomsFromMask,doorsFromMask} from './room-polygon.js';
 import {readPlanNumbers,estimateScale} from './plan-ocr.js';
 import {imageToPixels,detectWalls,snapRoomsToWalls} from './wall-detect.js';
-import {loadWallModel,segmentWalls,wallLinesFromMask} from './wall-onnx.js';
+import {loadWallModel,segmentWalls,wallLinesFromMask,wallBlocksFromMask} from './wall-onnx.js';
 import {detectDoorsOnly} from './door-detect.js';
 const hs=s=>document.querySelector(s),homeEscape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export function createHomeStudio({modal,setCleanup,createHome,notify}){
@@ -88,7 +88,11 @@ export function createHomeStudio({modal,setCleanup,createHome,notify}){
     if(x<fx0)fx0=x;if(x>fx1)fx1=x;if(y<fy0)fy0=y;if(y>fy1)fy1=y;
    }
    const frame=Number.isFinite(fx0)?{x:fx0,y:fy0,w:Math.max(1,fx1-fx0),h:Math.max(1,fy1-fy0)}:null;
-   return {lines:wallLinesFromMask(result.mask,result.width,result.height,{minLenH:minLength,minLenV:minLength,gap:8}),source:result.calibrated?'Domira 牆體模型':'基礎牆體模型',polygons,doors,frame,segWidth:result.width,segHeight:result.height,weakWalls:result.weakWalls,wallRatio:result.wallRatio};
+   // 2026-11-22：同时给「线」和「矩形块」。3D 优先用 blocks（不会碎），
+   // 2D 和 planWalls 还能继续吃 lines，迁移可以分两步走。
+   const lines=wallLinesFromMask(result.mask,result.width,result.height,{minLenH:minLength,minLenV:minLength,gap:8});
+   const blocks=wallBlocksFromMask(result.mask,result.width,result.height);
+   return {lines:{...lines,blocks},source:result.calibrated?'Domira 牆體模型':'基礎牆體模型',polygons,doors,frame,segWidth:result.width,segHeight:result.height,weakWalls:result.weakWalls,wallRatio:result.wallRatio};
   }catch(error){
    console.warn('[wall-model]',error);
    if(live&&ticket===sequence&&upload===image)hs('#floorplan-wall-status').textContent='牆體預覽暫時無法載入，仍可分析房間與尺寸。';

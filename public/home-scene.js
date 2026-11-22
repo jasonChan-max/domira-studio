@@ -32,7 +32,7 @@ export function buildHomeGeometry(home,overview=true){const group=new THREE.Grou
   const leaf=box(group,w,doorH,dep,'#b98a5a',d.x,doorH/2,d.z);
   leaf.castShadow=!overview;
   leaf.userData.door=true;
- }const segment=(s,height,y,material=wallMaterial)=>{const wall=box(group,s.axis==='x'?s.length:.09,height,s.axis==='z'?s.length:.09,material,s.x,y,s.z);wall.castShadow=!overview;};const segRange=(s,a,b,height,y,material=wallMaterial)=>{const len=b-a,mid=(a+b)/2;const wall=box(group,s.axis==='x'?len:.09,height,s.axis==='z'?len:.09,material,s.axis==='x'?mid:s.x,y,s.axis==='z'?mid:s.z);wall.castShadow=!overview;};
+ }const segment=(s,height,y,material=wallMaterial)=>{const th=Number.isFinite(s.thickness)&&s.thickness>.02?s.thickness:.09;const wall=box(group,s.axis==='x'?s.length:th,height,s.axis==='z'?s.length:th,material,s.x,y,s.z);wall.castShadow=!overview;};const segRange=(s,a,b,height,y,material=wallMaterial)=>{const th=Number.isFinite(s.thickness)&&s.thickness>.02?s.thickness:.09;const len=b-a,mid=(a+b)/2;const wall=box(group,s.axis==='x'?len:th,height,s.axis==='z'?len:th,material,s.axis==='x'?mid:s.x,y,s.axis==='z'?mid:s.z);wall.castShadow=!overview;};
  // 把牆在門的位置切開（2026-11-18）：只畫門板而不切牆，視覺上就是「門貼在牆上」。
  // 門的 bbox 來自 YOLO 檢測或分割的 door 類，和牆線不一定完全對齊，
  // 所以用「中心落在這條牆線 ±0.2 m 內、且重疊 >0.15 m」來配對，門洞上方補過梁。
@@ -49,9 +49,19 @@ export function buildHomeGeometry(home,overview=true){const group=new THREE.Grou
    return b-a>.15?[a,b]:null;
   }).filter(Boolean).sort((p,q)=>p[0]-q[0]);
  };
- const detectedWalls=[...(home.walls?.h||[]).map(w=>({axis:'x',x:(w.x0+w.x1)/2,z:w.z,length:w.x1-w.x0,height:home.height,kind:'wall'})),...(home.walls?.v||[]).map(w=>({axis:'z',x:w.x,z:(w.z0+w.z1)/2,length:w.z1-w.z0,height:home.height,kind:'wall'}))].filter(s=>[s.x,s.z,s.length,s.height].every(Number.isFinite)&&s.length>0);
+ const detectedWalls=[...(home.walls?.h||[]).map(w=>({axis:'x',x:(w.x0+w.x1)/2,z:w.z,length:w.x1-w.x0,height:home.height,thickness:w.thickness,kind:'wall'})),...(home.walls?.v||[]).map(w=>({axis:'z',x:w.x,z:(w.z0+w.z1)/2,length:w.z1-w.z0,height:home.height,thickness:w.thickness,kind:'wall'}))].filter(s=>[s.x,s.z,s.length,s.height].every(Number.isFinite)&&s.length>0);
  // Polygon homes carry measured mask walls separately from room boundaries.
- const sceneWalls=home.rooms.every(r=>r.polygon?.length>=3)&&detectedWalls.length?detectedWalls:planWalls(home);
+ // 2026-11-22：优先用矩形墙块——块直接画 box，厚度是块的自然属性，不会碎。
+ // 用线的话一堵墙 10-20px 厚会被拆成 10-20 条，每条画一片 9cm 的板叠在一起。
+ const wallBlocks=(home.walls?.blocks||[]).filter(b=>[b.x0,b.y0,b.x1,b.y1].every(Number.isFinite)&&b.x1>b.x0&&b.y1>b.y0);
+ const useBlocks=wallBlocks.length>0&&home.rooms.every(r=>r.polygon?.length>=3);
+ if(useBlocks){
+  for(const b of wallBlocks){
+   const w=b.x1-b.x0,d=b.y1-b.y0;
+   box(group,w,home.height,d,wallMaterial,(b.x0+b.x1)/2,home.height/2,(b.y0+b.y1)/2);
+  }
+ }
+ const sceneWalls=useBlocks?[]:(home.rooms.every(r=>r.polygon?.length>=3)&&detectedWalls.length?detectedWalls:planWalls(home));
  let glassMaterial;
  for(const w of home.windows||[]){
   if(![w.x,w.z,w.w,w.d].every(Number.isFinite)||w.w<=0||w.d<=0)continue;
