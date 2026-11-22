@@ -1,178 +1,81 @@
 #!/usr/bin/env node
-/* 用真实户型图跑完整 3D 管线，数墙的 mesh 数量与厚度分布。
- * 为什么要它：「3D 很碎」是用户看图发现的，只有真页面的 buildHomeGeometry 能反映。
- * 用法：先开 dev server，再 `node tools/probe-3d.cjs <图片>`
- */
-const { spawn } = require('child_process');
-const fs = require('fs');
-const os = require('os');
-const path = require('path');
-
-const BASE = (process.env.DOMIRA_PROBE_URL || 'http://127.0.0.1:3000').replace(/\/$/, '');
-const PORT = Number(process.env.DOMIRA_CDP_PORT || 9342);
-const PROFILE = path.join(os.tmpdir(), 'domira-probe-3d');
-const PUBLIC = path.join(__dirname, '..', 'public');
-const input = process.argv[2];
-
-const CANDIDATES = [
-  'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
-  'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
-  'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe',
-];
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-
-async function main() {
-  if (!input) throw new Error('用法: node tools/probe-3d.cjs <图片>');
-  if (!fs.existsSync(input)) throw new Error('缺图: ' + input);
-
-  const chrome = CANDIDATES.find((p) => fs.existsSync(p));
-  if (!chrome) throw new Error('找不到 Chrome / Edge');
-  const proc = spawn(chrome, [
-    '--headless=new', '--disable-gpu', '--no-sandbox', '--enable-unsafe-swiftshader',
-    '--remote-debugging-port=' + PORT, '--user-data-dir=' + PROFILE, 'about:blank',
-  ], { stdio: 'ignore', windowsHide: true });
-
-  let targets = null;
-  for (let i = 0; i < 60; i++) {
-    await sleep(250);
-    try {
-      const r = await fetch(`http://127.0.0.1:${PORT}/json/list`);
-      targets = await r.json();
-      if (targets.find((t) => t.type === 'page')) break;
-    } catch {}
-  }
-  const page = targets && targets.find((t) => t.type === 'page');
-  if (!page) throw new Error('Chrome 没起来');
-
-  const ws = new WebSocket(page.webSocketDebuggerUrl);
-  let id = 0;
-  const pending = new Map();
-  ws.addEventListener('message', (ev) => {
-    const m = JSON.parse(ev.data);
-    if (pending.has(m.id)) {
-      const { resolve, reject } = pending.get(m.id);
-      pending.delete(m.id);
-      m.error ? reject(new Error(JSON.stringify(m.error))) : resolve(m.result);
-    }
-  });
-  await new Promise((res, rej) => {
-    ws.addEventListener('open', res, { once: true });
-    ws.addEventListener('error', rej, { once: true });
-  });
-  const send = (method, params = {}) => new Promise((resolve, reject) => {
-    const key = ++id;
-    pending.set(key, { resolve, reject });
-    ws.send(JSON.stringify({ id: key, method, params }));
-  });
-
-  await send('Page.enable');
-  await send('Runtime.enable');
-  await send('Page.navigate', { url: `${BASE}/index.html` });
-  await sleep(2500);
-
-  const staged = path.join(PUBLIC, '__probe3d-input.jpg');
-  fs.copyFileSync(input, staged);
-  const stamp = Date.now();
-
-  const expr = `(async () => {
-    const onnx = await import('/wall-onnx.js');
-    const poly = await import('/room-polygon.js');
-    const dom = await import('/home-domain.js');
-    const scene = await import('/home-scene.js');
-
-    const img = new Image();
-    img.src = '/__probe3d-input.jpg?t=${stamp}';
-    await img.decode();
-    const c = document.createElement('canvas');
-    c.width = img.width; c.height = img.height;
-    c.getContext('2d').drawImage(img, 0, 0);
-
-    const seg = await onnx.segmentWalls(c, { modelUrl: '/models/unet-int8.onnx' });
-    const walls = onnx.wallLinesFromMask(seg.mask, seg.width, seg.height, { debug: true });
-    const blocks = onnx.wallBlocksFromMask(seg.mask, seg.width, seg.height);
-    walls.blocks = blocks;
-    const roomsArr = poly.roomsFromMask(seg.mask, seg.width, seg.height, {});
-    const dbg = { roomsArrType: Array.isArray(roomsArr) ? 'array' : typeof roomsArr, roomsArrLen: Array.isArray(roomsArr) ? roomsArr.length : -1 };
-    if (Array.isArray(roomsArr) && roomsArr[0]) dbg.firstKeys = Object.keys(roomsArr[0]);
-    if (Array.isArray(roomsArr) && roomsArr[0] && roomsArr[0].polygon) dbg.polyLen = roomsArr[0].polygon.length;
-    // 走真实入口 roomsFromPolygons，它会做 hLines -> {h,v} 的坐标换算与厚度传递
-    const polys = (Array.isArray(roomsArr) ? roomsArr : []).filter(r => Array.isArray(r.polygon) && r.polygon.length >= 3);
-    let home = null;
-    try {
-      home = dom.roomsFromPolygons(polys, seg.width, seg.height, 10, 8, { walls, height: 2.7 });
-    } catch (e) {
-      return { error: 'roomsFromPolygons: ' + String(e), dbg, polysLen: polys.length, hLines: walls.hLines.length, vLines: walls.vLines.length };
-    }
-    let geo = null;
-    try { geo = scene.buildHomeGeometry(home); } catch (e) { return { error: String(e) }; }
-
-    const groups = geo.group ? geo.group.children : (geo.children || []);
-    const ths = [];
-    let wallMeshes = 0, thin = 0, thick = 0;
-    const walk = (node) => {
-      if (!node || !node.children) return;
-      for (const m of node.children) {
-        if (m.geometry && m.geometry.parameters) {
-          const p = m.geometry.parameters;
-          if (Number.isFinite(p.width) && Number.isFinite(p.depth) && Number.isFinite(p.height) && p.height > 1.5) {
-            wallMeshes++;
-            const th = Math.min(p.width, p.depth);
-            ths.push(th);
-            if (th < 0.06) thin++;
-            if (th > 0.12) thick++;
-          }
-        }
-        walk(m);
-      }
-    };
-    walk(geo.group || geo);
-    ths.sort((a, b) => a - b);
-    return {
-      imgSize: [seg.width, seg.height],
-      hLines: walls.hLines.length,
-      vLines: walls.vLines.length,
-      rooms: home.rooms.length,
-      homeBlocks: home.walls?.blocks?.length || 0,
-      homeWallsH: home.walls?.h?.length || 0,
-      homeWallsV: home.walls?.v?.length || 0,
-      // 数据层体检：每条墙的厚度/长度分布，找出异常值是谁
-      wallStats: (() => {
-        const hw = (home.walls?.h || []).map(w => ({ t: +(w.thickness || 0).toFixed(3), len: +(Math.abs(w.x1 - w.x0)).toFixed(2), pos: +(w.z || 0).toFixed(2), axis: 'h' }));
-        const vw = (home.walls?.v || []).map(w => ({ t: +(w.thickness || 0).toFixed(3), len: +(Math.abs(w.z1 - w.z0)).toFixed(2), pos: +(w.x || 0).toFixed(2), axis: 'v' }));
-        const all = [...hw, ...vw];
-        const byT = [...all].sort((a, b) => b.t - a.t);
-        return {
-          total: all.length,
-          thicknessBuckets: {
-            '0 (没有)': all.filter(w => w.t === 0).length,
-            '<=0.05': all.filter(w => w.t > 0 && w.t <= 0.05).length,
-            '0.05-0.15': all.filter(w => w.t > 0.05 && w.t <= 0.15).length,
-            '0.15-0.3': all.filter(w => w.t > 0.15 && w.t <= 0.3).length,
-            '0.3-1': all.filter(w => w.t > 0.3 && w.t <= 1).length,
-            '>1 (肯定错)': all.filter(w => w.t > 1).length,
-          },
-          thickest5: byT.slice(0, 5),
-          thinnest5: byT.slice(-5).reverse(),
-        };
-      })(),
-      wallMeshes,
-      thinWalls: thin,
-      thickWalls: thick,
-      medianThickness: ths.length ? +ths[Math.floor(ths.length / 2)].toFixed(3) : 0,
-      thicknessSample: ths.slice(0, 8).map(v => +v.toFixed(3)),
-    };
-  })()`;
-
-  const res = await send('Runtime.evaluate', { expression: expr, awaitPromise: true, returnByValue: true });
-  if (res.exceptionDetails) {
-    console.log('前端报错:', JSON.stringify(res.exceptionDetails).slice(0, 600));
-  } else {
-    console.log(JSON.stringify(res.result.value, null, 2));
-  }
-  try { fs.unlinkSync(staged); } catch {}
-  ws.close();
-  proc.kill();
+// 同图、同识别数据、同相机比较墙块与轮廓，避免把模型变化误当作几何修复效果。
+const {spawn}=require('node:child_process'),fs=require('node:fs'),path=require('node:path'),os=require('node:os');
+const root=path.resolve(__dirname,'..'),input=process.argv[2],base=(process.env.DOMIRA_PROBE_URL||'http://127.0.0.1:3000').replace(/\/$/,'');
+const port=Number(process.env.DOMIRA_CDP_PORT||9342),out=path.join(root,'.screenshots/wall-repair'),staged=path.join(root,'public/__probe3d-input.jpg');
+const pause=ms=>new Promise(r=>setTimeout(r,ms));
+async function main(){
+ if(!input||!fs.existsSync(input))throw Error('用法：node tools/probe-3d.cjs <原图>');
+ const chrome=['C:/Program Files/Google/Chrome/Application/chrome.exe','C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe'].find(fs.existsSync);if(!chrome)throw Error('未找到 Chrome/Edge');
+ fs.mkdirSync(out,{recursive:true});fs.copyFileSync(input,staged);
+ const proc=spawn(chrome,['--headless=new','--disable-gpu','--no-sandbox','--enable-unsafe-swiftshader',`--remote-debugging-port=${port}`,`--user-data-dir=${path.join(os.tmpdir(),'domira-wall-repair-probe')}`,'about:blank'],{stdio:'ignore',windowsHide:true});let ws;
+ try{
+  let page;for(let i=0;i<80;i++){try{page=(await(await fetch(`http://127.0.0.1:${port}/json/list`)).json()).find(t=>t.type==='page');}catch{}if(page)break;await pause(250);}if(!page)throw Error('浏览器启动失败');
+  ws=new WebSocket(page.webSocketDebuggerUrl);await new Promise((r,j)=>{ws.addEventListener('open',r,{once:true});ws.addEventListener('error',j,{once:true});});let serial=0;const pending=new Map();
+  ws.addEventListener('message',event=>{const m=JSON.parse(event.data),p=pending.get(m.id);if(p){pending.delete(m.id);m.error?p.reject(Error(m.error.message)):p.resolve(m.result);}});
+  const send=(method,params={})=>new Promise((resolve,reject)=>{const id=++serial;pending.set(id,{resolve,reject});ws.send(JSON.stringify({id,method,params}));});
+  await send('Page.enable');await send('Page.navigate',{url:base+'/studio.html'});await pause(1000);
+  const saved=path.join(out,'blocks-fixed-scene.js'),baseline=fs.existsSync(saved)?'data:text/javascript;base64,'+Buffer.from(fs.readFileSync(saved,'utf8').replace(/from (['"])\.\/([^'"]+)\1/g,(_,q,file)=>`from '${base}/${file}'`)).toString('base64'):null;
+  const r=await send('Runtime.evaluate',{expression:`(${probeInBrowser.toString()})(${JSON.stringify(baseline)})`,awaitPromise:true,returnByValue:true,timeout:180000});if(r.exceptionDetails)throw Error(JSON.stringify(r.exceptionDetails));
+  const report=r.result.value;for(const [name,url] of Object.entries(report.images))fs.writeFileSync(path.join(out,name+'.png'),Buffer.from(url.split(',')[1],'base64'));fs.writeFileSync(path.join(out,'plan-2d.svg'),report.svg);delete report.images;delete report.svg;
+  fs.writeFileSync(path.join(out,'probe-3d.json'),JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report,null,2));
+ }finally{ws?.close();proc.kill();fs.unlinkSync(staged);}
 }
-
-main().catch((e) => { console.error('失败:', e.message); process.exit(1); });
-
+async function probeInBrowser(baselineURL){
+ const onnx=await import('/wall-onnx.js'),poly=await import('/room-polygon.js'),dom=await import('/home-domain.js');
+ const {signedArea,pointInRing}=await import('/wall-contours.js'),{detectDoors}=await import('/door-detect.js');
+ const {geometryFromSegmentation,homeFromRecognition}=await import('/floorplan-geometry.js');
+ const sceneModule=await import('/home-scene.js'),THREE=await import('/vendor/three.module.js');
+ const img=new Image();img.src='/__probe3d-input.jpg?t='+Date.now();await img.decode();const canvas=document.createElement('canvas');canvas.width=img.width;canvas.height=img.height;canvas.getContext('2d').drawImage(img,0,0);
+ const t=performance.now(),seg=await onnx.segmentWalls(canvas,{modelUrl:'/models/unet-int8.onnx'}),segMs=performance.now()-t,min=Math.max(18,Math.round(Math.max(seg.width,seg.height)*.03));
+ const boxes=await detectDoors(canvas,{modelUrl:'/models/yolo-doors-int8.onnx'});
+ const traceStart=performance.now(),recognized=geometryFromSegmentation(seg,boxes),geometryMs=performance.now()-traceStart;
+ const {frame}=recognized,{contours}=recognized.lines,width=10,depth=width*frame.h/frame.w;
+ // JSON 往返模拟项目保存；只测内存中的对象会漏掉窗字段在保存链上的丢失。
+ const home=JSON.parse(JSON.stringify(homeFromRecognition(recognized,width,depth,{height:2.7})));
+ const median=a=>[...a].sort((x,y)=>x-y)[Math.floor(a.length/2)],release=g=>g.traverse(o=>o.geometry?.dispose());
+ function benchmarkBuild(build){const times=[];let geometry;for(let i=0;i<10;i++){const start=performance.now(),g=build(home,false);if(i>=3)times.push(performance.now()-start);if(i===9)geometry=g;else release(g);}return {ms:median(times),samples:times,geometry};}
+ const current=benchmarkBuild(sceneModule.buildHomeGeometry),baseline=baselineURL?benchmarkBuild((await import(baselineURL)).buildHomeGeometry):null;
+ const renderer=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});renderer.setSize(900,700);renderer.setPixelRatio(1);const camera=new THREE.PerspectiveCamera(40,900/700,.1,100);camera.position.set(width,Math.max(width,depth)*1.3,depth*1.3);camera.lookAt(0,.6,0);
+ function measureRender(geometry){const scene=new THREE.Scene();scene.background=new THREE.Color('#202830');scene.add(new THREE.HemisphereLight('#ffffff','#707070',2));const light=new THREE.DirectionalLight('#ffffff',2.5);light.position.set(5,12,8);scene.add(light);scene.add(geometry);const gl=renderer.getContext();for(let i=0;i<5;i++){renderer.render(scene,camera);gl.finish();}const times=[];for(let i=0;i<12;i++){const start=performance.now();renderer.render(scene,camera);gl.finish();times.push(performance.now()-start);}return {ms:median(times),samples:times,drawCalls:renderer.info.render.calls,triangles:renderer.info.render.triangles,image:renderer.domElement.toDataURL()};}
+ const currentRender=measureRender(current.geometry),baselineRender=baseline?measureRender(baseline.geometry):null;
+ const count=(g,predicate)=>{let n=0;g.traverse(o=>{if(predicate(o))n++;});return n;};
+ const thickness=home.walls.blocks.map(b=>Math.min(b.x1-b.x0,b.y1-b.y0)).sort((a,b)=>a-b);
+ let tp=0,fp=0,fn=0;for(let y=0;y<seg.height;y++)for(let x=0;x<seg.width;x++){const p=[x+.5,y+.5],predicted=contours.some(s=>pointInRing(p,s.outer)&&!s.holes.some(h=>pointInRing(p,h))),actual=seg.mask[y*seg.width+x]===1;if(predicted&&actual)tp++;else if(predicted)fp++;else if(actual)fn++;}
+ const images={'contours-3d':currentRender.image};if(baselineRender)images['blocks-3d']=baselineRender.image;
+ const svg=dom.homePlanSVG(home),svgImg=new Image();svgImg.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);await svgImg.decode();const sc=document.createElement('canvas');sc.width=svgImg.width;sc.height=svgImg.height;sc.getContext('2d').drawImage(svgImg,0,0);images['plan-2d']=sc.toDataURL();
+ const pair=document.createElement('canvas');pair.width=1800;pair.height=1000;const ctx=pair.getContext('2d');ctx.fillStyle='#202830';ctx.fillRect(0,0,1800,1000);ctx.fillStyle='#ffffff';ctx.font='24px sans-serif';ctx.fillText('Original',20,35);ctx.fillText('Contour plan',920,35);for(const [i,image] of [img,svgImg].entries()){const scale=Math.min(880/image.width,940/image.height);ctx.drawImage(image,i*900+(900-image.width*scale)/2,50,image.width*scale,image.height*scale);}images['plan-original-comparison']=pair.toDataURL();
+ renderer.dispose();renderer.forceContextLoss();
+ // 直接操作真实上传控件和建房按钮，避免共享函数的测试掩盖页面漏传 windows 的问题。
+ const {createHomeStudio}=await import('/home-studio.js');let created;
+ const modal=document.querySelector('#modal');
+ const studio=createHomeStudio({modal:(title,content)=>{modal.querySelector('#modal-body').innerHTML=content;if(!modal.open)modal.showModal();},setCleanup:()=>{},createHome:(name,home)=>{created=JSON.parse(JSON.stringify(home));},notify:()=>{}});
+ await studio.open();
+ const file=new File([await(await fetch('/__probe3d-input.jpg')).blob()],'probe.jpg',{type:'image/jpeg'}),transfer=new DataTransfer();transfer.items.add(file);
+ const input=document.querySelector('#floorplan-file');input.files=transfer.files;await input.onchange({target:input});
+ document.querySelector('#floorplan-known-width').value='10';
+ await document.querySelector('#floorplan-model-only').onclick();
+ const svgWindowCount=document.querySelectorAll('#floorplan-preview [data-opening="window"]').length;
+ const newWidth=document.querySelector('#home-width');newWidth.value='12';newWidth.onchange();
+ document.querySelector('#floorplan-confirm').checked=true;document.querySelector('#floorplan-build').onclick();
+ const initialBuildError=document.querySelector('#floorplan-error').textContent;
+ const reviewedRooms=[];
+ if(!created&&initialBuildError){
+  // 明确保留原始保存失败结果；再验证产品已有的人工核对流程，不能静默删除模型的错误候选。
+  const small=Array.from(document.querySelectorAll('[data-home-field="depth"]')).filter(e=>Number(e.value)<.6);
+  for(const e of small.reverse()){
+   const index=e.dataset.roomIndex,name=document.querySelector(`[data-home-field="name"][data-room-index="${index}"]`).value;
+   reviewedRooms.push({name,depth:Number(e.value),action:'通过房间删除按钮人工移除小于验证下限的候选'});
+   document.querySelector(`[data-remove-room="${index}"]`).onclick();
+  }
+  if(reviewedRooms.length)document.querySelector('#floorplan-build').onclick();
+ }
+ if(!created)throw Error('页面建房失败：'+document.querySelector('#floorplan-error').textContent+' '+document.querySelector('#floorplan-model-status').textContent+' '+JSON.stringify(Array.from(document.querySelectorAll('[data-home-field]')).map(e=>({room:e.dataset.roomIndex,key:e.dataset.homeField,value:e.value}))));
+ if(created.windows.length!==home.windows.length||svgWindowCount!==created.windows.length||!created.walls.contours.length)throw Error('页面或保存链丢失窗/墙轮廓');
+ if(Math.abs(created.width-12)>1e-6)throw Error('页面长宽修改没有保存');
+ const uiFlow={initialBuildError,reviewedRooms,rooms:created.rooms.length,windows:created.windows.length,windowSource:created.windowSource,svgWindowCount,savedContours:created.walls.contours.length,savedWidth:created.width};
+ studio.stop();
+ const metrics=(build,render)=>({buildMs:build.ms,buildSamples:build.samples,frameMs:render.ms,frameSamples:render.samples,meshCount:count(build.geometry,o=>o.isMesh),wallMeshes:count(build.geometry,o=>o.userData.wall),drawCalls:render.drawCalls,triangles:render.triangles});
+ return {imgSize:[seg.width,seg.height],segMs,rooms:home.rooms.length,doors:home.doors.length,windows:home.windows.length,homeBlocks:home.walls.blocks.length,homeContours:contours.length,holes:contours.reduce((s,c)=>s+c.holes.length,0),vertices:contours.reduce((s,c)=>s+c.outer.length+c.holes.reduce((a,h)=>a+h.length,0),0),geometryMs,contourArea:contours.reduce((sum,s)=>sum+Math.abs(signedArea(s.outer))-s.holes.reduce((n,h)=>n+Math.abs(signedArea(h)),0),0),maskFidelity:{precision:tp/(tp+fp),recall:tp/(tp+fn),extraPixels:fp,missedPixels:fn},thickness:{min:thickness[0],median:median(thickness),max:thickness.at(-1)},current:metrics(current,currentRender),baseline:baseline?metrics(baseline,baselineRender):null,uiFlow,images,svg};
+}
+main().catch(error=>{console.error(error);process.exitCode=1;});

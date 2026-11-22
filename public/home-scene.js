@@ -2,6 +2,8 @@ import {CARE_FLOORING} from './care-flooring.js';
 import * as THREE from './vendor/three.module.js';
 import {box} from './furniture.js';
 import {planWalls,HOME_COLORS} from './home-domain.js';
+import {cutWallBlock} from './wall-openings.js';
+import {buildContourWallMeshes} from './wall-mesh.js';
 export function buildHomeGeometry(home,overview=true){const group=new THREE.Group();const slab=box(group,home.width,.06,home.depth,'#ece9e1',0,-.07,0);slab.userData.slab=true;for(const r of home.rooms){
   const color=CARE_FLOORING[r.flooring]?.color||HOME_COLORS[r.kind]||'#b4baa9';
   if(Array.isArray(r.polygon)&&r.polygon.length>=3){
@@ -50,26 +52,35 @@ export function buildHomeGeometry(home,overview=true){const group=new THREE.Grou
   }).filter(Boolean).sort((p,q)=>p[0]-q[0]);
  };
  const detectedWalls=[...(home.walls?.h||[]).map(w=>({axis:'x',x:(w.x0+w.x1)/2,z:w.z,length:w.x1-w.x0,height:home.height,thickness:w.thickness,kind:'wall'})),...(home.walls?.v||[]).map(w=>({axis:'z',x:w.x,z:(w.z0+w.z1)/2,length:w.z1-w.z0,height:home.height,thickness:w.thickness,kind:'wall'}))].filter(s=>[s.x,s.z,s.length,s.height].every(Number.isFinite)&&s.length>0);
- // Polygon homes carry measured mask walls separately from room boundaries.
- // 2026-11-22：优先用矩形墙块——块直接画 box，厚度是块的自然属性，不会碎。
- // 用线的话一堵墙 10-20px 厚会被拆成 10-20 条，每条画一片 9cm 的板叠在一起。
+ // 轮廓保留真实凹角与空洞；旧项目没有轮廓时仍须能读取原有墙块和线，不能让保存过的房子消失。
  const wallBlocks=(home.walls?.blocks||[]).filter(b=>[b.x0,b.y0,b.x1,b.y1].every(Number.isFinite)&&b.x1>b.x0&&b.y1>b.y0);
- const useBlocks=wallBlocks.length>0&&home.rooms.every(r=>r.polygon?.length>=3);
+ const polygonHome=home.rooms.every(r=>r.polygon?.length>=3);
+ const useContours=polygonHome&&home.walls?.contours?.length>0;
+ const useBlocks=!useContours&&wallBlocks.length>0&&polygonHome;
+ if(useContours)for(const mesh of buildContourWallMeshes(home,wallMaterial,overview))group.add(mesh);
+ const blockWindows=new Set();
+ const blockGlass=new THREE.MeshPhysicalMaterial({color:'#a5c5cf',transparent:true,opacity:.4,roughness:.15,metalness:.15,side:THREE.DoubleSide});
  if(useBlocks){
   for(const b of wallBlocks){
-   const w=b.x1-b.x0,d=b.y1-b.y0;
-   box(group,w,home.height,d,wallMaterial,(b.x0+b.x1)/2,home.height/2,(b.y0+b.y1)/2);
+   const parts=cutWallBlock(b,home.doors,home.windows,home.height);
+   for(const p of [...parts.solids,...parts.glass]){
+    const mesh=box(group,p.x1-p.x0,p.top-p.bottom,p.y1-p.y0,p.kind==='glass'?blockGlass:wallMaterial,(p.x0+p.x1)/2,(p.bottom+p.top)/2,(p.y0+p.y1)/2);
+    mesh.userData.wall=p.kind!=='glass';mesh.userData.window=p.kind==='glass';mesh.userData.wallPart=p.kind;
+    mesh.castShadow=!overview&&p.kind!=='glass';
+   }
+   for(const o of parts.openings)if(o.kind==='window')blockWindows.add(o.index);
   }
  }
- const sceneWalls=useBlocks?[]:(home.rooms.every(r=>r.polygon?.length>=3)&&detectedWalls.length?detectedWalls:planWalls(home));
+ const sceneWalls=useBlocks||useContours?[]:(home.rooms.every(r=>r.polygon?.length>=3)&&detectedWalls.length?detectedWalls:planWalls(home));
  let glassMaterial;
- for(const w of home.windows||[]){
+ for(const [windowIndex,w] of (home.windows||[]).entries()){
+  if(blockWindows.has(windowIndex))continue;
   if(![w.x,w.z,w.w,w.d].every(Number.isFinite)||w.w<=0||w.d<=0)continue;
-  const sill=Math.min(.85,home.height*.3),top=Math.min(2.1,home.height-.15);
+  const top=Math.min(2.1,home.height-.15),sill=Math.min(.85,top-.2);
   if(top<=sill)continue;
-  const pane=box(group,w.horizontal?w.w:.07,top-sill,w.horizontal?.07:w.d,'#a5c5cf',w.x,(sill+top)/2,w.z);
-  pane.material.dispose();
-  pane.material=glassMaterial??=new THREE.MeshPhysicalMaterial({color:'#a5c5cf',transparent:true,opacity:.4,roughness:.15,metalness:.15,side:THREE.DoubleSide});pane.userData.window=true;
+  glassMaterial??=new THREE.MeshPhysicalMaterial({color:'#a5c5cf',transparent:true,opacity:.4,roughness:.15,metalness:.15,side:THREE.DoubleSide});
+  const pane=new THREE.Mesh(new THREE.BoxGeometry(w.horizontal?w.w:.07,top-sill,w.horizontal?.07:w.d),glassMaterial);
+  pane.position.set(w.x,(sill+top)/2,w.z);pane.userData.window=true;group.add(pane);
  }
  for(const s of sceneWalls){if(s.kind==='door'){const top=Math.min(2.1,s.height-.15);segment(s,s.height-top,(s.height+top)/2);}else if(s.kind==='window'){const top=Math.min(2.1,s.height-.15),sill=Math.min(.85,top-.2);segment(s,sill,sill/2);segment(s,s.height-top,(s.height+top)/2);const glass=new THREE.MeshPhysicalMaterial({color:'#a5c5cf',transparent:true,opacity:.22,roughness:.15,metalness:.15,side:THREE.DoubleSide});segment(s,top-sill,(top+sill)/2,glass);}else{
   const cuts=doorSegments(s);

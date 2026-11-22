@@ -1,0 +1,125 @@
+{
+  "date": "2026-11-22",
+  "sourceBaseCommit": "4a04fd5",
+  "fixture": "NLYIG4QKTK7UGAABAAAAACA8.jpg",
+  "fixtureSha256": "073c2aa05ca23d03d52c83fece70998fbe5fd43f561accd06b60a65d61df6691",
+  "environment": "Node.js 24; headless Chrome; --disable-gpu --enable-unsafe-swiftshader; warm repeated timings",
+  "models": {
+    "unetSha256": "9e639256aa950ce2a6982593a1cb8324e2acac651e8fb6bea32769f74ba6aa98",
+    "yoloSha256": "6f257e8060d025f233a1e525067b6a12c8807c6b3a371f989447a42fc57d82c9"
+  },
+  "performanceAcceptance": {
+    "userReply": "继续第三步",
+    "note": "保留已报告的一次性构建开销，不按性能自动切换到墙块"
+  },
+  "maskFidelityMeaning": "仅衡量轮廓与输入分割 mask 的一致性，不代表原图识别准确率。",
+  "tests": {
+    "total": 276,
+    "passed": 276,
+    "failed": 0,
+    "fullOutput": "npm-test-full.txt"
+  },
+  "imgSize": [
+    1200,
+    900
+  ],
+  "segMs": 23121.699999809265,
+  "rooms": 4,
+  "doors": 5,
+  "windows": 8,
+  "homeBlocks": 40,
+  "homeContours": 8,
+  "holes": 0,
+  "vertices": 260,
+  "geometryMs": 131.90000009536743,
+  "contourArea": 67571,
+  "maskFidelity": {
+    "precision": 1,
+    "recall": 1,
+    "extraPixels": 0,
+    "missedPixels": 0
+  },
+  "thickness": {
+    "min": 0.02499999999999991,
+    "median": 0.18900000000000006,
+    "max": 0.3769999999999998
+  },
+  "current": {
+    "buildMs": 5.099999904632568,
+    "buildSamples": [
+      6.799999713897705,
+      5.700000286102295,
+      5.099999904632568,
+      5.699999809265137,
+      4.900000095367432,
+      4.900000095367432,
+      5.099999904632568
+    ],
+    "frameMs": 0.5,
+    "frameSamples": [
+      0.5,
+      0.40000009536743164,
+      0.5,
+      0.40000009536743164,
+      0.5,
+      0.5,
+      0.3000001907348633,
+      0.39999961853027344,
+      0.5,
+      0.3000001907348633,
+      0.5,
+      0.40000009536743164
+    ],
+    "meshCount": 21,
+    "wallMeshes": 3,
+    "drawCalls": 33,
+    "triangles": 3357
+  },
+  "baseline": {
+    "buildMs": 1,
+    "buildSamples": [
+      1.1999998092651367,
+      1,
+      0.9000000953674316,
+      0.8000001907348633,
+      1,
+      0.7999997138977051,
+      1.5999999046325684
+    ],
+    "frameMs": 0.6999998092651367,
+    "frameSamples": [
+      0.6000003814697266,
+      0.6999998092651367,
+      0.6999998092651367,
+      0.7000002861022949,
+      0.5999999046325684,
+      0.5999999046325684,
+      0.5999999046325684,
+      1.200000286102295,
+      0.40000009536743164,
+      0.8999996185302734,
+      0.7000002861022949,
+      0.8000001907348633
+    ],
+    "meshCount": 73,
+    "wallMeshes": 54,
+    "drawCalls": 86,
+    "triangles": 969
+  },
+  "uiFlow": {
+    "initialBuildError": "空間4 的尺寸或位置超出全屋範圍；單間長寬需為 0.6–20m。",
+    "reviewedRooms": [
+      {
+        "name": "空間4",
+        "depth": 0.4,
+        "action": "通过房间删除按钮人工移除小于验证下限的候选"
+      }
+    ],
+    "rooms": 3,
+    "windows": 8,
+    "windowSource": "yolo",
+    "svgWindowCount": 8,
+    "savedContours": 8,
+    "savedWidth": 12
+  }
+}

@@ -1,10 +1,10 @@
 import {API_BASE} from './api-config.js';
-import {HOME_KINDS,HOME_COLORS,homeFromAnalysis,validateHome,homePlanSVG,readPlanDimensions,roomsFromPolygons} from './home-domain.js';
-import {roomsFromMask,doorsFromMask} from './room-polygon.js';
+import {HOME_KINDS,HOME_COLORS,homeFromAnalysis,validateHome,homePlanSVG,readPlanDimensions} from './home-domain.js';
 import {readPlanNumbers,estimateScale} from './plan-ocr.js';
 import {imageToPixels,detectWalls,snapRoomsToWalls} from './wall-detect.js';
-import {loadWallModel,segmentWalls,wallLinesFromMask,wallBlocksFromMask} from './wall-onnx.js';
-import {detectDoorsOnly} from './door-detect.js';
+import {loadWallModel,segmentWalls} from './wall-onnx.js';
+import {detectDoors} from './door-detect.js';
+import {geometryFromSegmentation,homeFromRecognition,attachDetectedOpenings,scaleDetectedGeometry} from './floorplan-geometry.js';
 const hs=s=>document.querySelector(s),homeEscape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export function createHomeStudio({modal,setCleanup,createHome,notify}){
  let sequence=0,controller=null,image=null,analysis=null,draft=null,live=false;
@@ -58,41 +58,11 @@ export function createHomeStudio({modal,setCleanup,createHome,notify}){
     :result.stats.wall
      ?(result.calibrated?'Domira 牆體模型已完成辨識。':'基礎牆體模型已完成辨識。')+' 灰＝地板、紅＝牆、藍＝門、綠＝窗（疊在原圖上，未上色處模型判為屋外）。'
      :'模型未辨識到牆體，請改用更清晰的單層圖紙。';
-   const minLength=Math.max(18,Math.round(Math.max(result.width,result.height)*.03));
-   // 房間輪廓：AI 只回 4 點矩形，形狀失真且面積虛增 13–14%（2026-11-10 實測：
-   // 客廳 L 形連通域 90,970 px、外接矩形 103,085 px）。mask 的 floor 連通域才是真實形狀，
-   // 包括 L 形客廳與開放式客廳+餐廳+走廊（它們之間沒門沒牆，本來就該合成一間）。
-   let polygons=null,doors=null,doorsFromDetector=false;
-   // 門改用 YOLOv8n 檢測（2026-11-18）：分割的 door 只佔全圖 1.5% 像素、IoU 0.39–0.43，
-   // 一半門的位置不對；自訓的 YOLO（P 0.84／R 0.89，int8 只有 3.4 MB）在 R(10) 上 10 個門全對。
-   // 3D 開門洞只需要「哪面牆上有洞、洞多寬」，bbox 比像素級輪廓更適合。
-   // 檢不到門時才退回分割的 door 類（某些風格模型完全沒反應，留個兜底）。
-   try{
-    const boxes=await detectDoorsOnly(upload.canvas,{modelUrl:new URL('./models/yolo-doors-int8.onnx',import.meta.url).href});
-    if(boxes.length){
-     doors=boxes.map(b=>({cx:b.x+b.w/2,cy:b.y+b.h/2,x:b.x,y:b.y,w:b.w,h:b.h,area:b.w*b.h,horizontal:b.w>=b.h,score:b.score}));
-     doorsFromDetector=true;
-    }
-   }catch(e){console.warn('[door-detect] skipped:',e);}
-   // 門要在地板吸收之前抽：吸收會把門洞按最近的房間填平（讓地板連續），
-   // 之後 mask 上就分不出哪裡原本是門了。
-   if(!doors)try{doors=doorsFromMask(result.mask,result.width,result.height);}catch(e){console.warn('[door-mask] skipped:',e);}
-   try{polygons=roomsFromMask(result.mask,result.width,result.height);}catch(e){console.warn('[room-polygon] skipped:',e);}
-   // 房子外框＝非「屋外」（類別 4）像素的外框，當比例尺基準。
-   // 比用「房間多邊形聯集」穩：模型漏切一間房（陽台、儲物室）時聯集會縮，
-   // 整屋比例尺就跟著全錯；非屋外像素的外框不受影響。
-   let fx0=Infinity,fy0=Infinity,fx1=-Infinity,fy1=-Infinity;
-   for(let i=0;i<result.mask.length;i++){
-    if(result.mask[i]===4)continue;
-    const x=i%result.width,y=(i-x)/result.width;
-    if(x<fx0)fx0=x;if(x>fx1)fx1=x;if(y<fy0)fy0=y;if(y>fy1)fy1=y;
-   }
-   const frame=Number.isFinite(fx0)?{x:fx0,y:fy0,w:Math.max(1,fx1-fx0),h:Math.max(1,fy1-fy0)}:null;
-   // 2026-11-22：同时给「线」和「矩形块」。3D 优先用 blocks（不会碎），
-   // 2D 和 planWalls 还能继续吃 lines，迁移可以分两步走。
-   const lines=wallLinesFromMask(result.mask,result.width,result.height,{minLenH:minLength,minLenV:minLength,gap:8});
-   const blocks=wallBlocksFromMask(result.mask,result.width,result.height);
-   return {lines:{...lines,blocks},source:result.calibrated?'Domira 牆體模型':'基礎牆體模型',polygons,doors,frame,segWidth:result.width,segHeight:result.height,weakWalls:result.weakWalls,wallRatio:result.wallRatio};
+   // 门窗独立回退；检测服务不可用时仍能利用已完成的分割，不能让上传流程整段失败。
+   let boxes=[];
+   try{boxes=await detectDoors(upload.canvas,{modelUrl:new URL('./models/yolo-doors-int8.onnx',import.meta.url).href});}catch(error){console.warn('[opening-detect]',error);}
+   if(!live||ticket!==sequence||upload!==image)return null;
+   return {...geometryFromSegmentation(result,boxes),source:result.calibrated?'Domira 牆體模型':'基礎牆體模型',weakWalls:result.weakWalls,wallRatio:result.wallRatio};
   }catch(error){
    console.warn('[wall-model]',error);
    if(live&&ticket===sequence&&upload===image)hs('#floorplan-wall-status').textContent='牆體預覽暫時無法載入，仍可分析房間與尺寸。';
@@ -203,7 +173,7 @@ async function snapWithWalls(data, upload){
    }
   };
  }
- function showReview(data){analysis=data;const aspect=data.frame&&data.frame.w>0?data.frame.h/data.frame.w:image.height/image.width,readArea=(data.rooms||[]).reduce((s,r)=>s+(r.area_sqm||0),0),assumedArea=readArea>15?readArea*1.25:50,assumedW=Math.sqrt(assumedArea/Math.min(Math.max(aspect,.2),5)),w=Number(hs('#floorplan-known-width').value)||data.scale.width||assumedW,d=data.scale.depth||Math.round(w*aspect*100)/100;draft=homeFromAnalysis(data,w,Math.max(2,Math.min(40,d)),2.7,false);hs('#floorplan-review').hidden=false;hs('#floorplan-upload').hidden=true;hs('#floorplan-summary').textContent=data.summary;renderDimensions(data.dimensions);hs('#floorplan-review-image').src=image.data;hs('#home-width').value=Number(hs('#floorplan-known-width').value)||data.scale.width||'';hs('#home-depth').value=data.scale.depth||'';hs('#floorplan-scale-note').textContent=data.scale.basis==='dimensioned'?'AI 讀取到圖上尺寸，仍請按原圖或實測核對。':readArea>15?'圖上各房間標註面積合計 '+readArea.toFixed(2)+' m²（淨面積），已加 25% 牆體與公用部分換算全屋寬深；仍請逐間核對。':'圖紙沒有可驗證的尺寸標註；請填入全屋實際長寬。未填入前，寬深是按圖紙比例假設的示意值（約 40 m²）。';hs('#floorplan-warnings').textContent=['首版以矩形空間近似單層戶型，不是施工圖。',...data.warnings].join(' ');renderRooms();preview();hs('#modal').scrollTop=0;}
+ function showReview(data){analysis=data;const aspect=data.frame&&data.frame.w>0?data.frame.h/data.frame.w:image.height/image.width,readArea=(data.rooms||[]).reduce((s,r)=>s+(r.area_sqm||0),0),assumedArea=readArea>15?readArea*1.25:50,assumedW=Math.sqrt(assumedArea/Math.min(Math.max(aspect,.2),5)),w=Number(hs('#floorplan-known-width').value)||data.scale.width||assumedW,d=data.scale.depth||Math.round(w*aspect*100)/100;draft=homeFromAnalysis(data,w,Math.max(2,Math.min(40,d)),2.7,false);attachDetectedOpenings(draft,image?.wallResult);hs('#floorplan-review').hidden=false;hs('#floorplan-upload').hidden=true;hs('#floorplan-summary').textContent=data.summary;renderDimensions(data.dimensions);hs('#floorplan-review-image').src=image.data;hs('#home-width').value=Number(hs('#floorplan-known-width').value)||data.scale.width||'';hs('#home-depth').value=data.scale.depth||'';hs('#floorplan-scale-note').textContent=data.scale.basis==='dimensioned'?'AI 讀取到圖上尺寸，仍請按原圖或實測核對。':readArea>15?'圖上各房間標註面積合計 '+readArea.toFixed(2)+' m²（淨面積），已加 25% 牆體與公用部分換算全屋寬深；仍請逐間核對。':'圖紙沒有可驗證的尺寸標註；請填入全屋實際長寬。未填入前，寬深是按圖紙比例假設的示意值（約 40 m²）。';hs('#floorplan-warnings').textContent=['首版以矩形空間近似單層戶型，不是施工圖。',...data.warnings].join(' ');renderRooms();preview();hs('#modal').scrollTop=0;}
   async function postFloorplan(body,signal){const response=await fetch(API_BASE+'/api/floorplan/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),signal});const data=await response.json();if(!response.ok)throw new Error(data.error||'分析未完成');return data;}
   // 第二段的面積回來時只補數字：位置、矩形、門窗都已在第一段定好，這裡不動任何幾何。
   // draft 用「名字」而不只用下標對齊——homeFromAnalysis 可能合併同名房間，兩邊數量不一定一樣。
@@ -309,7 +279,7 @@ upload.wallPromise=detectImageWalls(upload,ticket).then(result=>{upload.wallResu
     if(!(mpp>0)){mpp=0.02;scaleSource='固定比例尺 0.02 m/像素（圖上沒讀到數字）';}
     const W=Math.round(bw*mpp*100)/100;
     const D=Math.round(bh*mpp*100)/100;
-    draft=roomsFromPolygons(predicted.polygons,predicted.segWidth,predicted.segHeight,W,D,{height:Number(hs('#home-height').value)||2.7,frame:predicted.frame,doors:predicted.doors,walls:predicted.lines});
+    draft=homeFromRecognition(predicted,W,D,{height:Number(hs('#home-height').value)||2.7});
     hs('#floorplan-review').hidden=false;hs('#floorplan-upload').hidden=true;
     hs('#floorplan-summary').textContent=draft.summary;
     hs('#floorplan-review-image').src=image.data;
@@ -322,7 +292,7 @@ upload.wallPromise=detectImageWalls(upload,ticket).then(result=>{upload.wallResu
    }catch(error){st.textContent=error.message;}
    finally{btn.disabled=false;}
   };
- for(const key of ['width','depth','height'])hs('#home-'+key).onchange=()=>{if(!draft)return;const value=Number(hs('#home-'+key).value);if(!value||!hs('#home-'+key).checkValidity())return hs('#home-'+key).reportValidity();if(key==='height')for(const room of draft.rooms)room.height=value;else{const factor=value/draft[key];for(const room of draft.rooms){room[key]*=factor;room[key==='width'?'x':'z']*=factor;} }draft[key]=value;renderRooms();preview();};for(const key of ['width','depth','height'])hs('#home-'+key).oninput=hs('#home-'+key).onchange;hs('#floorplan-add-room').onclick=()=>{if(draft.rooms.length>=12)return notify('目前最多 12 個空間。');draft.rooms.push({id:crypto.randomUUID(),name:'補充空間',kind:'other',purpose:'living',x:0,z:0,width:2,depth:2,height:draft.height,confidence:'low',openings:[],items:[]});renderRooms();preview();};hs('#floorplan-restart').onclick=open;
+ for(const key of ['width','depth','height'])hs('#home-'+key).onchange=()=>{if(!draft)return;const value=Number(hs('#home-'+key).value);if(!value||!hs('#home-'+key).checkValidity())return hs('#home-'+key).reportValidity();if(key==='height')for(const room of draft.rooms)room.height=value;else{const factor=value/draft[key];for(const room of draft.rooms){room[key]*=factor;room[key==='width'?'x':'z']*=factor;}scaleDetectedGeometry(draft,key,factor); }draft[key]=value;renderRooms();preview();};for(const key of ['width','depth','height'])hs('#home-'+key).oninput=hs('#home-'+key).onchange;hs('#floorplan-add-room').onclick=()=>{if(draft.rooms.length>=12)return notify('目前最多 12 個空間。');draft.rooms.push({id:crypto.randomUUID(),name:'補充空間',kind:'other',purpose:'living',x:0,z:0,width:2,depth:2,height:draft.height,confidence:'low',openings:[],items:[]});renderRooms();preview();};hs('#floorplan-restart').onclick=open;
  hs('#floorplan-build').onclick=()=>{try{if(!draft)return;document.querySelectorAll('[data-home-field]').forEach(input=>{const key=input.dataset.homeField;draft.rooms[Number(input.dataset.roomIndex)][key]=['name','kind'].includes(key)?input.value:Number(input.value);});for(const key of ['width','depth','height']){const input=hs('#home-'+key);if(!input.value||!input.checkValidity())throw new Error('請填入並確認全屋實際長寬高。');if(Math.abs(draft[key]-Number(input.value))>.001)input.onchange();}if(!hs('#floorplan-confirm').checked)throw new Error('請先確認尺寸與房間位置。');validateHome(draft);createHome(hs('#home-name').value.trim()||'我的全屋設計',structuredClone(draft));notify('全屋模型已建立。點選房間可進入編輯與佈局。');}catch(error){hs('#floorplan-error').textContent=error.message;hs('#floorplan-error').scrollIntoView({block:'nearest'});}};}
  return {open,stop};
 }
