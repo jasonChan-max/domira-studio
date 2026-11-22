@@ -98,8 +98,8 @@ export function assessWindowSupport(mask,width,height,box,frame,{blocks}={}){
  if(!frame||![box.x,box.y,box.w,box.h].every(Number.isFinite)||box.w<=0||box.h<=0)return {valid:false,reason:'窗坐标无效'};
  const horizontal=box.w>=box.h,cx=box.x+box.w/2,cy=box.y+box.h/2;
  const nearestWall=windowWallDistance(box,blocks||wallBlocksFromMask(mask,width,height));
- const diagnostic={onExteriorWall:false,nearestWall,withinWallDistance:!!nearestWall&&nearestWall.ratio<1.5};
- if(!diagnostic.withinWallDistance)return {...diagnostic,valid:false,reason:'窗到墙中线距离超过墙厚的 1.5 倍'};
+ const diagnostic={onExteriorWall:false,nearestWall,withinWallDistance:!!nearestWall&&nearestWall.ratio<2.5};
+ if(!diagnostic.withinWallDistance)return {...diagnostic,valid:false,reason:'窗到墙中线距离超过墙厚的 2.5 倍'};
  const at=(x,y)=>x>=0&&y>=0&&x<width&&y<height?mask[Math.floor(y)*width+Math.floor(x)]:4;
  const probe=Math.max(3,Math.round(Math.max(width,height)*.015));
  const short=horizontal?box.h:box.w,long=horizontal?box.w:box.h;
