@@ -21,7 +21,8 @@ export function buildHomeGeometry(home,overview=true){const group=new THREE.Grou
    const outline=new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(r.width,.012,r.depth)),new THREE.LineBasicMaterial({color:'#c2d8c6',transparent:true,opacity:.25}));
    outline.position.set(r.x,.006,r.z);group.add(outline);
   }
- }const wallMaterial=new THREE.MeshStandardMaterial({color:'#d8ddd3',roughness:.82,transparent:overview,opacity:overview?.42:1,depthWrite:!overview,side:THREE.DoubleSide});
+ }// 2026-11-22：墙改成不透明。原来是 overview 时 opacity .42，而轮廓墙按门窗上下沿分成 3 层（窗下墙 / 窗洞层 / 过梁），半透明下能看见每层的侧壁分界，用户看到的就是「一节一节」。改成不透明后层与层之间看不出来（下面还加了 0.002 的重叠）。代价是 overview 模式下墙会挡住内部，要看家具得转视角。
+const wallMaterial=new THREE.MeshStandardMaterial({color:'#d8ddd3',roughness:.82,transparent:false,opacity:1,depthWrite:true,side:THREE.DoubleSide});
  // 門板：2026-11-18 查出來的「3D 沒門」根因——home.doors 一直有資料（分割或 YOLO 給的），
  // 但 planWalls 只從 room.openings 取門，而 roomsFromPolygons 建的房間 openings 是空的，
  // 所以 3D 那段 kind==='door' 的分支從來沒觸發過，home.doors 只被 2D SVG 用過。

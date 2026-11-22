@@ -29,7 +29,9 @@ export function contourWallLayers(home){
   const bottom=heights[i-1],top=heights[i];if(top-bottom<1e-6)continue;
   const mid=(bottom+top)/2,cuts=openings.filter(o=>mid>o.bottom&&mid<o.top).map(o=>o.polygon);
   const polygons=cuts.length?clipping.difference(envelope,...cuts):envelope;
-  if(polygons.length)layers.push({bottom,top,polygons});
+  // 2026-11-22：每层顶部多伸 0.002m。分层切门窗是几何上必须的（要留窗下墙和过梁），
+ // 但相邻层顶/底面严丝合缝时会有 z-fighting，看起来像一条缝。多伸一点让它们重叠。
+ if(polygons.length)layers.push({bottom,top:Math.min(height,top+0.002),polygons});
  }
  return layers;
 }
