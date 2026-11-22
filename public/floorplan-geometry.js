@@ -16,7 +16,7 @@ export function geometryFromSegmentation(result,boxes,options={}){
  const closedMask=closeDetectedDoorFloors(mask,width,height,supported.doors),roomCandidates=roomsFromMask(closedMask,width,height);
  const inside=roomsWithinHouse(roomCandidates,frame),merged=mergeRoomFragments(inside,closedMask,width,height),polygons=merged.rooms;
  return {...openings,doors:supported.doors,windows:supported.windows,windowSource:supported.recovered.length?'yolo+segmentation':openings.windowSource,polygons,lines:{...lines,blocks,contours},frame,segWidth:width,segHeight:height,
-  selection:{contours:{raw:rawContours.length,kept:contours.length,rejected:selection.removed,orthogonalize:options.orthogonalize!==false},rooms:{candidates:roomCandidates.length,insideHouse:inside.length,merged:merged.merged},windows:{raw:openings.windows.length,kept:supported.windows.length,checks:supported.checks,rejected:supported.rejected,recovered:supported.recovered,reclassifiedDoors:supported.reclassifiedDoors}}};
+  selection:{contours:{raw:rawContours.length,kept:contours.length,rejected:selection.removed,orthogonalize:options.orthogonalize!==false,postprocessing:rawContours.diagnostics},rooms:{candidates:roomCandidates.length,insideHouse:inside.length,merged:merged.merged},windows:{raw:openings.windows.length,kept:supported.windows.length,checks:supported.checks,rejected:supported.rejected,recovered:supported.recovered,reclassifiedDoors:supported.reclassifiedDoors}}};
 }
 
 export function homeFromRecognition(result,width,depth,options={}){

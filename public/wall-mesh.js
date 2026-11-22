@@ -11,7 +11,13 @@ export function contourWallLayers(home){
  for(const [kind,list] of [['door',home.doors||[]],['window',home.windows||[]]])for(const o of list){
   if(kind==='window'&&o.wallFootprint){
    const f=o.wallFootprint,top=Math.min(2.1,height-.15);
-   if([f.x0,f.x1,f.y0,f.y1].every(Number.isFinite)&&f.x1>f.x0&&f.y1>f.y0)openings.push({kind,bottom:Math.min(.85,top-.2),top,polygon:rectangle(f)});
+   if([f.x0,f.x1,f.y0,f.y1].every(Number.isFinite)&&f.x1>f.x0&&f.y1>f.y0){
+    const body=o.horizontal?{...f,x0:o.x-o.w/2,x1:o.x+o.w/2}:{...f,y0:o.z-o.d/2,y1:o.z+o.d/2};
+    const normalPad=Math.max(.02,(o.horizontal?f.y1-f.y0:f.x1-f.x0)/2+.02);
+    const cut=o.horizontal?{x0:body.x0-.02,x1:body.x1+.02,y0:body.y0-normalPad,y1:body.y1+normalPad}:{x0:body.x0-normalPad,x1:body.x1+normalPad,y0:body.y0-.02,y1:body.y1+.02};
+    // 墙端恢复的厚度可能只覆盖墙带的一部分；洞必须贯穿实际墙厚，而扩大的切除范围不能用来补窗台和过梁。
+    openings.push({kind,bottom:Math.min(.85,top-.2),top,polygon:rectangle(body),cutPolygon:rectangle(cut)});
+   }
    continue;
   }
   const supports=blocks.flatMap(block=>{
@@ -27,7 +33,7 @@ export function contourWallLayers(home){
  const heights=[...new Set([0,height,...openings.flatMap(o=>[o.bottom,o.top])])].sort((a,b)=>a-b),layers=[];
  for(let i=1;i<heights.length;i++){
   const bottom=heights[i-1],top=heights[i];if(top-bottom<1e-6)continue;
-  const mid=(bottom+top)/2,cuts=openings.filter(o=>mid>o.bottom&&mid<o.top).map(o=>o.polygon);
+  const mid=(bottom+top)/2,cuts=openings.filter(o=>mid>o.bottom&&mid<o.top).map(o=>o.cutPolygon||o.polygon);
   const polygons=cuts.length?clipping.difference(envelope,...cuts):envelope;
   // 2026-11-22：每层顶部多伸 0.002m。分层切门窗是几何上必须的（要留窗下墙和过梁），
  // 但相邻层顶/底面严丝合缝时会有 z-fighting，看起来像一条缝。多伸一点让它们重叠。

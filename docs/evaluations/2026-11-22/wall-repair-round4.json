@@ -1,0 +1,601 @@
+{
+  "date": "2026-11-22",
+  "sourceBaseCommit": "f8f2ca3",
+  "tests": {
+    "total": 298,
+    "passed": 298,
+    "failed": 0,
+    "fullOutput": "npm-test-round4.txt"
+  },
+  "models": {
+    "unetSha256": "9e639256aa950ce2a6982593a1cb8324e2acac651e8fb6bea32769f74ba6aa98",
+    "yoloSha256": "6f257e8060d025f233a1e525067b6a12c8807c6b3a371f989447a42fc57d82c9",
+    "thresholdChanged": false
+  },
+  "acceptance": {
+    "status": "主要几何目标达成；R(2) 轮廓个数和整体语义一致性未完全达成",
+    "r2": {
+      "verticesUnder120": true,
+      "shortEdgesUnderFivePercent": true,
+      "recallAtLeast92Percent": true,
+      "tenWindowMeshesAndAllCutsValid": true,
+      "contoursUnderOrEqual9": false,
+      "actualContours": 10
+    },
+    "regressions": {
+      "46": {
+        "rooms4": true,
+        "windows7": true,
+        "allWindowsValid": true,
+        "vertices64": true,
+        "recallAtLeast95Percent": true
+      },
+      "r10": {
+        "rooms13": true,
+        "stairAndLandingRegionsRetained": true,
+        "initialBuildError": ""
+      }
+    }
+  },
+  "algorithm": {
+    "mergeCollinearDefault": true,
+    "disable": "geometryFromSegmentation(result, boxes, {mergeCollinear:false})",
+    "rawControl": "{orthogonalize:false,mergeCollinear:false,filterSmallContours:false}",
+    "rdpAdded": false,
+    "notes": [
+      "逐像素提取与原有简化步骤保持原样；新增长直段后处理。",
+      "小台阶的局部转角也可能是 90°，仅按相邻点转角删点不能处理这种噪声。按整段延续方向和横向抖动范围合并；接头留在相邻结构边上，以面积方程确定直线位置，不声称保端点必然保面积。",
+      "拟合后仍做现有正交化，并以实际 mask 栅格覆盖检查、拓扑与自交检查决定是否采纳。",
+      "厚度采用每个墙像素横竖连续段的较小值，按墙像素取中位数；避免碎矩形块使厚度统计偏薄。R(2) 为 16px，面积阈值为 256px²。",
+      "三块噪声面积分别为 202、91、6px²；另填一个面积仅 2px² 的墙内像素孔，正常房间空洞保留。"
+    ]
+  },
+  "windowCutFinding": {
+    "alongLengthsAlreadyMatched": true,
+    "mainCause": "原 wallFootprint 的墙厚方向偏窄，切洞后仍留一层墙皮；分割窗质心也可偏离 bbox 中心。",
+    "fix": "洞口沿墙方向跟随玻璃中心和 w/d，两端各留 0.02m；墙厚方向留余量。扩大后的切除框与补窗台/过梁的实体框分离，保留 envelope=union(source,openings)。",
+    "auditMeaning": "仅表示现有候选的3D洞口和墙体正确，不证明候选类别、完整性和原图语义正确。"
+  },
+  "remainingIssues": [
+    {
+      "issue": "R(2) homeContours=10，大于目标9",
+      "reason": "存疑 #4 面积约1246px²，大于256px²阈值，且位于厨房/阳台交界真实墙段。保留此墙，不为凑个数删除。"
+    },
+    {
+      "issue": "R(2) precision 从约0.985降到0.9497",
+      "reason": "用长直墙带替代像素毛刺会覆盖部分原 mask 非墙像素。recall=0.94699 达标，但 precision 损失必须如实披露。"
+    },
+    {
+      "issue": "左上阳台所报左墙长竖窗没有 YOLO window 原始框",
+      "rawWindowCount": 11,
+      "windowBoxInReportedRegion": false,
+      "reportedRegion": {
+        "x0": 75,
+        "x1": 90,
+        "y0": 150,
+        "y1": 285
+      },
+      "reason": "已检查全部11个原始窗框；未调阈值。原图该区域下段还可见门扇弧线，对应 D4；具体窗/门范围需人工确认，不自行补框。"
+    },
+    {
+      "issue": "R(2) 房间语义仍未完全对应原图",
+      "reason": "出图中左上阳台与厨房候选存在合并，右下飘窗区域另成空间；九个空间的数量不表示九个空间均正确对应。本轮未改房间分割、模型权重或待审核门分类。"
+    },
+    {
+      "issue": "14个门中5个可疑候选等待用户判定",
+      "suspected": [
+        "D3",
+        "D10",
+        "D11",
+        "D13",
+        "D14"
+      ],
+      "action": "全部保留，没有删门或调整 YOLO 阈值。"
+    }
+  ],
+  "cases": {
+    "46": {
+      "rooms": 4,
+      "doors": 4,
+      "windows": 7,
+      "windowMeshCount": 7,
+      "windowsAllValid": true,
+      "vertices": 64,
+      "edges": {
+        "edges": 64,
+        "under3": 3,
+        "under6": 5,
+        "under8": 5,
+        "under8Ratio": 0.078125,
+        "under10": 6,
+        "min": 2,
+        "median": 47,
+        "max": 441
+      },
+      "homeContours": 7,
+      "maskFidelity": {
+        "precision": 1,
+        "recall": 0.9517396516256974,
+        "extraPixels": 0,
+        "missedPixels": 3261
+      },
+      "uiFlow": {
+        "initialBuildError": "",
+        "resizedBuildError": "",
+        "initialRooms": 4,
+        "initialWidth": 10,
+        "reviewedRooms": [],
+        "rooms": 4,
+        "windows": 7,
+        "windowSource": "yolo+segmentation",
+        "svgWindowCount": 7,
+        "windowsMatchData": true,
+        "svgWindowsMatchData": true,
+        "savedContours": 7,
+        "savedWidth": 12
+      },
+      "detail": "wall-repair-round4-46.json"
+    },
+    "r2": {
+      "rooms": 9,
+      "doors": 14,
+      "windows": 10,
+      "windowMeshCount": 10,
+      "windowsAllValid": true,
+      "vertices": 104,
+      "edges": {
+        "edges": 104,
+        "under3": 1,
+        "under6": 1,
+        "under8": 3,
+        "under8Ratio": 0.028846153846153848,
+        "under10": 9,
+        "min": 2,
+        "median": 27.0265122205019,
+        "max": 678.7591831833124
+      },
+      "homeContours": 10,
+      "maskFidelity": {
+        "precision": 0.9497046378147388,
+        "recall": 0.9469869451697128,
+        "extraPixels": 2401,
+        "missedPixels": 2538
+      },
+      "uiFlow": {
+        "initialBuildError": "",
+        "resizedBuildError": "",
+        "initialRooms": 9,
+        "initialWidth": 10,
+        "reviewedRooms": [],
+        "rooms": 9,
+        "windows": 10,
+        "windowSource": "yolo+segmentation",
+        "svgWindowCount": 10,
+        "windowsMatchData": true,
+        "svgWindowsMatchData": true,
+        "savedContours": 10,
+        "savedWidth": 12
+      },
+      "detail": "wall-repair-round4-r2.json"
+    },
+    "r10": {
+      "rooms": 13,
+      "doors": 7,
+      "windows": 13,
+      "windowMeshCount": 13,
+      "windowsAllValid": true,
+      "vertices": 127,
+      "edges": {
+        "edges": 127,
+        "under3": 1,
+        "under6": 17,
+        "under8": 28,
+        "under8Ratio": 0.2204724409448819,
+        "under10": 40,
+        "min": 1.4656488597393036,
+        "median": 48.01041553542018,
+        "max": 342.5260238945484
+      },
+      "homeContours": 7,
+      "maskFidelity": {
+        "precision": 0.9478574827171206,
+        "recall": 0.9489464245684824,
+        "extraPixels": 1863,
+        "missedPixels": 1822
+      },
+      "uiFlow": {
+        "initialBuildError": "",
+        "resizedBuildError": "",
+        "initialRooms": 13,
+        "initialWidth": 10,
+        "reviewedRooms": [],
+        "rooms": 13,
+        "windows": 13,
+        "windowSource": "yolo+segmentation",
+        "svgWindowCount": 13,
+        "windowsMatchData": true,
+        "svgWindowsMatchData": true,
+        "savedContours": 7,
+        "savedWidth": 12
+      },
+      "detail": "wall-repair-round4-r10.json"
+    }
+  },
+  "doorAudit": [
+    {
+      "id": "D1",
+      "pixelBox": {
+        "x": 172.6915454864502,
+        "y": 221.91527366638184,
+        "w": 12.696590423583984,
+        "h": 54.82622146606445
+      },
+      "score": 0.8039276599884033,
+      "home": {
+        "x": -3.258,
+        "z": -2.228,
+        "w": 0.187,
+        "d": 0.808,
+        "horizontal": false
+      },
+      "assessment": "likely-door",
+      "comparison": "左阳台通往客餐厅的下部门洞，原图可见门扇弧线。",
+      "action": "仅记录，未删除或重新分类"
+    },
+    {
+      "id": "D2",
+      "pixelBox": {
+        "x": 339.8059272766113,
+        "y": 516.3432312011719,
+        "w": 10.965232849121094,
+        "h": 49.055023193359375
+      },
+      "score": 0.755621075630188,
+      "home": {
+        "x": -0.809,
+        "z": 2.067,
+        "w": 0.162,
+        "d": 0.723,
+        "horizontal": false
+      },
+      "assessment": "likely-door",
+      "comparison": "左下次卧入口，位置和门扇弧线一致。",
+      "action": "仅记录，未删除或重新分类"
+    },
+    {
+      "id": "D3",
+      "pixelBox": {
+        "x": 172.11440086364746,
+        "y": 138.64155292510986,
+        "w": 13.27371597290039,
+        "h": 69.8313045501709
+      },
+      "score": 0.7192376852035522,
+      "home": {
+        "x": -3.262,
+        "z": -3.344,
+        "w": 0.196,
+        "d": 1.029,
+        "horizontal": false
+      },
+      "assessment": "suspected-window",
+      "comparison": "左阳台与客餐厅之间的上部窄长开口，疑似窗被标为门；与下方 D1 不同，不能直接视作重复。",
+      "action": "仅记录，未删除或重新分类"
+    },
+    {
+      "id": "D4",
+      "pixelBox": {
+        "x": 56.92034721374512,
+        "y": 225.37797927856445,
+        "w": 15.582189559936523,
+        "h": 56.557579040527344
+      },
+      "score": 0.7192376852035522,
+      "home": {
+        "x": -4.942,
+        "z": -2.164,
+        "w": 0.23,
+        "d": 0.833,
+        "horizontal": false
+      },
+      "assessment": "likely-door",
+      "comparison": "左阳台左外墙下段，原图可见向外开启的门扇弧线。",
+      "action": "仅记录，未删除或重新分类"
+    },
+    {
+      "id": "D5",
+      "pixelBox": {
+        "x": 406.92033767700195,
+        "y": 345.76610565185547,
+        "w": 10.965232849121094,
+        "h": 44.43809509277344
+      },
+      "score": 0.7192376852035522,
+      "home": {
+        "x": 0.18,
+        "z": -0.48,
+        "w": 0.162,
+        "d": 0.655,
+        "horizontal": false
+      },
+      "assessment": "likely-door",
+      "comparison": "右侧上部次卧入口，门扇弧线位置一致。",
+      "action": "仅记录，未删除或重新分类"
+    },
+    {
+      "id": "D6",
+      "pixelBox": {
+        "x": 407.4974822998047,
+        "y": 515.7661056518555,
+        "w": 10.388107299804688,
+        "h": 45.59234619140625
+      },
+      "score": 0.7192376852035522,
+      "home": {
+        "x": 0.184,
+        "z": 2.033,
+        "w": 0.153,
+        "d": 0.672,
+        "horizontal": false
+      },
+      "assessment": "likely-door",
+      "comparison": "主卧入口，门扇弧线位置一致。",
+      "action": "仅记录，未删除或重新分类"
+    },
+    {
+      "id": "D7",
+      "pixelBox": {
+        "x": 338.07456970214844,
+        "y": 445.76610565185547,
+        "w": 14.427947998046875,
+        "h": 47.32368469238281
+      },
+      "score": 0.6998566389083862,
+      "home": {
+        "x": -0.809,
+        "z": 1.014,
+        "w": 0.213,
+        "d": 0.697,
+        "horizontal": false
+      },
+      "assessment": "likely-door",
+      "comparison": "左侧卫生间入口，原图弧线对应。",
+      "action": "仅记录，未删除或重新分类"
+    },
+    {
+      "id": "D8",
+      "pixelBox": {
+        "x": 416.72119140625,
+        "y": 566.9203567504883,
+        "w": 36.935577392578125,
+        "h": 8.656768798828125
+      },
+      "score": 0.6154646277427673,
+      "home": {
+        "x": 0.515,
+        "z": 2.514,
+        "w": 0.544,
+        "d": 0.128,
+        "horizontal": true
+      },
+      "assessment": "likely-door",
+      "comparison": "下方主卫顶部横向门洞，位置与原图一致。",
+      "action": "仅记录，未删除或重新分类"
+    },
+    {
+      "id": "D9",
+      "pixelBox": {
+        "x": 639.8059272766113,
+        "y": 122.0941162109375,
+        "w": 14.427909851074219,
+        "h": 176.0210418701172
+      },
+      "score": 0.38453537225723267,
+      "home": {
+        "x": 3.636,
+        "z": -2.806,
+        "w": 0.213,
+        "d": 2.593,
+        "horizontal": false
+      },
+      "assessment": "likely-door",
+      "comparison": "右阳台与客餐厅之间的长滑门开口，原图有整段白色开口。",
+      "action": "仅记录，未删除或重新分类"
+    },
+    {
+      "id": "D10",
+      "pixelBox": {
+        "x": 48.07458162307739,
+        "y": 281.1491584777832,
+        "w": 10.96524715423584,
+        "h": 15.582199096679688
+      },
+      "score": 0.38453537225723267,
+      "home": {
+        "x": -5.107,
+        "z": -1.644,
+        "w": 0.162,
+        "d": 0.23,
+        "horizontal": false
+      },
+      "assessment": "suspected-artifact",
+      "comparison": "左阳台外侧左下角，靠近尺寸线和 D4 门扇末端；未见独立门洞，疑似噪声或 D4 尾部重复。",
+      "action": "仅记录，未删除或重新分类"
+    },
+    {
+      "id": "D11",
+      "pixelBox": {
+        "x": 416.5321922302246,
+        "y": 566.910228729248,
+        "w": 40.398292541503906,
+        "h": 126.3888931274414
+      },
+      "score": 0.36252766847610474,
+      "home": {
+        "x": 0.538,
+        "z": 3.381,
+        "w": 0.595,
+        "d": 1.862,
+        "horizontal": false
+      },
+      "assessment": "suspected-duplicate",
+      "comparison": "整框覆盖下方主卫的大半边界；顶部与 D8 重叠，疑似把房间边框也包含在内的重复大框。",
+      "action": "仅记录，未删除或重新分类"
+    },
+    {
+      "id": "D12",
+      "pixelBox": {
+        "x": 223.6263370513916,
+        "y": 288.6516857147217,
+        "w": 88.2990837097168,
+        "h": 14.427967071533203
+      },
+      "score": 0.32026663422584534,
+      "home": {
+        "x": -1.951,
+        "z": -1.542,
+        "w": 1.301,
+        "d": 0.213,
+        "horizontal": true
+      },
+      "assessment": "likely-door",
+      "comparison": "厨房顶部横向开口，疑似滑门；同位置也有一个 window 原始框，类别存在冲突。",
+      "action": "仅记录，未删除或重新分类"
+    },
+    {
+      "id": "D13",
+      "pixelBox": {
+        "x": 641.5373611450195,
+        "y": 128.26356887817383,
+        "w": 10.965194702148438,
+        "h": 40.39827346801758
+      },
+      "score": 0.28076231479644775,
+      "home": {
+        "x": 3.636,
+        "z": -3.714,
+        "w": 0.162,
+        "d": 0.595,
+        "horizontal": false
+      },
+      "assessment": "suspected-duplicate",
+      "comparison": "完全落在 D9 的上段，是同一右阳台开口的子框，疑似重复。",
+      "action": "仅记录，未删除或重新分类"
+    },
+    {
+      "id": "D14",
+      "pixelBox": {
+        "x": 672.1144485473633,
+        "y": 522.4822807312012,
+        "w": 10.388107299804688,
+        "h": 164.47864532470703
+      },
+      "score": 0.2621638774871826,
+      "home": {
+        "x": 4.082,
+        "z": 3.007,
+        "w": 0.153,
+        "d": 2.423,
+        "horizontal": false
+      },
+      "assessment": "suspected-window",
+      "comparison": "主卧右侧飘窗边界的长竖框，原图没有门扇弧线，疑似窗被标为门。",
+      "action": "仅记录，未删除或重新分类"
+    }
+  ],
+  "rawWindowBoxes": [
+    {
+      "x": 355.1788330078125,
+      "y": 694.6118927001953,
+      "w": 46.74659729003906,
+      "h": 11.5423583984375,
+      "cls": "window",
+      "score": 0.7378361225128174
+    },
+    {
+      "x": 174.61186408996582,
+      "y": 315.56697845458984,
+      "w": 10.965251922607422,
+      "h": 47.32368469238281,
+      "cls": "window",
+      "score": 0.679733395576477
+    },
+    {
+      "x": 663.0694961547852,
+      "y": 354.98985290527344,
+      "w": 39.82109069824219,
+      "h": 117.15499877929688,
+      "cls": "window",
+      "score": 0.6589184999465942
+    },
+    {
+      "x": 212.48225212097168,
+      "y": 693.4576797485352,
+      "w": 93.49313735961914,
+      "h": 15.582199096679688,
+      "cls": "window",
+      "score": 0.6589184999465942
+    },
+    {
+      "x": 170.96017837524414,
+      "y": 423.4576416015625,
+      "w": 14.427947998046875,
+      "h": 54.249114990234375,
+      "cls": "window",
+      "score": 0.6374723315238953
+    },
+    {
+      "x": 664.0347671508789,
+      "y": 322.88049697875977,
+      "w": 44.43809509277344,
+      "h": 13.850822448730469,
+      "cls": "window",
+      "score": 0.5929739475250244
+    },
+    {
+      "x": 226.52207374572754,
+      "y": 289.2288303375244,
+      "w": 85.41349411010742,
+      "h": 13.850841522216797,
+      "cls": "window",
+      "score": 0.5
+    },
+    {
+      "x": 684.606819152832,
+      "y": 510.7356834411621,
+      "w": 49.63218688964844,
+      "h": 186.98627471923828,
+      "cls": "window",
+      "score": 0.47956404089927673
+    },
+    {
+      "x": 69.02968406677246,
+      "y": 80.96016883850098,
+      "w": 38.66691589355469,
+      "h": 8.079662322998047,
+      "cls": "window",
+      "score": 0.36252766847610474
+    },
+    {
+      "x": 188.4272003173828,
+      "y": 77.28310585021973,
+      "w": 229.69303131103516,
+      "h": 198.5286521911621,
+      "cls": "window",
+      "score": 0.3062109351158142
+    },
+    {
+      "x": 404.188232421875,
+      "y": 78.43734741210938,
+      "w": 245.85235595703125,
+      "h": 211.2252426147461,
+      "cls": "window",
+      "score": 0.27259963750839233
+    }
+  ],
+  "visualArtifacts": {
+    "comparison": ".screenshots/wall-round4/r2/plan-original-comparison.png",
+    "scene": ".screenshots/wall-round4/r2/contours-3d.png",
+    "doorAudit": ".screenshots/wall-round4/door-audit.html"
+  }
+}

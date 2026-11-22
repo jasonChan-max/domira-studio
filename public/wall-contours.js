@@ -1,7 +1,7 @@
 import clipping from './vendor/polygon-clipping.js';
 
 // 沿像素单元的边走，而不是取连通域外接框；这样凹角和房间空洞不会被填实。
-export function wallContoursFromMask(mask,width,height,{epsilon=1,orthogonalize=true}={}){
+export function wallContoursFromMask(mask,width,height,{epsilon=1,orthogonalize=true,mergeCollinear=true,filterSmallContours=true}={}){
  if(!Number.isInteger(width)||!Number.isInteger(height)||width<1||height<1||mask.length!==width*height)throw new Error('墙体 mask 尺寸无效');
  if(!Number.isFinite(epsilon)||epsilon<0||epsilon>2)throw new Error('轮廓简化容差必须为 0–2 像素');
  const stride=width+1,edges=[],outgoing=new Map();
@@ -33,7 +33,21 @@ export function wallContoursFromMask(mask,width,height,{epsilon=1,orthogonalize=
   const parent=solids.filter(s=>pointInRing(hole.points[0],s.outer)).sort((a,b)=>a.areaPixels-b.areaPixels)[0];
   if(!parent)throw new Error('墙体内部空洞缺少外轮廓');parent.holes.push(hole.points);parent.areaPixels+=hole.area;
  }
- return orthogonalize?orthogonalizeWallContours(solids,{maxDeviation:Math.max(1,Math.min(8,Math.max(width,height)/150))}):solids;
+ const thickness=medianWallThickness(mask,width,height),filtered=filterSmallContours?filterSmallWallContours(solids,thickness):{contours:solids,removed:[],filledHoles:[]};
+ const deviation=Math.max(1,Math.min(8,Math.max(width,height)/150));
+ const baseline=orthogonalize?orthogonalizeWallContours(filtered.contours,{maxDeviation:deviation}):filtered.contours;
+ let result=baseline,fitApplied=false,fitFidelity=null;
+ // 已经稀疏的轮廓不必再拟合一次，避免干净小户型为了省几个点而改变真实墙角。
+ if(mergeCollinear&&vertexCount(baseline)>120){
+  const fitted=mergeCollinearWallContours(filtered.contours,{maxJitter:Math.max(1,Math.min(6,thickness/2))});
+  const candidate=orthogonalize?orthogonalizeWallContours(fitted,{maxDeviation:deviation,maxLossRatio:.02}):fitted;
+  const before=wallMaskFidelity(baseline,mask,width,height),after=wallMaskFidelity(candidate,mask,width,height);
+  // 面积相等不代表覆盖相等；实际栅格覆盖也必须过线，才能替换原来的轮廓。
+  if(vertexCount(candidate)<vertexCount(baseline)&&after.recall>=(before.recall>=.95?.95:.92)&&after.precision>=before.precision-.04){result=candidate;fitApplied=true;}
+  fitFidelity={before,after};
+ }
+ Object.defineProperty(result,'diagnostics',{value:{medianThickness:thickness,areaThreshold:thickness*thickness,removed:filtered.removed,filledHoles:filtered.filledHoles,mergeCollinear,fitApplied,baselineVertices:vertexCount(baseline),fitFidelity}});
+ return result;
 }
 
 export function signedArea(ring){let area=0;for(let i=0;i<ring.length;i++){const a=ring[i],b=ring[(i+1)%ring.length];area+=a[0]*b[1]-b[0]*a[1];}return area/2;}
@@ -91,6 +105,79 @@ function intersection(a,b,c,d){
  const dx=b[0]-a[0],dy=b[1]-a[1],ex=d[0]-c[0],ey=d[1]-c[1],det=dx*ey-dy*ex;
  if(Math.abs(det)<1e-8)return null;
  const t=((c[0]-a[0])*ey-(c[1]-a[1])*ex)/det;return [a[0]+t*dx,a[1]+t*dy];
+}
+
+const vertexCount=shapes=>shapes.reduce((sum,s)=>sum+s.outer.length+s.holes.reduce((n,r)=>n+r.length,0),0);
+export function medianWallThickness(mask,width,height){
+ const horizontal=new Uint32Array(mask.length),histogram=new Uint32Array(Math.max(width,height)+1);let pixels=0;
+ for(let y=0;y<height;y++)for(let x=0;x<width;){
+  if(mask[y*width+x]!==1){x++;continue;}let end=x+1;while(end<width&&mask[y*width+end]===1)end++;
+  horizontal.fill(end-x,y*width+x,y*width+end);x=end;
+ }
+ for(let x=0;x<width;x++)for(let y=0;y<height;){
+  if(mask[y*width+x]!==1){y++;continue;}let end=y+1;while(end<height&&mask[end*width+x]===1)end++;
+  for(let at=y;at<end;at++){histogram[Math.min(horizontal[at*width+x],end-y)]++;pixels++;}y=end;
+ }
+ let total=0;for(let thickness=1;thickness<histogram.length;thickness++){total+=histogram[thickness];if(pixels&&total>=pixels/2)return thickness;}
+ return 0;
+}
+export function filterSmallWallContours(source,thickness){
+ const threshold=thickness*thickness,removed=[],filledHoles=[];
+ const contours=source.flatMap((s,index)=>{
+  const area=s.areaPixels??shapeArea(s);
+  if(area<threshold){removed.push({index,area,threshold,bounds:[Math.min(...s.outer.map(p=>p[0])),Math.min(...s.outer.map(p=>p[1])),Math.max(...s.outer.map(p=>p[0])),Math.max(...s.outer.map(p=>p[1]))]});return [];}
+  // 墙内的孤立像素孔也会生成一圈极短边；只填相同相对尺度以下的孔，正常房间空洞仍保留。
+  const holes=(s.holes||[]).filter((r,hole)=>{const area=Math.abs(signedArea(r));if(area>=threshold)return true;filledHoles.push({index,hole,area,threshold});return false;});
+  return [{...s,holes}];
+ });
+ return {contours,removed,filledHoles};
+}
+
+export function wallMaskFidelity(shapes,mask,width,height){
+ const covered=new Uint8Array(mask.length);
+ for(const shape of shapes){
+  const rings=shapeRings(shape),ys=shape.outer.map(p=>p[1]);
+  for(let y=Math.max(0,Math.ceil(Math.min(...ys)-.5));y<Math.min(height,Math.ceil(Math.max(...ys)-.5));y++){
+   const row=y+.5,crossings=[];
+   for(const ring of rings)for(let i=0;i<ring.length;i++){const a=ring[i],b=ring[(i+1)%ring.length];if((a[1]>row)!==(b[1]>row))crossings.push(a[0]+(row-a[1])*(b[0]-a[0])/(b[1]-a[1]));}
+   crossings.sort((a,b)=>a-b);
+   for(let i=0;i+1<crossings.length;i+=2){const start=Math.max(0,Math.ceil(crossings[i]-.5)),end=Math.min(width,Math.ceil(crossings[i+1]-.5));if(end>start)covered.fill(1,y*width+start,y*width+end);}
+  }
+ }
+ let tp=0,fp=0,fn=0;for(let i=0;i<mask.length;i++){if(covered[i]&&mask[i]===1)tp++;else if(covered[i])fp++;else if(mask[i]===1)fn++;}
+ return {precision:tp+fp?tp/(tp+fp):1,recall:tp+fn?tp/(tp+fn):1,extraPixels:fp,missedPixels:fn};
+}
+
+export function mergeCollinearWallContours(source,{maxJitter=6,angleDegrees=15}={}){
+ if(!Number.isFinite(maxJitter)||maxJitter<0||!Number.isFinite(angleDegrees)||angleDegrees<0||angleDegrees>15)throw new Error('长直段拟合参数无效');
+ const shapes=source.map(s=>({...s,outer:s.outer.map(p=>[...p]),holes:s.holes.map(r=>r.map(p=>[...p]))})),tangent=Math.tan(angleDegrees*Math.PI/180);
+ const onAxis=(a,b,axis,coord)=>{const t=(coord-a[1-axis])/(b[1-axis]-a[1-axis]);const p=[a[0]+t*(b[0]-a[0]),a[1]+t*(b[1]-a[1])];p[1-axis]=coord;return p;};
+ for(let si=0;si<shapes.length;si++)for(let ri=0;ri<shapeRings(shapes[si]).length;ri++){
+  let ring=shapeRings(shapes[si])[ri];
+  while(ring.length>4){let best;
+   for(let i=0;i<ring.length;i++)for(const axis of [0,1]){
+    const start=ring[i],prev=ring[(i+ring.length-1)%ring.length],crossAxis=1-axis;
+    if(Math.abs(prev[axis]-start[axis])>Math.abs(prev[crossAxis]-start[crossAxis])*tangent||equal(prev,start))continue;
+    let low=start[crossAxis],high=low,min=start[axis],max=min;
+    for(let span=1;span<ring.length-1;span++){
+     const end=ring[(i+span)%ring.length],next=ring[(i+span+1)%ring.length];low=Math.min(low,end[crossAxis]);high=Math.max(high,end[crossAxis]);min=Math.min(min,end[axis]);max=Math.max(max,end[axis]);
+     if(high-low>maxJitter)break;
+     if(span<2||best&&span-1<=best.removed||Math.abs(next[axis]-end[axis])>Math.abs(next[crossAxis]-end[crossAxis])*tangent||equal(end,next)||Math.abs(end[axis]-start[axis])<8||min<Math.min(start[axis],end[axis])-maxJitter||max>Math.max(start[axis],end[axis])+maxJitter)continue;
+     const excluded=new Set(Array.from({length:span-1},(_,n)=>(i+n+1)%ring.length));
+     const make=coord=>{const changed=ring.map(p=>[...p]);changed[i]=onAxis(prev,start,axis,coord);changed[(i+span)%ring.length]=onAxis(end,next,axis,coord);return changed.filter((_,n)=>!excluded.has(n));};
+     const target=signedArea(ring);let a=low,b=high,fa=signedArea(make(a))-target,fb=signedArea(make(b))-target;
+     if(fa*fb>1e-6)continue;
+     // 小台阶的局部转角也是 90°；按整段延续方向合并，并以面积约束求直线位置，不能误称删点天然保面积。
+     for(let n=0;n<25;n++){const mid=(a+b)/2,fm=signedArea(make(mid))-target;if(fm*fa>0){a=mid;fa=fm;}else b=mid;}
+     const fitted=make((a+b)/2);if(fitted.length<4)continue;
+     const candidate=replaceRing(shapes[si],ri,fitted);if(!validShape(candidate))continue;
+     best={candidate,removed:span-1};
+    }
+   }
+   if(!best)break;shapes[si]=best.candidate;ring=shapeRings(shapes[si])[ri];
+  }
+ }
+ return shapes.map(s=>({...s,areaPixels:shapeArea(s)}));
 }
 
 // 原始轮廓仍可关闭后处理逐像素对照；正交化只向墙内收，避免把房间和洞口填成墙。

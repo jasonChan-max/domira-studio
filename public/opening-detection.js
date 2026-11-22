@@ -17,7 +17,12 @@ export function openingsToHome(openings,frame,width,depth){
   x:(b.cx-frame.x-frame.w/2)*width/frame.w,z:(b.cy-frame.y-frame.h/2)*depth/frame.h,
   w:b.w*width/frame.w,d:b.h*depth/frame.h,horizontal:!!b.horizontal,
  };
- if(wallFootprint){opening.wallFootprint=wallFootprint;if(opening.horizontal){opening.z=(wallFootprint.y0+wallFootprint.y1)/2;opening.d=wallFootprint.y1-wallFootprint.y0;}else{opening.x=(wallFootprint.x0+wallFootprint.x1)/2;opening.w=wallFootprint.x1-wallFootprint.x0;}}
+ if(wallFootprint){
+  // 分割连通域的质心未必等于 bbox 中心；洞口必须跟随实际玻璃的中心和长度，不能仅让两者长度数值相等。
+  if(opening.horizontal){opening.z=(wallFootprint.y0+wallFootprint.y1)/2;opening.d=wallFootprint.y1-wallFootprint.y0;wallFootprint.x0=opening.x-opening.w/2;wallFootprint.x1=opening.x+opening.w/2;}
+  else{opening.x=(wallFootprint.x0+wallFootprint.x1)/2;opening.w=wallFootprint.x1-wallFootprint.x0;wallFootprint.y0=opening.z-opening.d/2;wallFootprint.y1=opening.z+opening.d/2;}
+  opening.wallFootprint=wallFootprint;
+ }
  return opening;
  });
 }
