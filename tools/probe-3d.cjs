@@ -16,13 +16,13 @@ async function main(){
   const send=(method,params={})=>new Promise((resolve,reject)=>{const id=++serial;pending.set(id,{resolve,reject});ws.send(JSON.stringify({id,method,params}));});
   await send('Page.enable');await send('Page.navigate',{url:base+'/studio.html'});await pause(1000);
   const saved=path.join(out,'blocks-fixed-scene.js'),baseline=fs.existsSync(saved)?'data:text/javascript;base64,'+Buffer.from(fs.readFileSync(saved,'utf8').replace(/from (['"])\.\/([^'"]+)\1/g,(_,q,file)=>`from '${base}/${file}'`)).toString('base64'):null;
-  const r=await send('Runtime.evaluate',{expression:`(${probeInBrowser.toString()})(${JSON.stringify(baseline)},${process.env.DOMIRA_EXPORT_DATA==='1'})`,awaitPromise:true,returnByValue:true,timeout:180000});if(r.exceptionDetails)throw Error(JSON.stringify(r.exceptionDetails));
+  const r=await send('Runtime.evaluate',{expression:`(${probeInBrowser.toString()})(${JSON.stringify(baseline)},${process.env.DOMIRA_EXPORT_DATA==='1'},${Number(process.env.DOMIRA_KNOWN_WIDTH)||10})`,awaitPromise:true,returnByValue:true,timeout:180000});if(r.exceptionDetails)throw Error(JSON.stringify(r.exceptionDetails));
   if(r.result.value.exportData){const data=r.result.value.exportData;fs.writeFileSync(path.join(out,'raw-mask.bin'),Buffer.from(data.mask,'base64'));delete data.mask;fs.writeFileSync(path.join(out,'raw-data.json'),JSON.stringify(data,null,2));console.log(JSON.stringify({exported:out,...data}));return;}
   const report=r.result.value;for(const [name,url] of Object.entries(report.images))fs.writeFileSync(path.join(out,name+'.png'),Buffer.from(url.split(',')[1],'base64'));fs.writeFileSync(path.join(out,'plan-2d.svg'),report.svg);delete report.images;delete report.svg;
   fs.writeFileSync(path.join(out,'probe-3d.json'),JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report,null,2));
  }finally{ws?.close();proc.kill();fs.unlinkSync(staged);}
 }
-async function probeInBrowser(baselineURL,exportData=false){
+async function probeInBrowser(baselineURL,exportData=false,knownWidth=10){
  const onnx=await import('/wall-onnx.js'),poly=await import('/room-polygon.js'),dom=await import('/home-domain.js');
  const {signedArea,pointInRing}=await import('/wall-contours.js'),{detectDoors}=await import('/door-detect.js');
  const {geometryFromSegmentation,homeFromRecognition}=await import('/floorplan-geometry.js');
@@ -32,9 +32,12 @@ async function probeInBrowser(baselineURL,exportData=false){
  const boxes=await detectDoors(canvas,{modelUrl:'/models/yolo-doors-int8.onnx'});
  if(exportData){let encoded='';for(let i=0;i<seg.mask.length;i+=8192)encoded+=String.fromCharCode(...seg.mask.subarray(i,i+8192));return {exportData:{width:seg.width,height:seg.height,mask:btoa(encoded),boxes,stats:seg.stats}};}
  const traceStart=performance.now(),recognized=geometryFromSegmentation(seg,boxes),geometryMs=performance.now()-traceStart;
- const {frame}=recognized,{contours}=recognized.lines,width=10,depth=width*frame.h/frame.w;
+ const original=geometryFromSegmentation(seg,boxes,{orthogonalize:false});
+ const {frame}=recognized,{contours}=recognized.lines,width=knownWidth,depth=width*frame.h/frame.w;
  // JSON 往返模拟项目保存；只测内存中的对象会漏掉窗字段在保存链上的丢失。
  const home=JSON.parse(JSON.stringify(homeFromRecognition(recognized,width,depth,{height:2.7})));
+ dom.validateHome(home);
+ const roomAudit=home.rooms.map(r=>{const points=r.polygon.map(([x,z])=>[r.x+x,r.z+z]),xs=points.map(p=>p[0]),zs=points.map(p=>p[1]);return {name:r.name,bounds:{x0:Math.min(...xs),x1:Math.max(...xs),z0:Math.min(...zs),z1:Math.max(...zs)},withinHouse:points.every(([x,z])=>Math.abs(x)<=home.width/2+.03&&Math.abs(z)<=home.depth/2+.03)};});
  const median=a=>[...a].sort((x,y)=>x-y)[Math.floor(a.length/2)],release=g=>g.traverse(o=>o.geometry?.dispose());
  function benchmarkBuild(build){const times=[];let geometry;for(let i=0;i<10;i++){const start=performance.now(),g=build(home,false);if(i>=3)times.push(performance.now()-start);if(i===9)geometry=g;else release(g);}return {ms:median(times),samples:times,geometry};}
  const current=benchmarkBuild(sceneModule.buildHomeGeometry),baseline=baselineURL?benchmarkBuild((await import(baselineURL)).buildHomeGeometry):null;
@@ -73,22 +76,26 @@ async function probeInBrowser(baselineURL,exportData=false){
  await studio.open();
  const file=new File([await(await fetch('/__probe3d-input.jpg')).blob()],'probe.jpg',{type:'image/jpeg'}),transfer=new DataTransfer();transfer.items.add(file);
  const input=document.querySelector('#floorplan-file');input.files=transfer.files;await input.onchange({target:input});
- document.querySelector('#floorplan-known-width').value='10';
+ document.querySelector('#floorplan-known-width').value=String(knownWidth);
  await document.querySelector('#floorplan-model-only').onclick();
  const svgWindowCount=document.querySelectorAll('#floorplan-preview [data-opening="window"]').length;
- const newWidth=document.querySelector('#home-width');newWidth.value='12';newWidth.onchange();
  document.querySelector('#floorplan-confirm').checked=true;document.querySelector('#floorplan-build').onclick();
  const initialBuildError=document.querySelector('#floorplan-error').textContent;
+ const initialRooms=created?.rooms.length,initialWidth=created?.width;
+ const newWidth=document.querySelector('#home-width');newWidth.value='12';newWidth.onchange();
+ document.querySelector('#floorplan-build').onclick();
+ const resizedBuildError=document.querySelector('#floorplan-error').textContent;
  const reviewedRooms=[];
  // 本轮必须数据层直接产出可建房的房间，不能再让探针代替用户删掉失败候选。
  if(initialBuildError)throw Error('未经人工删除的页面保存失败：'+initialBuildError);
+ if(resizedBuildError)throw Error('修改长宽后的页面保存失败：'+resizedBuildError);
  if(!created)throw Error('页面建房失败：'+document.querySelector('#floorplan-error').textContent+' '+document.querySelector('#floorplan-model-status').textContent+' '+JSON.stringify(Array.from(document.querySelectorAll('[data-home-field]')).map(e=>({room:e.dataset.roomIndex,key:e.dataset.homeField,value:e.value}))));
  if(created.windows.length!==home.windows.length||svgWindowCount!==created.windows.length||!created.walls.contours.length)throw Error('页面或保存链丢失窗/墙轮廓');
  if(Math.abs(created.width-12)>1e-6)throw Error('页面长宽修改没有保存');
  if(created.rooms.length!==home.rooms.length)throw Error('原始图与上传后的房间数量不一致');
- const uiFlow={initialBuildError,reviewedRooms,rooms:created.rooms.length,windows:created.windows.length,windowSource:created.windowSource,svgWindowCount,savedContours:created.walls.contours.length,savedWidth:created.width};
+ const uiFlow={initialBuildError,resizedBuildError,initialRooms,initialWidth,reviewedRooms,rooms:created.rooms.length,windows:created.windows.length,windowSource:created.windowSource,svgWindowCount,savedContours:created.walls.contours.length,savedWidth:created.width};
  studio.stop();
  const metrics=(build,render)=>({buildMs:build.ms,buildSamples:build.samples,frameMs:render.ms,frameSamples:render.samples,meshCount:count(build.geometry,o=>o.isMesh),wallMeshes:count(build.geometry,o=>o.userData.wall),drawCalls:render.drawCalls,triangles:render.triangles});
- return {imgSize:[seg.width,seg.height],segMs,rooms:home.rooms.length,doors:home.doors.length,windows:home.windows.length,windowMeshCount,windowAudit,selection:home.selection,homeBlocks:home.walls.blocks.length,homeContours:contours.length,holes:contours.reduce((s,c)=>s+c.holes.length,0),vertices:contours.reduce((s,c)=>s+c.outer.length+c.holes.reduce((a,h)=>a+h.length,0),0),geometryMs,contourArea:contours.reduce((sum,s)=>sum+Math.abs(signedArea(s.outer))-s.holes.reduce((n,h)=>n+Math.abs(signedArea(h)),0),0),maskFidelity:{precision:tp/(tp+fp),recall:tp/(tp+fn),extraPixels:fp,missedPixels:fn},thickness:{min:thickness[0],median:median(thickness),max:thickness.at(-1)},current:metrics(current,currentRender),baseline:baseline?metrics(baseline,baselineRender):null,uiFlow,images,svg};
+ return {imgSize:[seg.width,seg.height],segMs,rooms:home.rooms.length,roomAudit,doors:home.doors.length,windows:home.windows.length,windowMeshCount,windowAudit,selection:home.selection,homeBlocks:home.walls.blocks.length,homeContours:contours.length,holes:contours.reduce((s,c)=>s+c.holes.length,0),vertices:contours.reduce((s,c)=>s+c.outer.length+c.holes.reduce((a,h)=>a+h.length,0),0),orthogonalization:{enabled:true,originalVertices:original.lines.contours.reduce((s,c)=>s+c.outer.length+c.holes.reduce((a,h)=>a+h.length,0),0),originalArea:original.lines.contours.reduce((s,c)=>s+Math.abs(signedArea(c.outer))-c.holes.reduce((a,h)=>a+Math.abs(signedArea(h)),0),0)},geometryMs,contourArea:contours.reduce((sum,s)=>sum+Math.abs(signedArea(s.outer))-s.holes.reduce((n,h)=>n+Math.abs(signedArea(h)),0),0),maskFidelity:{precision:tp/(tp+fp),recall:tp/(tp+fn),extraPixels:fp,missedPixels:fn},thickness:{min:thickness[0],median:median(thickness),max:thickness.at(-1)},current:metrics(current,currentRender),baseline:baseline?metrics(baseline,baselineRender):null,uiFlow,images,svg};
 }
 main().catch(error=>{console.error(error);process.exitCode=1;});

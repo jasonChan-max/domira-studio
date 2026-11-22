@@ -1,5 +1,7 @@
+import clipping from './vendor/polygon-clipping.js';
+
 // 沿像素单元的边走，而不是取连通域外接框；这样凹角和房间空洞不会被填实。
-export function wallContoursFromMask(mask,width,height,{epsilon=1}={}){
+export function wallContoursFromMask(mask,width,height,{epsilon=1,orthogonalize=true}={}){
  if(!Number.isInteger(width)||!Number.isInteger(height)||width<1||height<1||mask.length!==width*height)throw new Error('墙体 mask 尺寸无效');
  if(!Number.isFinite(epsilon)||epsilon<0||epsilon>2)throw new Error('轮廓简化容差必须为 0–2 像素');
  const stride=width+1,edges=[],outgoing=new Map();
@@ -31,7 +33,7 @@ export function wallContoursFromMask(mask,width,height,{epsilon=1}={}){
   const parent=solids.filter(s=>pointInRing(hole.points[0],s.outer)).sort((a,b)=>a.areaPixels-b.areaPixels)[0];
   if(!parent)throw new Error('墙体内部空洞缺少外轮廓');parent.holes.push(hole.points);parent.areaPixels+=hole.area;
  }
- return solids;
+ return orthogonalize?orthogonalizeWallContours(solids,{maxDeviation:Math.max(1,Math.min(8,Math.max(width,height)/150))}):solids;
 }
 
 export function signedArea(ring){let area=0;for(let i=0;i<ring.length;i++){const a=ring[i],b=ring[(i+1)%ring.length];area+=a[0]*b[1]-b[0]*a[1];}return area/2;}
@@ -52,4 +54,90 @@ function simplifyRing(ring,epsilon){
  anchors.sort((a,b)=>a-b);const out=[];
  for(let i=0;i<anchors.length;i++){const start=anchors[i],end=i+1<anchors.length?anchors[i+1]:ring.length+anchors[0],part=[];for(let j=start;j<=end;j++)part.push(ring[j%ring.length]);out.push(...simplifyOpen(part,epsilon).slice(0,-1));}
  return out.length>=3&&signedArea(out)*sign>0?out:ring;
+}
+
+const cross=(a,b,c)=>(b[0]-a[0])*(c[1]-a[1])-(b[1]-a[1])*(c[0]-a[0]);
+const equal=(a,b)=>Math.abs(a[0]-b[0])<1e-8&&Math.abs(a[1]-b[1])<1e-8;
+function cleanRing(ring){
+ const unique=ring.filter((p,i)=>!equal(p,ring[(i+ring.length-1)%ring.length]));
+ return removeCollinear(unique);
+}
+function segmentsMeet(a,b,c,d){
+ const on=(p,a,b)=>Math.abs(cross(a,b,p))<1e-8&&p[0]>=Math.min(a[0],b[0])-1e-8&&p[0]<=Math.max(a[0],b[0])+1e-8&&p[1]>=Math.min(a[1],b[1])-1e-8&&p[1]<=Math.max(a[1],b[1])+1e-8;
+ return cross(a,b,c)*cross(a,b,d)<0&&cross(c,d,a)*cross(c,d,b)<0||on(c,a,b)||on(d,a,b)||on(a,c,d)||on(b,c,d);
+}
+export function isSimpleRing(ring){
+ if(ring.length<3||Math.abs(signedArea(ring))<1e-8)return false;
+ for(let i=0;i<ring.length;i++){
+  if(equal(ring[i],ring[(i+1)%ring.length]))return false;
+  for(let j=i+1;j<ring.length;j++)if(j!==i+1&&!(i===0&&j===ring.length-1)&&segmentsMeet(ring[i],ring[(i+1)%ring.length],ring[j],ring[(j+1)%ring.length]))return false;
+ }
+ return true;
+}
+const shapeRings=s=>[s.outer,...(s.holes||[])];
+const shapeArea=s=>shapeRings(s).reduce((sum,r)=>sum+signedArea(r),0);
+function validShape(shape){
+ const rings=shapeRings(shape);
+ if(!rings.every(isSimpleRing)||signedArea(shape.outer)<=0||shape.holes.some(r=>signedArea(r)>=0||!pointInRing(r[0],shape.outer)))return false;
+ for(let i=0;i<rings.length;i++)for(let j=i+1;j<rings.length;j++){
+  const a=rings[i],b=rings[j];
+  if(i>0&&(pointInRing(a[0],b)||pointInRing(b[0],a)))return false;
+  for(let n=0;n<a.length;n++)for(let m=0;m<b.length;m++)if(segmentsMeet(a[n],a[(n+1)%a.length],b[m],b[(m+1)%b.length]))return false;
+ }
+ return true;
+}
+function replaceRing(shape,index,ring){return {...shape,outer:index===0?ring:shape.outer,holes:shape.holes.map((r,i)=>i+1===index?ring:r)};}
+function intersection(a,b,c,d){
+ const dx=b[0]-a[0],dy=b[1]-a[1],ex=d[0]-c[0],ey=d[1]-c[1],det=dx*ey-dy*ex;
+ if(Math.abs(det)<1e-8)return null;
+ const t=((c[0]-a[0])*ey-(c[1]-a[1])*ex)/det;return [a[0]+t*dx,a[1]+t*dy];
+}
+
+// 原始轮廓仍可关闭后处理逐像素对照；正交化只向墙内收，避免把房间和洞口填成墙。
+export function orthogonalizeWallContours(source,{maxDeviation=8,maxLossRatio=.05,angleDegrees=5}={}){
+ if(!Number.isFinite(maxDeviation)||maxDeviation<0||!Number.isFinite(maxLossRatio)||maxLossRatio<0||maxLossRatio>.05||!Number.isFinite(angleDegrees)||angleDegrees<0||angleDegrees>5)throw new Error('正交化参数超出保真范围');
+ const shapes=source.map(s=>({...s,outer:s.outer.map(p=>[...p]),holes:(s.holes||[]).map(r=>r.map(p=>[...p]))}));
+ const total=shapes.reduce((sum,s)=>sum+shapeArea(s),0),budget=total*maxLossRatio;let lost=0;
+ const acceptable=(candidate,index,loss)=>{
+  if(loss< -1e-7||lost+loss>budget+1e-7||!validShape(candidate))return false;
+  // 只比较顶点不足以发现跨凹角的填墙；连续区域差集还会拦住新自交与洞口侵占。
+  try{return clipping.difference(shapeRings(candidate),shapeRings(source[index])).length===0;}catch{return false;}
+ };
+ for(let si=0;si<shapes.length;si++)for(let ri=0;ri<shapeRings(shapes[si]).length;ri++){
+  let ring=shapeRings(shapes[si])[ri];
+  for(let i=0;i<ring.length;i++){
+   const n=ring.length,a=ring[i],b=ring[(i+1)%n],dx=b[0]-a[0],dy=b[1]-a[1];
+   if(dx===0||dy===0||Math.atan2(Math.min(Math.abs(dx),Math.abs(dy)),Math.max(Math.abs(dx),Math.abs(dy)))*180/Math.PI>=angleDegrees)continue;
+   const horizontal=Math.abs(dx)>Math.abs(dy),coord=horizontal?(dx>0?Math.max(a[1],b[1]):Math.min(a[1],b[1])):(dy>0?Math.min(a[0],b[0]):Math.max(a[0],b[0]));
+   const p=horizontal?[a[0],coord]:[coord,a[1]],q=horizontal?[b[0],coord]:[coord,b[1]];
+   const start=intersection(ring[(i+n-1)%n],a,p,q),end=intersection(p,q,b,ring[(i+2)%n]);
+   if(!start||!end)continue;
+   const snapped=ring.map(p=>[...p]);snapped[i]=start;snapped[(i+1)%n]=end;
+   const candidate=replaceRing(shapes[si],ri,snapped),loss=signedArea(ring)-signedArea(snapped);
+   if(acceptable(candidate,si,loss)){shapes[si]=candidate;ring=snapped;lost+=Math.max(0,loss);}
+  }
+ }
+ while(true){let best;
+  for(let si=0;si<shapes.length;si++)for(let ri=0;ri<shapeRings(shapes[si]).length;ri++){
+   const ring=shapeRings(shapes[si])[ri],n=ring.length;if(n<=4)continue;
+   for(let i=0;i<n;i++){
+    const a=ring[i],b=ring[(i+1)%n],c=ring[(i+2)%n],d=ring[(i+3)%n],prev=ring[(i+n-1)%n],next=ring[(i+4)%n];
+    const horizontal=a[1]===b[1]&&c[1]===d[1]&&a[0]===prev[0]&&d[0]===next[0],vertical=a[0]===b[0]&&c[0]===d[0]&&a[1]===prev[1]&&d[1]===next[1];
+    if(!horizontal&&!vertical)continue;const axis=horizontal?1:0;
+    if(Math.abs(b[axis]-c[axis])>maxDeviation)continue;
+    // 原始台阶的每条边本来就是轴向的；必须合并相邻平行链，才能消除半透明墙上的细竖条。
+    for(const coord of [b[axis],c[axis]]){
+     const changed=ring.map(p=>[...p]);changed[i][axis]=coord;changed[(i+3)%n][axis]=coord;
+     const simplified=cleanRing(changed.filter((_,j)=>j!==(i+1)%n&&j!==(i+2)%n));
+     if(simplified.length<3||simplified.length>=n||Math.sign(signedArea(simplified))!==Math.sign(signedArea(ring)))continue;
+     const loss=signedArea(ring)-signedArea(simplified),score=loss/(n-simplified.length);
+     if(best&&score>=best.score)continue;
+     const candidate=replaceRing(shapes[si],ri,simplified);
+     if(acceptable(candidate,si,loss))best={si,candidate,loss,score};
+    }
+   }
+  }
+  if(!best)break;shapes[best.si]=best.candidate;lost+=Math.max(0,best.loss);
+ }
+ return shapes.map(s=>({...s,outer:cleanRing(s.outer),holes:s.holes.map(cleanRing),areaPixels:shapeArea(s)}));
 }

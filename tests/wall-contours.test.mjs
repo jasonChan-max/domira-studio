@@ -12,7 +12,7 @@ const ray=(meshes,origin,direction)=>{const group=new THREE.Group();meshes.forEa
 test('像素边界轮廓保留锯齿面积，不再把 100 个墙像素扩成 180',()=>{
  const w=60,h=40,mask=new Uint8Array(w*h).fill(4);
  for(let y=5;y<25;y++)for(let x=20+(y%2)*4;x<25+(y%2)*4;x++)mask[y*w+x]=1;
- const exact=wallContoursFromMask(mask,w,h,{epsilon:0}),smooth=wallContoursFromMask(mask,w,h);
+ const exact=wallContoursFromMask(mask,w,h,{epsilon:0,orthogonalize:false}),smooth=wallContoursFromMask(mask,w,h,{orthogonalize:false});
  assert.equal(area(exact),100);
  // 简化允许 1px 边界误差，不能要求简化后的面积与锯齿逐像素完全相等。
  const distance=(p,ring)=>Math.min(...ring.map((a,i)=>{const b=ring[(i+1)%ring.length],dx=b[0]-a[0],dy=b[1]-a[1],t=Math.max(0,Math.min(1,((p[0]-a[0])*dx+(p[1]-a[1])*dy)/(dx*dx+dy*dy)));return Math.hypot(p[0]-a[0]-t*dx,p[1]-a[1]-t*dy);}));
@@ -37,7 +37,7 @@ test('轮廓保留 L 形凹角、斜墙台阶和仅顶点接触的独立墙岛',
  const diagonal=new Uint8Array(16).fill(4);diagonal[0]=diagonal[5]=1;
  assert.equal(wallContoursFromMask(diagonal,4,4,{epsilon:0}).length,2);
  const slope=new Uint8Array(20*20).fill(4);for(let y=2;y<16;y++)for(let x=y;x<y+3;x++)slope[y*20+x]=1;
- const exact=wallContoursFromMask(slope,20,20,{epsilon:0});assert.equal(area(exact),42);
+ const exact=wallContoursFromMask(slope,20,20,{epsilon:0,orthogonalize:false});assert.equal(area(exact),42);
  const meshes=buildContourWallMeshes({height:2.7,walls:{contours:exact}},material,false);
  assert.ok(ray(meshes,[8.5,5,7.5],[0,-1,0])>0);assert.equal(ray(meshes,[2.5,5,10.5],[0,-1,0]),0);
 });

@@ -3,19 +3,20 @@ import {roomsFromMask} from './room-polygon.js';
 import {wallContoursFromMask} from './wall-contours.js';
 import {selectOpenings,openingsToHome} from './opening-detection.js';
 import {roomsFromPolygons} from './home-domain.js';
-import {closeDetectedDoorFloors,selectHouseContours,roomsWithinHouse,selectSupportedWindows} from './plan-selection.js';
+import {closeDetectedDoorFloors,selectHouseContours,roomsWithinHouse,mergeRoomFragments,selectSupportedWindows} from './plan-selection.js';
 
 // 上传、模型识别和探针共用同一入口，避免验收时有窗、实际主流程却只取门。
-export function geometryFromSegmentation(result,boxes){
+export function geometryFromSegmentation(result,boxes,options={}){
  const {mask,width,height}=result,minLength=Math.max(18,Math.round(Math.max(width,height)*.03));
  const openings=selectOpenings(boxes,mask,width,height);
  const lines=wallLinesFromMask(mask,width,height,{minLenH:minLength,minLenV:minLength,gap:8});
- const blocks=wallBlocksFromMask(mask,width,height),rawContours=wallContoursFromMask(mask,width,height);
- const closedMask=closeDetectedDoorFloors(mask,width,height,openings.doors),roomCandidates=roomsFromMask(closedMask,width,height);
- const selection=selectHouseContours(rawContours,roomCandidates),{contours,frame}=selection;
- const polygons=roomsWithinHouse(roomCandidates,frame),supported=selectSupportedWindows(mask,width,height,openings.windows,frame);
- return {...openings,windows:supported.windows,polygons,lines:{...lines,blocks,contours},frame,segWidth:width,segHeight:height,
-  selection:{contours:{raw:rawContours.length,kept:contours.length,rejected:selection.removed},rooms:{candidates:roomCandidates.length,insideHouse:polygons.length},windows:{raw:openings.windows.length,kept:supported.windows.length,checks:supported.checks,rejected:supported.rejected}}};
+ const blocks=wallBlocksFromMask(mask,width,height),rawContours=wallContoursFromMask(mask,width,height,options);
+ const initialRooms=roomsFromMask(mask,width,height),selection=selectHouseContours(rawContours,initialRooms),{contours,frame}=selection;
+ const supported=selectSupportedWindows(mask,width,height,openings.windows,frame,{blocks,recoverFromSegmentation:openings.windowSource==='yolo',doors:openings.doors});
+ const closedMask=closeDetectedDoorFloors(mask,width,height,supported.doors),roomCandidates=roomsFromMask(closedMask,width,height);
+ const inside=roomsWithinHouse(roomCandidates,frame),merged=mergeRoomFragments(inside,closedMask,width,height),polygons=merged.rooms;
+ return {...openings,doors:supported.doors,windows:supported.windows,windowSource:supported.recovered.length?'yolo+segmentation':openings.windowSource,polygons,lines:{...lines,blocks,contours},frame,segWidth:width,segHeight:height,
+  selection:{contours:{raw:rawContours.length,kept:contours.length,rejected:selection.removed,orthogonalize:options.orthogonalize!==false},rooms:{candidates:roomCandidates.length,insideHouse:inside.length,merged:merged.merged},windows:{raw:openings.windows.length,kept:supported.windows.length,checks:supported.checks,rejected:supported.rejected,recovered:supported.recovered,reclassifiedDoors:supported.reclassifiedDoors}}};
 }
 
 export function homeFromRecognition(result,width,depth,options={}){
