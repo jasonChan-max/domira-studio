@@ -1,6 +1,8 @@
 import {doorsFromMask,windowsFromMask} from './room-polygon.js';
 
-export const DOOR_LIMITS=Object.freeze({minWidth:.45,maxWidth:2,minThickness:.10,maxThickness:.40,minScore:.30});
+// 平開門 0.45–1.2m，推拉門（陽台／客廳隔斷）1.2–3.0m。兩段區間不重疊，
+// 所以「門太寬」必須按類型分別判斷——2026-11-23 用戶指出推拉門被當假門刪掉了。
+export const DOOR_LIMITS=Object.freeze({minWidth:.45,swingMaxWidth:1.2,slidingMinWidth:1.2,slidingMaxWidth:3,minThickness:.10,maxThickness:.40,minScore:.30});
 
 export function doorsToHome(openings,frame,width,depth){
  const doors=[],checks=[],rejected=[],candidates=[];
@@ -9,16 +11,19 @@ export function doorsToHome(openings,frame,width,depth){
   const source={...box,cx:box.cx??box.x+box.w/2,cy:box.cy??box.y+box.h/2},converted=openingsToHome([source],frame,width,depth)[0];
   const door=converted&&['x','z','w','d'].every(k=>Number.isFinite(converted[k]))?converted:null;
   const longSide=door?Math.max(door.w,door.d):null,shortSide=door?Math.min(door.w,door.d):null,score=box.score??null;
+  const isSliding=door?longSide>=DOOR_LIMITS.slidingMinWidth:false;
   const reasons=[];
   if(!door)reasons.push('门坐标或房屋比例尺无效');
   else{
-   if(!between(longSide,DOOR_LIMITS.minWidth,DOOR_LIMITS.maxWidth))reasons.push('门宽不在 0.45–2.0m');
+   const maxWidth=isSliding?DOOR_LIMITS.slidingMaxWidth:DOOR_LIMITS.swingMaxWidth;
+   if(!between(longSide,DOOR_LIMITS.minWidth,maxWidth))reasons.push(isSliding?'推拉门宽不在 1.2–3.0m':'门宽不在 0.45–1.2m');
    if(!between(shortSide,DOOR_LIMITS.minThickness,DOOR_LIMITS.maxThickness))reasons.push('门厚不在 0.10–0.40m');
   }
   // 分割回退没有检测置信度，不能伪造分数；有 score 的检测框则必须通过同一置信度闸。
   if(score!==null&&(!Number.isFinite(score)||score<DOOR_LIMITS.minScore))reasons.push('门检测置信度低于 0.30 或无效');
   const check={index,box:{x:box.x,y:box.y,w:box.w,h:box.h},score,longSide,shortSide,valid:reasons.length===0,reasons};checks.push(check);
-  if(check.valid)candidates.push({door:{...door,...(score===null?{}:{score}),sourceIndex:index},check,score});
+  check.kind=isSliding?'sliding':'swing';
+  if(check.valid)candidates.push({door:{...door,...(score===null?{}:{score}),kind:check.kind,sourceIndex:index},check,score});
   else rejected.push(check);
  }
  // 同一个门洞只放一个门。同一面墙上沿墙方向重叠超过 60% 就是同一个洞——

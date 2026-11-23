@@ -46,7 +46,7 @@ for(const [name,rooms,windows] of [['r2',8,12],['46',4,7],['r10',13,13]])test(na
  const data=load(name),recognized=geometryFromSegmentation(data,data.boxes),home=JSON.parse(JSON.stringify(homeFromRecognition(recognized,10,10*recognized.frame.h/recognized.frame.w)));
  assert.equal(home.rooms.length,rooms);assert.equal(home.windows.length,windows);validateHome(home);
  if(name==='r2'){
-  assert.equal(home.doors.length,9);assert.deepEqual(recognized.doors.map(({x,y,w,h,score})=>({x,y,w,h,score})),data.boxes.filter(b=>b.cls==='door').map(({x,y,w,h,score})=>({x,y,w,h,score})));
+  assert.equal(home.doors.length,10);assert.deepEqual(recognized.doors.map(({x,y,w,h,score})=>({x,y,w,h,score})),data.boxes.filter(b=>b.cls==='door').map(({x,y,w,h,score})=>({x,y,w,h,score})));
   assert.equal(data.boxes.filter(b=>b.cls==='window'&&b.h>b.w&&b.x<100&&b.y<285&&b.y+b.h>150).length,0);
  }
  auditWindows(home,buildHomeGeometry(home,false));
