@@ -1,26 +1,38 @@
 import {doorsFromMask,windowsFromMask} from './room-polygon.js';
 
-export const DOOR_LIMITS=Object.freeze({minWidth:.45,maxWidth:2,minThickness:.10,maxThickness:.40,minScore:.30});
+export const DOOR_LIMITS=Object.freeze({minWidthRatio:3,maxWidthRatio:12,minThicknessRatio:1,maxThicknessRatio:2,minScore:.30});
 
-export function doorsToHome(openings,frame,width,depth){
+// 与现有探针及生成墙块的几何跨度一致；候选与墙块都在原图像素坐标中计算，完全不依赖估计米数。
+export function doorWallMedian(blocks=[]){
+ const values=blocks.map(b=>Math.min(b.x1-b.x0,b.y1-b.y0)).filter(v=>Number.isFinite(v)&&v>0).sort((a,b)=>a-b);
+ return values.length?values[Math.floor(values.length/2)]:null;
+}
+
+export function doorsToHome(openings,frame,width,depth,{wallBlocks=[]}={}){
  const doors=[],checks=[],rejected=[];
+ const globalWallThickness=doorWallMedian(wallBlocks);
  const between=(value,min,max)=>value>=min-1e-9&&value<=max+1e-9;
  for(const [index,box] of (openings||[]).entries()){
   const source={...box,cx:box.cx??box.x+box.w/2,cy:box.cy??box.y+box.h/2},converted=openingsToHome([source],frame,width,depth)[0];
   const door=converted&&['x','z','w','d'].every(k=>Number.isFinite(converted[k]))?converted:null;
   const longSide=door?Math.max(door.w,door.d):null,shortSide=door?Math.min(door.w,door.d):null,score=box.score??null;
+  const local=box.nearestWall?.thickness??box.wallSupport?.nearestWall?.thickness;
+  const wallThickness=Number.isFinite(local)&&local>0?local:globalWallThickness,wallThicknessSource=Number.isFinite(local)&&local>0?'nearestWall':'global-median';
+  const longSidePx=Math.max(box.w,box.h),shortSidePx=Math.min(box.w,box.h);
+  const rWidth=wallThickness?longSidePx/wallThickness:null,rThick=wallThickness?shortSidePx/wallThickness:null;
   const reasons=[];
   if(!door)reasons.push('门坐标或房屋比例尺无效');
+  if(!wallThickness)reasons.push('无法取得候选墙厚或全局墙厚中位数');
   else{
-   if(!between(longSide,DOOR_LIMITS.minWidth,DOOR_LIMITS.maxWidth))reasons.push('门宽不在 0.45–2.0m');
-   if(!between(shortSide,DOOR_LIMITS.minThickness,DOOR_LIMITS.maxThickness))reasons.push('门厚不在 0.10–0.40m');
+   if(!between(rWidth,DOOR_LIMITS.minWidthRatio,DOOR_LIMITS.maxWidthRatio))reasons.push('门宽/墙厚不在 3–12');
+   if(!between(rThick,DOOR_LIMITS.minThicknessRatio,DOOR_LIMITS.maxThicknessRatio))reasons.push('门厚/墙厚不在 1–2');
   }
   // 分割回退没有检测置信度，不能伪造分数；有 score 的检测框则必须通过同一置信度闸。
   if(score!==null&&(!Number.isFinite(score)||score<DOOR_LIMITS.minScore))reasons.push('门检测置信度低于 0.30 或无效');
-  const check={index,box:{x:box.x,y:box.y,w:box.w,h:box.h},score,longSide,shortSide,valid:reasons.length===0,reasons};checks.push(check);
+  const check={index,box:{x:box.x,y:box.y,w:box.w,h:box.h},score,longSide,shortSide,longSidePx,shortSidePx,wallThickness,wallThicknessSource:wallThickness?wallThicknessSource:'unavailable',globalWallThickness,rWidth,rThick,valid:reasons.length===0,reasons};checks.push(check);
   if(check.valid)doors.push({...door,...(score===null?{}:{score}),sourceIndex:index});else rejected.push(check);
  }
- return {doors,raw:checks.length,kept:doors.length,checks,rejected};
+ return {doors,raw:checks.length,kept:doors.length,globalWallThickness,checks,rejected};
 }
 
 // Keep both sources available for reproducible comparison. Empty or failed
