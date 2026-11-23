@@ -1,22 +1,27 @@
 import * as THREE from './vendor/three.module.js';
 import clipping from './vendor/polygon-clipping.js';
 import {openingsOnBlock} from './wall-openings.js';
+import {windowPanels} from './bay-window.js';
 
 const closed=ring=>ring.length&&ring[0][0]===ring.at(-1)[0]&&ring[0][1]===ring.at(-1)[1]?ring:[...ring,ring[0]];
 const rectangle=b=>[[[b.x0,b.y0],[b.x1,b.y0],[b.x1,b.y1],[b.x0,b.y1],[b.x0,b.y0]]];
 export function contourWallLayers(home){
  const source=(home.walls?.contours||[]).map(s=>[closed(s.outer),...(s.holes||[]).map(closed)]);
  if(!source.length)return [];
- const height=home.height,blocks=home.walls?.blocks||[],openings=[];
+ const height=home.height,blocks=home.walls?.blocks||[],openings=[],baySeats=[];
  for(const [kind,list] of [['door',home.doors||[]],['window',home.windows||[]]])for(const o of list){
   if(kind==='window'&&o.wallFootprint){
-   const f=o.wallFootprint,top=Math.min(2.1,height-.15);
+   const top=Math.min(2.1,height-.15);
+   if(o.bay?.seatFootprint)baySeats.push({polygon:rectangle(o.bay.seatFootprint),top:Math.min(.85,top-.2)});
+   for(const panel of windowPanels(o)){
+   const f=panel.wallFootprint;
    if([f.x0,f.x1,f.y0,f.y1].every(Number.isFinite)&&f.x1>f.x0&&f.y1>f.y0){
-    const body=o.horizontal?{...f,x0:o.x-o.w/2,x1:o.x+o.w/2}:{...f,y0:o.z-o.d/2,y1:o.z+o.d/2};
-    const normalPad=Math.max(.02,(o.horizontal?f.y1-f.y0:f.x1-f.x0)/2+.02);
-    const cut=o.horizontal?{x0:body.x0-.02,x1:body.x1+.02,y0:body.y0-normalPad,y1:body.y1+normalPad}:{x0:body.x0-normalPad,x1:body.x1+normalPad,y0:body.y0-.02,y1:body.y1+.02};
+    const body=panel.horizontal?{...f,x0:panel.x-panel.w/2,x1:panel.x+panel.w/2}:{...f,y0:panel.z-panel.d/2,y1:panel.z+panel.d/2};
+    const normalPad=Math.max(.02,(panel.horizontal?f.y1-f.y0:f.x1-f.x0)/2+.02);
+    const cut=panel.horizontal?{x0:body.x0-.02,x1:body.x1+.02,y0:body.y0-normalPad,y1:body.y1+normalPad}:{x0:body.x0-normalPad,x1:body.x1+normalPad,y0:body.y0-.02,y1:body.y1+.02};
     // 墙端恢复的厚度可能只覆盖墙带的一部分；洞必须贯穿实际墙厚，而扩大的切除范围不能用来补窗台和过梁。
     openings.push({kind,bottom:Math.min(.85,top-.2),top,polygon:rectangle(body),cutPolygon:rectangle(cut)});
+   }
    }
    continue;
   }
@@ -34,12 +39,24 @@ export function contourWallLayers(home){
  for(let i=1;i<heights.length;i++){
   const bottom=heights[i-1],top=heights[i];if(top-bottom<1e-6)continue;
   const mid=(bottom+top)/2,cuts=openings.filter(o=>mid>o.bottom&&mid<o.top).map(o=>o.cutPolygon||o.polygon);
-  const polygons=cuts.length?clipping.difference(envelope,...cuts):envelope;
+  let polygons=cuts.length?clipping.difference(envelope,...cuts):envelope;
+  const seats=baySeats.filter(seat=>mid<seat.top).map(seat=>seat.polygon);
+  if(seats.length)polygons=clipping.union(polygons,...seats);
   // 2026-11-22：每层顶部多伸 0.002m。分层切门窗是几何上必须的（要留窗下墙和过梁），
  // 但相邻层顶/底面严丝合缝时会有 z-fighting，看起来像一条缝。多伸一点让它们重叠。
  if(polygons.length)layers.push({bottom,top:Math.min(height,top+0.002),polygons});
  }
  return layers;
+}
+
+export function buildBayGlassGeometry(window,height){
+ const strips=windowPanels(window).map(p=>rectangle(p.horizontal?{x0:p.x-p.w/2,x1:p.x+p.w/2,y0:p.z-.035,y1:p.z+.035}:{x0:p.x-.035,x1:p.x+.035,y0:p.z-p.d/2,y1:p.z+p.d/2}));
+ const polygons=clipping.union(...strips),shapes=polygons.map(([outer,...holes])=>{
+  const shape=new THREE.Shape(outer.map(([x,z])=>new THREE.Vector2(x,-z)));
+  for(const h of holes)shape.holes.push(new THREE.Path(h.map(([x,z])=>new THREE.Vector2(x,-z))));return shape;
+ });
+ // 三面玻璃合成一个窗 mesh；项目保存和统计仍对应一个真实飘窗，不能把一个窗虚增成三扇。
+ const geometry=new THREE.ExtrudeGeometry(shapes,{depth:height,bevelEnabled:false,steps:1,curveSegments:1});geometry.rotateX(-Math.PI/2);return geometry;
 }
 
 export function buildContourWallMeshes(home,material,overview){

@@ -2,6 +2,12 @@ import clipping from './vendor/polygon-clipping.js';
 import {signedArea} from './wall-contours.js';
 import {wallBlocksFromMask} from './wall-onnx.js';
 import {windowsFromMask} from './room-polygon.js';
+import {assessBayWindowSupport} from './bay-window.js';
+
+// 飘窗约 58cm 的凸出场景中，玻璃在凸出外沿，主墙中线的 2.5 倍墙厚不足以覆盖它。
+export const MAX_WINDOW_WALL_RATIO=5;
+export const LEGACY_WINDOW_WALL_RATIO=2.5;
+export const MIN_BAY_WINDOW_ASPECT=2;
 
 // 筛选与轮廓转换分开；不能为了去除屋外噪声而改写忠实于 mask 的轮廓提取。
 export function contourBounds(contour){
@@ -74,7 +80,7 @@ export function mergeRoomFragments(rooms,mask,width,height){
 }
 
 export function closeDetectedDoorFloors(mask,width,height,doors){
- const closed=mask.slice();
+ const closed=new Uint8Array(mask);
  for(const b of doors){
   if(![b.x,b.y,b.w,b.h].every(Number.isFinite)||b.w<=0||b.h<=0)continue;
   for(let y=Math.max(0,Math.floor(b.y));y<Math.min(height,Math.ceil(b.y+b.h));y++)for(let x=Math.max(0,Math.floor(b.x));x<Math.min(width,Math.ceil(b.x+b.w));x++)if(closed[y*width+x]===0)closed[y*width+x]=2;
@@ -98,8 +104,16 @@ export function assessWindowSupport(mask,width,height,box,frame,{blocks}={}){
  if(!frame||![box.x,box.y,box.w,box.h].every(Number.isFinite)||box.w<=0||box.h<=0)return {valid:false,reason:'窗坐标无效'};
  const horizontal=box.w>=box.h,cx=box.x+box.w/2,cy=box.y+box.h/2;
  const nearestWall=windowWallDistance(box,blocks||wallBlocksFromMask(mask,width,height));
- const diagnostic={onExteriorWall:false,nearestWall,withinWallDistance:!!nearestWall&&nearestWall.ratio<2.5};
- if(!diagnostic.withinWallDistance)return {...diagnostic,valid:false,reason:'窗到墙中线距离超过墙厚的 2.5 倍'};
+ const aspectRatio=Math.max(box.w,box.h)/Math.min(box.w,box.h),far=!!nearestWall&&nearestWall.ratio>=LEGACY_WINDOW_WALL_RATIO;
+ const diagnostic={onExteriorWall:false,nearestWall,aspectRatio,withinWallDistance:!!nearestWall&&nearestWall.ratio<MAX_WINDOW_WALL_RATIO};
+ // 46.03 的短真窗原框长宽比可小于 2；细长约束用于新增的远墙路径，近墙仍需原来的墙端和屋外证据。
+ if(far&&aspectRatio<MIN_BAY_WINDOW_ASPECT)return {...diagnostic,valid:false,reason:'远墙候选长宽比小于 2，疑似方形大假框'};
+ if(!diagnostic.withinWallDistance)return {...diagnostic,valid:false,reason:'窗到墙中线距离超过墙厚的 5 倍'};
+ if(aspectRatio>=MIN_BAY_WINDOW_ASPECT&&(far||Math.min(box.w,box.h)>nearestWall.thickness*2)){
+  const bay=assessBayWindowSupport(mask,width,height,box,nearestWall);
+  if(bay)return {...diagnostic,...bay};
+ }
+ if(far)return {...diagnostic,valid:false,reason:'远墙候选缺少三面窗、凸出地板和屋外的共同证据'};
  const at=(x,y)=>x>=0&&y>=0&&x<width&&y<height?mask[Math.floor(y)*width+Math.floor(x)]:4;
  const probe=Math.max(3,Math.round(Math.max(width,height)*.015));
  const short=horizontal?box.h:box.w,long=horizontal?box.w:box.h;
@@ -133,19 +147,24 @@ export function assessWindowSupport(mask,width,height,box,frame,{blocks}={}){
 }
 
 const openingOverlap=(a,b)=>Math.max(0,Math.min(a.x+a.w,b.x+b.w)-Math.max(a.x,b.x))*Math.max(0,Math.min(a.y+a.h,b.y+b.h)-Math.max(a.y,b.y))/Math.min(a.w*a.h,b.w*b.h);
+function withWallSupport(box,check){
+ const f=check.bay?check.footprint:null;
+ return f?{...box,sourceBox:{...box},x:f.x0,y:f.y0,w:f.x1-f.x0,h:f.y1-f.y0,cx:(f.x0+f.x1)/2,cy:(f.y0+f.y1)/2,horizontal:box.horizontal??(box.w>=box.h),wallSupport:check}:{...box,wallSupport:check};
+}
 export function selectSupportedWindows(mask,width,height,windows,frame,{blocks,recoverFromSegmentation=false,doors=[]}={}){
  const kept=[],rejected=[],checks=[],recovered=[],reclassifiedDoors=[];blocks??=wallBlocksFromMask(mask,width,height);
  for(const [index,box] of windows.entries()){
   const check=assessWindowSupport(mask,width,height,box,frame,{blocks});checks.push({index,box,...check});
-  if(check.valid)kept.push({...box,wallSupport:check});else rejected.push({index,box,...check});
+  if(check.valid)kept.push(withWallSupport(box,check));else rejected.push({index,box,...check});
  }
  if(recoverFromSegmentation)for(const box of windowsFromMask(mask,width,height)){
-  if(box.area/(box.w*box.h)<.6||kept.some(w=>openingOverlap(w,box)>.5))continue;
+  if(kept.some(w=>openingOverlap(w,box)>.5))continue;
   const check=assessWindowSupport(mask,width,height,box,frame,{blocks});
-  if(!check.valid)continue;
+  if(!check.valid||box.area/(box.w*box.h)<.6&&!check.bay)continue;
   // 检测器把真窗叫成门时，必须同时有分割窗类和外墙证据；不能单凭低置信度就改分类。
-  const conflicts=doors.filter(d=>openingOverlap(d,box)>.65);
-  const windowBox={...box,cls:'window',source:'segmentation',wallSupport:check};kept.push(windowBox);
+  // U 形框包含窗台和内缘，不能仅因 bbox 重叠就删除仍待人工确认的门候选。
+  const conflicts=check.bay?[]:doors.filter(d=>openingOverlap(d,box)>.65);
+  const windowBox=withWallSupport({...box,cls:'window',source:'segmentation'},check);kept.push(windowBox);
   recovered.push({box,...check});reclassifiedDoors.push(...conflicts);
  }
  return {windows:kept,doors:doors.filter(d=>!reclassifiedDoors.includes(d)),rejected,checks,recovered,reclassifiedDoors};

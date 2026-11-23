@@ -3,7 +3,7 @@ import * as THREE from './vendor/three.module.js';
 import {box} from './furniture.js';
 import {planWalls,HOME_COLORS} from './home-domain.js';
 import {cutWallBlock} from './wall-openings.js';
-import {buildContourWallMeshes} from './wall-mesh.js';
+import {buildContourWallMeshes,buildBayGlassGeometry} from './wall-mesh.js';
 export function buildHomeGeometry(home,overview=true){const group=new THREE.Group();const slab=box(group,home.width,.06,home.depth,'#ece9e1',0,-.07,0);slab.userData.slab=true;for(const r of home.rooms){
   const color=CARE_FLOORING[r.flooring]?.color||HOME_COLORS[r.kind]||'#b4baa9';
   if(Array.isArray(r.polygon)&&r.polygon.length>=3){
@@ -80,8 +80,9 @@ const wallMaterial=new THREE.MeshStandardMaterial({color:'#d8ddd3',roughness:.82
   const top=Math.min(2.1,home.height-.15),sill=Math.min(.85,top-.2);
   if(top<=sill)continue;
   glassMaterial??=new THREE.MeshPhysicalMaterial({color:'#a5c5cf',transparent:true,opacity:.4,roughness:.15,metalness:.15,side:THREE.DoubleSide});
-  const pane=new THREE.Mesh(new THREE.BoxGeometry(w.horizontal?w.w:.07,top-sill,w.horizontal?.07:w.d),glassMaterial);
-  pane.position.set(w.x,(sill+top)/2,w.z);pane.userData.window=true;group.add(pane);
+  const pane=new THREE.Mesh(w.bay?buildBayGlassGeometry(w,top-sill):new THREE.BoxGeometry(w.horizontal?w.w:.07,top-sill,w.horizontal?.07:w.d),glassMaterial);
+  if(w.bay){pane.position.y=sill;pane.userData.windowKind='bay';pane.userData.paneCount=w.bay.panels.length;}else pane.position.set(w.x,(sill+top)/2,w.z);
+  pane.userData.window=true;group.add(pane);
  }
  for(const s of sceneWalls){if(s.kind==='door'){const top=Math.min(2.1,s.height-.15);segment(s,s.height-top,(s.height+top)/2);}else if(s.kind==='window'){const top=Math.min(2.1,s.height-.15),sill=Math.min(.85,top-.2);segment(s,sill,sill/2);segment(s,s.height-top,(s.height+top)/2);const glass=new THREE.MeshPhysicalMaterial({color:'#a5c5cf',transparent:true,opacity:.22,roughness:.15,metalness:.15,side:THREE.DoubleSide});segment(s,top-sill,(top+sill)/2,glass);}else{
   const cuts=doorSegments(s);

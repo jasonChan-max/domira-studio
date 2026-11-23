@@ -4,6 +4,7 @@ import {wallContoursFromMask} from './wall-contours.js';
 import {selectOpenings,openingsToHome} from './opening-detection.js';
 import {roomsFromPolygons} from './home-domain.js';
 import {closeDetectedDoorFloors,selectHouseContours,roomsWithinHouse,mergeRoomFragments,selectSupportedWindows} from './plan-selection.js';
+import {clipBayFloorPolygons} from './bay-window.js';
 
 // 上传、模型识别和探针共用同一入口，避免验收时有窗、实际主流程却只取门。
 export function geometryFromSegmentation(result,boxes,options={}){
@@ -14,9 +15,9 @@ export function geometryFromSegmentation(result,boxes,options={}){
  const initialRooms=roomsFromMask(mask,width,height),selection=selectHouseContours(rawContours,initialRooms),{contours,frame}=selection;
  const supported=selectSupportedWindows(mask,width,height,openings.windows,frame,{blocks,recoverFromSegmentation:openings.windowSource==='yolo',doors:openings.doors});
  const closedMask=closeDetectedDoorFloors(mask,width,height,supported.doors),roomCandidates=roomsFromMask(closedMask,width,height);
- const inside=roomsWithinHouse(roomCandidates,frame),merged=mergeRoomFragments(inside,closedMask,width,height),polygons=merged.rooms;
+ const inside=roomsWithinHouse(roomCandidates,frame),merged=mergeRoomFragments(inside,closedMask,width,height),bayFloors=clipBayFloorPolygons(merged.rooms,supported.windows),polygons=bayFloors.polygons;
  return {...openings,doors:supported.doors,windows:supported.windows,windowSource:supported.recovered.length?'yolo+segmentation':openings.windowSource,polygons,lines:{...lines,blocks,contours},frame,segWidth:width,segHeight:height,
-  selection:{contours:{raw:rawContours.length,kept:contours.length,rejected:selection.removed,orthogonalize:options.orthogonalize!==false,postprocessing:rawContours.diagnostics},rooms:{candidates:roomCandidates.length,insideHouse:inside.length,merged:merged.merged},windows:{raw:openings.windows.length,kept:supported.windows.length,checks:supported.checks,rejected:supported.rejected,recovered:supported.recovered,reclassifiedDoors:supported.reclassifiedDoors}}};
+  selection:{contours:{raw:rawContours.length,kept:contours.length,rejected:selection.removed,orthogonalize:options.orthogonalize!==false,postprocessing:rawContours.diagnostics},rooms:{candidates:roomCandidates.length,insideHouse:inside.length,merged:merged.merged,bayFloorChanges:bayFloors.changes},windows:{raw:openings.windows.length,kept:supported.windows.length,checks:supported.checks,rejected:supported.rejected,recovered:supported.recovered,reclassifiedDoors:supported.reclassifiedDoors}}};
 }
 
 export function homeFromRecognition(result,width,depth,options={}){
@@ -45,7 +46,11 @@ export function attachDetectedOpenings(home,result){
 export function scaleDetectedGeometry(home,axis,factor){
  if(!['width','depth'].includes(axis)||!Number.isFinite(factor)||factor<=0)throw new Error('平面缩放参数无效');
  const horizontal=axis==='width',coordinate=horizontal?'x':'z',size=horizontal?'w':'d';
- for(const list of [home.doors,home.windows])for(const o of list||[]){o[coordinate]*=factor;o[size]*=factor;if(o.wallFootprint){o.wallFootprint[horizontal?'x0':'y0']*=factor;o.wallFootprint[horizontal?'x1':'y1']*=factor;}}
+ const scaledRectangles=new Set(),scaleRect=f=>{if(!f||scaledRectangles.has(f))return;scaledRectangles.add(f);f[horizontal?'x0':'y0']*=factor;f[horizontal?'x1':'y1']*=factor;};
+ for(const list of [home.doors,home.windows])for(const o of list||[]){
+  o[coordinate]*=factor;o[size]*=factor;scaleRect(o.wallFootprint);
+  if(o.bay){scaleRect(o.bay.seatFootprint);for(const p of o.bay.panels){p[coordinate]*=factor;p[size]*=factor;scaleRect(p.wallFootprint);}}
+ }
  for(const room of home.rooms||[])for(const p of room.polygon||[])p[horizontal?0:1]*=factor;
  for(const wall of home.walls?.h||[]){if(horizontal){wall.x0*=factor;wall.x1*=factor;}else{wall.z*=factor;if(Number.isFinite(wall.thickness))wall.thickness*=factor;}}
  for(const wall of home.walls?.v||[]){if(horizontal){wall.x*=factor;if(Number.isFinite(wall.thickness))wall.thickness*=factor;}else{wall.z0*=factor;wall.z1*=factor;}}

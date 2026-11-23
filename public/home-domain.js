@@ -1,4 +1,5 @@
 import {CATALOG,itemBounds,clampItem,clearanceMetrics} from './domain.js';
+import {windowPanels} from './bay-window.js';
 export const HOME_KINDS={living:'客廳',bedroom:'睡房',dining:'飯廳',work:'書房',kitchen:'廚房',bathroom:'浴室',hall:'走廊',balcony:'露台',other:'其他空間'};
 export const HOME_COLORS={living:'#b7bca3',bedroom:'#a7b7bb',dining:'#c4b494',work:'#a9bba5',kitchen:'#c5baa6',bathroom:'#9dbab8',hall:'#b9b4a7',balcony:'#a4b99a',other:'#b3a8bb'};
 const finiteHome=n=>Number.isFinite(n),roundHome=n=>Math.round(n*1000)/1000;
@@ -726,4 +727,9 @@ function autofillDoors(rooms){
  return filled;
 }
 
-function homeWindowsSVG(home,ox,oy,scale){return (home.windows||[]).filter(w=>[w.x,w.z,w.w,w.d].every(Number.isFinite)&&w.w>0&&w.d>0).map(w=>{const x=ox+(w.x+home.width/2)*scale,y=oy+(w.z+home.depth/2)*scale;return '<rect data-opening="window" x="'+(x-w.w*scale/2).toFixed(1)+'" y="'+(y-w.d*scale/2).toFixed(1)+'" width="'+Math.max(2,w.w*scale).toFixed(1)+'" height="'+Math.max(2,w.d*scale).toFixed(1)+'" fill="#7eafbf" opacity=".85"/>';}).join('');}
+function homeWindowsSVG(home,ox,oy,scale){return (home.windows||[]).filter(w=>[w.x,w.z,w.w,w.d].every(Number.isFinite)&&w.w>0&&w.d>0).map(w=>{
+ const draw=(p,attribute='')=>{const x=ox+(p.x+home.width/2)*scale,y=oy+(p.z+home.depth/2)*scale;return '<rect '+attribute+' x="'+(x-p.w*scale/2).toFixed(1)+'" y="'+(y-p.d*scale/2).toFixed(1)+'" width="'+Math.max(2,p.w*scale).toFixed(1)+'" height="'+Math.max(2,p.d*scale).toFixed(1)+'" fill="#7eafbf" opacity=".85"/>';};
+ if(!w.bay)return draw(w,'data-opening="window"');
+ const seat=w.bay.seatFootprint;
+ return '<g data-opening="window" data-window-kind="bay"><rect x="'+(ox+(seat.x0+home.width/2)*scale).toFixed(1)+'" y="'+(oy+(seat.y0+home.depth/2)*scale).toFixed(1)+'" width="'+((seat.x1-seat.x0)*scale).toFixed(1)+'" height="'+((seat.y1-seat.y0)*scale).toFixed(1)+'" fill="#d5ddd4"/>'+windowPanels(w).map(p=>draw(p)).join('')+'</g>';
+ }).join('');}

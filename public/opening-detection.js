@@ -23,6 +23,13 @@ export function openingsToHome(openings,frame,width,depth){
   else{opening.x=(wallFootprint.x0+wallFootprint.x1)/2;opening.w=wallFootprint.x1-wallFootprint.x0;wallFootprint.y0=opening.z-opening.d/2;wallFootprint.y1=opening.z+opening.d/2;}
   opening.wallFootprint=wallFootprint;
  }
+ const bay=b.wallSupport?.bay;
+ if(bay){
+  const toWorld=f=>({x0:(f.x0-frame.x-frame.w/2)*width/frame.w,x1:(f.x1-frame.x-frame.w/2)*width/frame.w,y0:(f.y0-frame.y-frame.h/2)*depth/frame.h,y1:(f.y1-frame.y-frame.h/2)*depth/frame.h});
+  opening.bay={side:bay.side,seatFootprint:toWorld(bay.seatFootprint),panels:bay.panels.map(p=>{
+   const f=toWorld(p.footprint);return {horizontal:p.horizontal,x:(f.x0+f.x1)/2,z:(f.y0+f.y1)/2,w:f.x1-f.x0,d:f.y1-f.y0,wallFootprint:f};
+  })};
+ }
  return opening;
  });
 }

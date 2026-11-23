@@ -47,24 +47,33 @@ async function probeInBrowser(baselineURL,exportData=false,knownWidth=10){
  const count=(g,predicate)=>{let n=0;g.traverse(o=>{if(predicate(o))n++;});return n;};
  current.geometry.updateMatrixWorld(true);
  const solidWalls=current.geometry.children.filter(m=>m.userData.wall);
+ const glassMeshes=current.geometry.children.filter(m=>m.userData.window);
+ const {windowPanels,rectangleRing}=await import('/bay-window.js'),{default:clipping}=await import('/vendor/polygon-clipping.js');
+ const auditPanel=p=>{
+  const f=p.wallFootprint,hits=(meshes,y,offset)=>{
+   const along=p.horizontal?p.x+p.w*offset:p.z+p.d*offset;
+   const origin=p.horizontal?new THREE.Vector3(along,y,f.y0-.05):new THREE.Vector3(f.x0-.05,y,along),direction=p.horizontal?new THREE.Vector3(0,0,1):new THREE.Vector3(1,0,0),far=(p.horizontal?f.y1-f.y0:f.x1-f.x0)+.1;
+   return new THREE.Raycaster(origin,direction,0,far).intersectObjects(meshes).length>0;
+  };
+  return [-.25,0,.25].map(offset=>({offset,lowerWall:hits(solidWalls,.4,offset),openingClear:!hits(solidWalls,1.5,offset),upperWall:hits(solidWalls,2.4,offset),glassPresent:hits(glassMeshes,1.5,offset)}));
+ };
  const windowAudit=home.windows.map((w,index)=>{
   const f=w.wallFootprint,support=recognized.windows[index].wallSupport;
   if(!f)return {index,valid:false,reason:'缺少经过墙体支持验证的洞口'};
-  const hits=(y,offset)=>{
-   const along=w.horizontal?w.x+w.w*offset:w.z+w.d*offset;
-   const origin=w.horizontal?new THREE.Vector3(along,y,f.y0-.05):new THREE.Vector3(f.x0-.05,y,along);
-   const direction=w.horizontal?new THREE.Vector3(0,0,1):new THREE.Vector3(1,0,0);
-   const far=(w.horizontal?f.y1-f.y0:f.x1-f.x0)+.1;
-   return new THREE.Raycaster(origin,direction,0,far).intersectObjects(solidWalls).length>0;
-  };
-  const samples=[-.25,0,.25].map(offset=>({offset,lowerWall:hits(.4,offset),openingClear:!hits(1.5,offset),upperWall:hits(2.4,offset)}));
+  const samples=auditPanel(w),panels=windowPanels(w).map(p=>({horizontal:p.horizontal,wallFootprint:p.wallFootprint,samples:auditPanel(p)}));
   const onExteriorWall=!!support?.valid&&support.endA&&support.endB;
   const glassLength=w.horizontal?w.w:w.d,footprintLength=w.horizontal?f.x1-f.x0:f.y1-f.y0;
   const centerDelta=w.horizontal?(f.x0+f.x1)/2-w.x:(f.y0+f.y1)/2-w.z;
-  return {index,x:w.x,z:w.z,onExteriorWall,wallFootprint:f,glassLength,footprintLength,alongLengthDelta:footprintLength-glassLength,alongCenterDelta:centerDelta,samples,valid:onExteriorWall&&samples.every(s=>s.lowerWall&&s.openingClear&&s.upperWall)};
+  return {index,x:w.x,z:w.z,onExteriorWall,kind:w.bay?'bay':'flat',wallFootprint:f,glassLength,footprintLength,alongLengthDelta:footprintLength-glassLength,alongCenterDelta:centerDelta,samples,panels,valid:onExteriorWall&&panels.every(p=>p.samples.every(s=>s.lowerWall&&s.openingClear&&s.upperWall&&s.glassPresent))};
  });
  const windowMeshCount=count(current.geometry,o=>o.userData.window);
  const windowsAllValid=windowMeshCount===home.windows.length&&windowAudit.every(w=>w.valid);
+ const bayWindows=home.windows.flatMap((w,index)=>w.bay?[{index,x:w.x,z:w.z,frontLength:w.horizontal?w.w:w.d,totalGlassLength:w.bay.panels.reduce((n,p)=>n+(p.horizontal?p.w:p.d),0),side:w.bay.side,panels:w.bay.panels,seatFootprint:w.bay.seatFootprint,sourceBox:recognized.windows[index].sourceBox}]:[]);
+ const bayFloorAudit=bayWindows.map(b=>({index:b.index,overlaps:home.rooms.map(r=>{
+  const global=r.polygon.map(([x,z])=>[r.x+x,r.z+z]),intersection=clipping.intersection([global],[rectangleRing(b.seatFootprint)]);
+  return {room:r.name,area:intersection.reduce((n,p)=>n+Math.abs(signedArea(p[0]))-p.slice(1).reduce((n,h)=>n+Math.abs(signedArea(h)),0),0)};
+ })}));
+ const noExposedBayFloors=bayFloorAudit.every(b=>b.overlaps.every(r=>r.area<.005));
  const thickness=home.walls.blocks.map(b=>Math.min(b.x1-b.x0,b.y1-b.y0)).sort((a,b)=>a-b);
  let tp=0,fp=0,fn=0;for(let y=0;y<seg.height;y++)for(let x=0;x<seg.width;x++){const p=[x+.5,y+.5],predicted=contours.some(s=>pointInRing(p,s.outer)&&!s.holes.some(h=>pointInRing(p,h))),actual=seg.mask[y*seg.width+x]===1;if(predicted&&actual)tp++;else if(predicted)fp++;else if(actual)fn++;}
  const images={'contours-3d':currentRender.image};if(baselineRender)images['blocks-3d']=baselineRender.image;
@@ -94,10 +103,10 @@ async function probeInBrowser(baselineURL,exportData=false,knownWidth=10){
  if(!created)throw Error('页面建房失败：'+document.querySelector('#floorplan-error').textContent+' '+document.querySelector('#floorplan-model-status').textContent+' '+JSON.stringify(Array.from(document.querySelectorAll('[data-home-field]')).map(e=>({room:e.dataset.roomIndex,key:e.dataset.homeField,value:e.value}))));
  if(Math.abs(created.width-12)>1e-6)throw Error('页面长宽修改没有保存');
  if(created.rooms.length!==home.rooms.length)throw Error('原始图与上传后的房间数量不一致');
- const uiFlow={initialBuildError,resizedBuildError,initialRooms,initialWidth,reviewedRooms,rooms:created.rooms.length,windows:created.windows.length,windowSource:created.windowSource,svgWindowCount,windowsMatchData:created.windows.length===home.windows.length,svgWindowsMatchData:svgWindowCount===created.windows.length,savedContours:created.walls.contours.length,savedWidth:created.width};
+ const uiFlow={initialBuildError,resizedBuildError,initialRooms,initialWidth,reviewedRooms,rooms:created.rooms.length,windows:created.windows.length,windowSource:created.windowSource,svgWindowCount,windowsMatchData:created.windows.length===home.windows.length,svgWindowsMatchData:svgWindowCount===created.windows.length,savedContours:created.walls.contours.length,savedWidth:created.width,savedBayWindows:created.windows.filter(w=>w.bay).map(w=>({x:w.x,z:w.z,panels:w.bay.panels,seatFootprint:w.bay.seatFootprint}))};
  studio.stop();
  const metrics=(build,render)=>({buildMs:build.ms,buildSamples:build.samples,frameMs:render.ms,frameSamples:render.samples,meshCount:count(build.geometry,o=>o.isMesh),wallMeshes:count(build.geometry,o=>o.userData.wall),drawCalls:render.drawCalls,triangles:render.triangles});
  const stepStats=rings=>{const lens=[];for(const ring of rings){const n=ring.length;for(let i=0;i<n;i++){const a=ring[i],b=ring[(i+1)%n],l=Math.hypot(b[0]-a[0],b[1]-a[1]);lens.push(l);}}const sorted=[...lens].sort((x,y)=>x-y),under8=lens.filter(l=>l<8).length;return {edges:lens.length,under3:lens.filter(l=>l<3).length,under6:lens.filter(l=>l<6).length,under8,under8Ratio:under8/lens.length,under10:lens.filter(l=>l<10).length,min:sorted[0],median:median(sorted),max:sorted.at(-1)};};
- return {imgSize:[seg.width,seg.height],segMs,rooms:home.rooms.length,roomAudit,doors:home.doors.length,doorDetections:boxes.filter(b=>b.cls==='door'),homeDoors:home.doors,windowsRaw:boxes.filter(b=>b.cls==='window'),windows:home.windows.length,windowMeshCount,windowAudit,windowsAllValid,edges:stepStats(contours.flatMap(c=>[c.outer,...c.holes])),contoursRaw:contours.map(c=>({outer:c.outer,holes:c.holes})),selection:home.selection,homeBlocks:home.walls.blocks.length,homeContours:contours.length,holes:contours.reduce((s,c)=>s+c.holes.length,0),vertices:contours.reduce((s,c)=>s+c.outer.length+c.holes.reduce((a,h)=>a+h.length,0),0),orthogonalization:{enabled:true,originalVertices:original.lines.contours.reduce((s,c)=>s+c.outer.length+c.holes.reduce((a,h)=>a+h.length,0),0),originalArea:original.lines.contours.reduce((s,c)=>s+Math.abs(signedArea(c.outer))-c.holes.reduce((n,h)=>n+Math.abs(signedArea(h)),0),0)},geometryMs,contourArea:contours.reduce((sum,s)=>sum+Math.abs(signedArea(s.outer))-s.holes.reduce((n,h)=>n+Math.abs(signedArea(h)),0),0),maskFidelity:{precision:tp/(tp+fp),recall:tp/(tp+fn),extraPixels:fp,missedPixels:fn},thickness:{min:thickness[0],median:median(thickness),max:thickness.at(-1)},current:metrics(current,currentRender),baseline:baseline?metrics(baseline,baselineRender):null,uiFlow,images,svg};
+ return {imgSize:[seg.width,seg.height],segMs,rooms:home.rooms.length,roomAudit,doors:home.doors.length,doorDetections:boxes.filter(b=>b.cls==='door'),homeDoors:home.doors,windowsRaw:boxes.filter(b=>b.cls==='window'),windows:home.windows.length,windowMeshCount,windowAudit,windowsAllValid,bayWindows,bayFloorAudit,noExposedBayFloors,edges:stepStats(contours.flatMap(c=>[c.outer,...c.holes])),contoursRaw:contours.map(c=>({outer:c.outer,holes:c.holes})),selection:home.selection,homeBlocks:home.walls.blocks.length,homeContours:contours.length,holes:contours.reduce((s,c)=>s+c.holes.length,0),vertices:contours.reduce((s,c)=>s+c.outer.length+c.holes.reduce((a,h)=>a+h.length,0),0),orthogonalization:{enabled:true,originalVertices:original.lines.contours.reduce((s,c)=>s+c.outer.length+c.holes.reduce((a,h)=>a+h.length,0),0),originalArea:original.lines.contours.reduce((s,c)=>s+Math.abs(signedArea(c.outer))-c.holes.reduce((n,h)=>n+Math.abs(signedArea(h)),0),0)},geometryMs,contourArea:contours.reduce((sum,s)=>sum+Math.abs(signedArea(s.outer))-s.holes.reduce((n,h)=>n+Math.abs(signedArea(h)),0),0),maskFidelity:{precision:tp/(tp+fp),recall:tp/(tp+fn),extraPixels:fp,missedPixels:fn},thickness:{min:thickness[0],median:median(thickness),max:thickness.at(-1)},current:metrics(current,currentRender),baseline:baseline?metrics(baseline,baselineRender):null,uiFlow,images,svg};
 }
 main().catch(error=>{console.error(error);process.exitCode=1;});

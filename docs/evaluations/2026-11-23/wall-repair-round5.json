@@ -1,0 +1,1188 @@
+{
+  "date": "2026-11-23",
+  "sourceBaseCommit": "29e1a1e",
+  "tests": {
+    "total": 308,
+    "passed": 308,
+    "failed": 0,
+    "fullOutput": "npm-test-round5.txt"
+  },
+  "acceptance": {
+    "status": "飘窗显示、墙体保护、地板修复和两图回归通过；前立面长度目标未达成",
+    "r2": {
+      "windows12": true,
+      "meshes12": true,
+      "twoBayWindows": true,
+      "allThreeFacesValid": true,
+      "noExposedBayFloors": true,
+      "twoLargeFalseBoxesRejected": true,
+      "frontLengthsNear309And338": false
+    },
+    "regressions": {
+      "46": {
+        "rooms": 4,
+        "windows": 7,
+        "precision": 1,
+        "vertices": 64,
+        "allWindowAuditsPassed": true
+      },
+      "r10": {
+        "rooms": 13,
+        "windows": 13,
+        "allWindowAuditsPassed": true
+      }
+    }
+  },
+  "models": {
+    "unetSha256": "9e639256aa950ce2a6982593a1cb8324e2acac651e8fb6bea32769f74ba6aa98",
+    "yoloSha256": "6f257e8060d025f233a1e525067b6a12c8807c6b3a371f989447a42fc57d82c9",
+    "weightsChanged": false,
+    "detectorScoreThresholdChanged": false,
+    "protectedMaskFiltersChanged": false
+  },
+  "diagnosis": {
+    "rawMaskSha256": "d1bbf5760c3165cdc9d6fada0c1f00ed0c7afde8517a4ecdeabf0761cb198a8a",
+    "matchesFrozenRawMask": true,
+    "regions": [
+      {
+        "name": "上飘窗检测范围",
+        "bounds": [
+          663,
+          355,
+          703,
+          472
+        ],
+        "classes": {
+          "floor": 2317,
+          "wall": 0,
+          "door": 0,
+          "window": 2359,
+          "outside": 4
+        }
+      },
+      {
+        "name": "下飘窗及其内缘",
+        "bounds": [
+          663,
+          510,
+          735,
+          700
+        ],
+        "classes": {
+          "floor": 9099,
+          "wall": 265,
+          "door": 52,
+          "window": 4114,
+          "outside": 150
+        }
+      }
+    ],
+    "finding": "两处主要是 floor+window，原始墙像素几乎没有；原始轮廓和后处理轮廓都没有包住外沿。不是共线合并吃掉了原有凸墙，也没有改 keepHouse 来猜补。",
+    "maskInterpretation": "复核的是未被房间分析修改的原始 mask。封门现在强制复制到 Uint8Array，Node Buffer.slice 的共享视图不会污染原始诊断数据。"
+  },
+  "implementation": {
+    "maxWallDistanceRatio": 5,
+    "minAspectForNewFarPath": 2,
+    "legacyNearPathRatio": 2.5,
+    "aspectScope": "细长约束用于新增远墙飘窗路径；近墙短窗继续由原墙端支持和室内/屋外证据审核。46.03 既有真窗原框长宽比可小于2，若全局直接拒绝会违反7窗回归。",
+    "evidence": "至少三个不同纵向采样位置需有凸出地板、外沿窗、屋外证据；内缘缺失时还要求两端真实墙垛及三面窗支持。仅放宽距离而没有这些证据不能补窗。",
+    "geometry": "每扇飘窗仍是一个窗对象、一个窗 mesh，包含前面和两侧三片玻璃；窗台实体/三面过梁与切洞分开构建，原0.4/1.5/2.4m检查未放宽。",
+    "sourceContours": "墙 mask 的提取、正交化、共线合并均未改；U形补墙是带证据的独立窗构件，源轮廓 maskFidelity 不包含这些补墙。"
+  },
+  "room9Policy": {
+    "choice": "排除独立房间，改为不可步入的飘窗窗台",
+    "rawRoomCandidates": 8,
+    "afterDetectedDoorClosure": 9,
+    "afterBayFloorClip": 8,
+    "reason": "原始下飘窗地板与主卧连通。被检成门的 D14 在房间分析副本中封闭后，才切出了空间9；其95%以上区域落入已确认的三面飘窗窗台，不能当作独立房间。",
+    "changes": [
+      {
+        "windowIndex": 2,
+        "index": 3,
+        "bbox": [
+          417,
+          328,
+          691,
+          503
+        ],
+        "areaBefore": 42052.5,
+        "areaAfter": 39405.45633971291,
+        "action": "裁去飘窗窗台范围内的地板"
+      },
+      {
+        "windowIndex": 6,
+        "index": 1,
+        "bbox": [
+          411,
+          498,
+          686,
+          707
+        ],
+        "areaBefore": 49168,
+        "areaAfter": 49081.26084898546,
+        "action": "裁去飘窗窗台范围内的地板"
+      },
+      {
+        "windowIndex": 6,
+        "index": 8,
+        "bbox": [
+          678,
+          525,
+          724,
+          676
+        ],
+        "areaBefore": 6413,
+        "areaAfter": 0,
+        "action": "排除被当作独立房间的飘窗地板"
+      }
+    ],
+    "uiDeletes": []
+  },
+  "dimensionReview": {
+    "assumedWholeHouseWidth": 10,
+    "targetFrontLengths": [
+      3.09,
+      3.38
+    ],
+    "actualFrontLengths": [
+      1.725841778006035,
+      2.7545450743600948
+    ],
+    "actualTotalThreeSideGlassLengths": [
+      3.0663872385920734,
+      4.286597029315565
+    ],
+    "actualFrontX": [
+      4.372122201877813,
+      4.872985340997871
+    ],
+    "reason": "按原始检测框117.15/186.99px和当前像素比例换算，前立面长度约1.73/2.75m。没有将房间边长标注强行当作整扇窗长，也没有把两扇不同外沿都吸到x=4.8。须按图纸比例尺与实际窗范围复核，当前未满足3.09/3.38m长度目标。"
+  },
+  "remainingIssues": [
+    "两扇前立面长度未达到文档3.09m/3.38m近似目标，已保存真实像素范围、尺度和三面展开长度。",
+    "D14等既有可疑门候选仍保留；根部可能仍看到木色门板，本轮未自动删除或重分类待审核的门。",
+    "R(2)左上阳台与厨房的既有房间分区偏差、其他模型漏检/错分仍存在，8间不是原图所有房间已正确一一对应的证明。"
+  ],
+  "cases": {
+    "46": {
+      "rooms": 4,
+      "windows": 7,
+      "windowMeshCount": 7,
+      "windowsAllValid": true,
+      "bayWindows": [],
+      "noExposedBayFloors": true,
+      "vertices": 64,
+      "maskFidelity": {
+        "precision": 1,
+        "recall": 0.9517396516256974,
+        "extraPixels": 0,
+        "missedPixels": 3261
+      },
+      "uiFlow": {
+        "initialBuildError": "",
+        "resizedBuildError": "",
+        "initialRooms": 4,
+        "initialWidth": 10,
+        "reviewedRooms": [],
+        "rooms": 4,
+        "windows": 7,
+        "windowSource": "yolo+segmentation",
+        "svgWindowCount": 7,
+        "windowsMatchData": true,
+        "svgWindowsMatchData": true,
+        "savedContours": 7,
+        "savedWidth": 12,
+        "savedBayWindows": []
+      },
+      "detail": "wall-repair-round5-46.json"
+    },
+    "r2": {
+      "rooms": 8,
+      "windows": 12,
+      "windowMeshCount": 12,
+      "windowsAllValid": true,
+      "bayWindows": [
+        {
+          "index": 2,
+          "x": 4.372122201877813,
+          "z": 0.1914415511158767,
+          "frontLength": 1.725841778006035,
+          "totalGlassLength": 3.0663872385920734,
+          "side": "right",
+          "panels": [
+            {
+              "horizontal": false,
+              "x": 4.372122201877813,
+              "z": 0.19144155111587674,
+              "w": 0.2357003007623799,
+              "d": 1.725841778006035,
+              "wallFootprint": {
+                "x0": 4.254272051496623,
+                "x1": 4.489972352259003,
+                "y0": -0.6714793378871408,
+                "y1": 1.0543624401188942
+              }
+            },
+            {
+              "horizontal": true,
+              "x": 4.036985836731303,
+              "z": -0.6714793378871409,
+              "w": 0.6702727302930191,
+              "d": 0.23570030076238024,
+              "wallFootprint": {
+                "x0": 3.701849471584794,
+                "x1": 4.372122201877813,
+                "y0": -0.7893294882683309,
+                "y1": -0.5536291875059507
+              }
+            },
+            {
+              "horizontal": true,
+              "x": 4.036985836731303,
+              "z": 1.0543624401188942,
+              "w": 0.6702727302930191,
+              "d": 0.23570030076238024,
+              "wallFootprint": {
+                "x0": 3.701849471584794,
+                "x1": 4.372122201877813,
+                "y0": 0.9365122897377042,
+                "y1": 1.1722125905000844
+              }
+            }
+          ],
+          "seatFootprint": {
+            "x0": 3.701849471584794,
+            "x1": 4.489972352259003,
+            "y0": -0.7893294882683309,
+            "y1": 1.1722125905000844
+          },
+          "sourceBox": {
+            "x": 663.0694961547852,
+            "y": 354.98985290527344,
+            "w": 39.82109069824219,
+            "h": 117.15499877929688,
+            "cls": "window",
+            "score": 0.6589184999465942,
+            "cx": 682.9800415039062,
+            "cy": 413.5673522949219,
+            "area": 4665.239832142834,
+            "horizontal": false
+          }
+        },
+        {
+          "index": 6,
+          "x": 4.872985340997871,
+          "z": 3.0001268930301355,
+          "frontLength": 2.7545450743600948,
+          "totalGlassLength": 4.286597029315565,
+          "side": "right",
+          "panels": [
+            {
+              "horizontal": false,
+              "x": 4.872985340997871,
+              "z": 3.0001268930301355,
+              "w": 0.2357003007623799,
+              "d": 2.7545450743600943,
+              "wallFootprint": {
+                "x0": 4.755135190616681,
+                "x1": 4.990835491379061,
+                "y0": 1.622854355850088,
+                "y1": 4.377399430210183
+              }
+            },
+            {
+              "horizontal": true,
+              "x": 4.489972352259003,
+              "z": 1.622854355850088,
+              "w": 0.7660259774777352,
+              "d": 0.23570030076238035,
+              "wallFootprint": {
+                "x0": 4.106959363520136,
+                "x1": 4.872985340997871,
+                "y0": 1.505004205468898,
+                "y1": 1.7407045062312783
+              }
+            },
+            {
+              "horizontal": true,
+              "x": 4.489972352259003,
+              "z": 4.377399430210183,
+              "w": 0.7660259774777352,
+              "d": 0.2357003007623808,
+              "wallFootprint": {
+                "x0": 4.106959363520136,
+                "x1": 4.872985340997871,
+                "y0": 4.259549279828993,
+                "y1": 4.4952495805913735
+              }
+            }
+          ],
+          "seatFootprint": {
+            "x0": 4.106959363520136,
+            "x1": 4.990835491379061,
+            "y0": 1.505004205468898,
+            "y1": 4.4952495805913735
+          },
+          "sourceBox": {
+            "x": 684.606819152832,
+            "y": 510.7356834411621,
+            "w": 49.63218688964844,
+            "h": 186.98627471923828,
+            "cls": "window",
+            "score": 0.47956404089927673,
+            "cx": 709.4229125976562,
+            "cy": 604.2288208007812,
+            "area": 9280.53773266438,
+            "horizontal": false
+          }
+        }
+      ],
+      "noExposedBayFloors": true,
+      "vertices": 104,
+      "maskFidelity": {
+        "precision": 0.9497046378147388,
+        "recall": 0.9469869451697128,
+        "extraPixels": 2401,
+        "missedPixels": 2538
+      },
+      "uiFlow": {
+        "initialBuildError": "",
+        "resizedBuildError": "",
+        "initialRooms": 8,
+        "initialWidth": 10,
+        "reviewedRooms": [],
+        "rooms": 8,
+        "windows": 12,
+        "windowSource": "yolo+segmentation",
+        "svgWindowCount": 12,
+        "windowsMatchData": true,
+        "svgWindowsMatchData": true,
+        "savedContours": 10,
+        "savedWidth": 12,
+        "savedBayWindows": [
+          {
+            "x": 5.246546642253375,
+            "z": 0.19137007307627818,
+            "panels": [
+              {
+                "horizontal": false,
+                "x": 5.246546642253375,
+                "z": 0.19137007307627812,
+                "w": 0.28284036091485587,
+                "d": 1.7251974048998302,
+                "wallFootprint": {
+                  "x0": 5.1051264617959475,
+                  "x1": 5.387966822710804,
+                  "y0": -0.671228629373637,
+                  "y1": 1.0539687755261933
+                }
+              },
+              {
+                "horizontal": true,
+                "x": 4.844383004077564,
+                "z": -0.671228629373637,
+                "w": 0.8043272763516229,
+                "d": 0.23561229794724903,
+                "wallFootprint": {
+                  "x0": 4.442219365901753,
+                  "x1": 5.246546642253375,
+                  "y0": -0.7890347783472615,
+                  "y1": -0.5534224804000125
+                }
+              },
+              {
+                "horizontal": true,
+                "x": 4.844383004077564,
+                "z": 1.0539687755261933,
+                "w": 0.8043272763516229,
+                "d": 0.23561229794724903,
+                "wallFootprint": {
+                  "x0": 4.442219365901753,
+                  "x1": 5.246546642253375,
+                  "y0": 0.9361626265525689,
+                  "y1": 1.171774924499818
+                }
+              }
+            ],
+            "seatFootprint": {
+              "x0": 4.442219365901753,
+              "x1": 5.387966822710804,
+              "y0": -0.7890347783472615,
+              "y1": 1.171774924499818
+            }
+          },
+          {
+            "x": 5.847582409197445,
+            "z": 2.999006743367689,
+            "panels": [
+              {
+                "horizontal": false,
+                "x": 5.847582409197445,
+                "z": 2.999006743367689,
+                "w": 0.28284036091485587,
+                "d": 2.753516616949708,
+                "wallFootprint": {
+                  "x0": 5.706162228740017,
+                  "x1": 5.989002589654873,
+                  "y0": 1.622248434892835,
+                  "y1": 4.375765051842543
+                }
+              },
+              {
+                "horizontal": true,
+                "x": 5.387966822710804,
+                "z": 1.622248434892835,
+                "w": 0.9192311729732822,
+                "d": 0.23561229794724903,
+                "wallFootprint": {
+                  "x0": 4.928351236224162,
+                  "x1": 5.847582409197445,
+                  "y0": 1.5044422859192104,
+                  "y1": 1.7400545838664594
+                }
+              },
+              {
+                "horizontal": true,
+                "x": 5.387966822710804,
+                "z": 4.375765051842543,
+                "w": 0.9192311729732822,
+                "d": 0.2356122979472488,
+                "wallFootprint": {
+                  "x0": 4.928351236224162,
+                  "x1": 5.847582409197445,
+                  "y0": 4.257958902868919,
+                  "y1": 4.4935712008161675
+                }
+              }
+            ],
+            "seatFootprint": {
+              "x0": 4.928351236224162,
+              "x1": 5.989002589654873,
+              "y0": 1.5044422859192104,
+              "y1": 4.4935712008161675
+            }
+          }
+        ]
+      },
+      "detail": "wall-repair-round5-r2.json"
+    },
+    "r10": {
+      "rooms": 13,
+      "windows": 13,
+      "windowMeshCount": 13,
+      "windowsAllValid": true,
+      "bayWindows": [],
+      "noExposedBayFloors": true,
+      "vertices": 127,
+      "maskFidelity": {
+        "precision": 0.9478574827171206,
+        "recall": 0.9489464245684824,
+        "extraPixels": 1863,
+        "missedPixels": 1822
+      },
+      "uiFlow": {
+        "initialBuildError": "",
+        "resizedBuildError": "",
+        "initialRooms": 13,
+        "initialWidth": 10,
+        "reviewedRooms": [],
+        "rooms": 13,
+        "windows": 13,
+        "windowSource": "yolo+segmentation",
+        "svgWindowCount": 13,
+        "windowsMatchData": true,
+        "svgWindowsMatchData": true,
+        "savedContours": 7,
+        "savedWidth": 12,
+        "savedBayWindows": []
+      },
+      "detail": "wall-repair-round5-r10.json"
+    }
+  },
+  "rawWindowChecks": [
+    {
+      "index": 0,
+      "box": {
+        "x": 355.1788330078125,
+        "y": 694.6118927001953,
+        "w": 46.74659729003906,
+        "h": 11.5423583984375,
+        "cls": "window",
+        "score": 0.7378361225128174,
+        "cx": 378.55213165283203,
+        "cy": 700.3830718994141,
+        "area": 539.565979829058,
+        "horizontal": true
+      },
+      "onExteriorWall": true,
+      "nearestWall": {
+        "distance": 1.3830718994140625,
+        "thickness": 8,
+        "ratio": 0.1728839874267578,
+        "centerLine": 699,
+        "bbox": {
+          "x0": 398,
+          "y0": 695,
+          "x1": 686,
+          "y1": 702
+        }
+      },
+      "aspectRatio": 4.050003965945746,
+      "withinWallDistance": true,
+      "valid": true,
+      "endA": true,
+      "endB": true,
+      "outsideSide": 1,
+      "sideA": 0,
+      "sideB": 5,
+      "footprint": {
+        "x0": 355.1788330078125,
+        "x1": 401.92543029785156,
+        "y0": 694,
+        "y1": 703
+      }
+    },
+    {
+      "index": 1,
+      "box": {
+        "x": 174.61186408996582,
+        "y": 315.56697845458984,
+        "w": 10.965251922607422,
+        "h": 47.32368469238281,
+        "cls": "window",
+        "score": 0.679733395576477,
+        "cx": 180.09449005126953,
+        "cy": 339.22882080078125,
+        "area": 518.916124558018,
+        "horizontal": false
+      },
+      "onExteriorWall": true,
+      "nearestWall": {
+        "distance": 1.4055099487304688,
+        "thickness": 19,
+        "ratio": 0.07397420782791941,
+        "centerLine": 181.5,
+        "bbox": {
+          "x0": 172,
+          "y0": 364,
+          "x1": 190,
+          "y1": 383
+        }
+      },
+      "aspectRatio": 4.3157863609876586,
+      "withinWallDistance": true,
+      "valid": true,
+      "endA": true,
+      "endB": true,
+      "outsideSide": -1,
+      "sideA": 5,
+      "sideB": 0,
+      "footprint": {
+        "x0": 177,
+        "x1": 186,
+        "y0": 315.56697845458984,
+        "y1": 362.89066314697266
+      }
+    },
+    {
+      "index": 2,
+      "box": {
+        "x": 663.0694961547852,
+        "y": 354.98985290527344,
+        "w": 39.82109069824219,
+        "h": 117.15499877929688,
+        "cls": "window",
+        "score": 0.6589184999465942,
+        "cx": 682.9800415039062,
+        "cy": 413.5673522949219,
+        "area": 4665.239832142834,
+        "horizontal": false
+      },
+      "onExteriorWall": true,
+      "nearestWall": {
+        "distance": 36.98004150390625,
+        "thickness": 14,
+        "ratio": 2.6414315359933034,
+        "centerLine": 646,
+        "bbox": {
+          "x0": 639,
+          "y0": 475,
+          "x1": 652,
+          "y1": 497
+        }
+      },
+      "aspectRatio": 2.942033900253476,
+      "withinWallDistance": true,
+      "valid": true,
+      "endA": true,
+      "endB": true,
+      "outsideSide": 1,
+      "footprint": {
+        "x0": 689,
+        "y0": 354.98985290527344,
+        "x1": 705,
+        "y1": 472.1448516845703
+      },
+      "bay": {
+        "side": "right",
+        "rootLine": 651.5,
+        "frontLine": 697,
+        "projection": 45.5,
+        "thickness": 16,
+        "panels": [
+          {
+            "horizontal": false,
+            "footprint": {
+              "x0": 689,
+              "y0": 354.98985290527344,
+              "x1": 705,
+              "y1": 472.1448516845703
+            }
+          },
+          {
+            "horizontal": true,
+            "footprint": {
+              "x0": 651.5,
+              "y0": 346.98985290527344,
+              "x1": 697,
+              "y1": 362.98985290527344
+            }
+          },
+          {
+            "horizontal": true,
+            "footprint": {
+              "x0": 651.5,
+              "y0": 464.1448516845703,
+              "x1": 697,
+              "y1": 480.1448516845703
+            }
+          }
+        ],
+        "seatFootprint": {
+          "x0": 651.5,
+          "y0": 346.98985290527344,
+          "x1": 705,
+          "y1": 480.1448516845703
+        },
+        "floorClip": {
+          "x0": 651.5,
+          "y0": 346.98985290527344,
+          "x1": 800,
+          "y1": 480.1448516845703
+        },
+        "evidence": [
+          {
+            "fraction": 0.15,
+            "root": {
+              "center": 654.5,
+              "thickness": 13
+            },
+            "front": {
+              "center": 697,
+              "thickness": 16
+            },
+            "floorPixels": 28
+          },
+          {
+            "fraction": 0.275,
+            "root": {
+              "center": 651.5,
+              "thickness": 7
+            },
+            "front": {
+              "center": 698.5,
+              "thickness": 13
+            },
+            "floorPixels": 34
+          },
+          {
+            "fraction": 0.725,
+            "root": {
+              "center": 651.5,
+              "thickness": 19
+            },
+            "front": {
+              "center": 697,
+              "thickness": 16
+            },
+            "floorPixels": 28
+          }
+        ],
+        "capSupport": {
+          "endA": 1,
+          "endB": 1
+        }
+      }
+    },
+    {
+      "index": 3,
+      "box": {
+        "x": 212.48225212097168,
+        "y": 693.4576797485352,
+        "w": 93.49313735961914,
+        "h": 15.582199096679688,
+        "cls": "window",
+        "score": 0.6589184999465942,
+        "cx": 259.22882080078125,
+        "cy": 701.248779296875,
+        "area": 1456.8286805108073,
+        "horizontal": true
+      },
+      "onExteriorWall": true,
+      "nearestWall": {
+        "distance": 2.248779296875,
+        "thickness": 14,
+        "ratio": 0.16062709263392858,
+        "centerLine": 699,
+        "bbox": {
+          "x0": 173,
+          "y0": 692,
+          "x1": 213,
+          "y1": 705
+        }
+      },
+      "aspectRatio": 5.999996327831609,
+      "withinWallDistance": true,
+      "valid": true,
+      "endA": true,
+      "endB": true,
+      "outsideSide": 1,
+      "sideA": 0,
+      "sideB": 5,
+      "footprint": {
+        "x0": 212.48225212097168,
+        "x1": 305.9753894805908,
+        "y0": 692,
+        "y1": 702
+      }
+    },
+    {
+      "index": 4,
+      "box": {
+        "x": 170.96017837524414,
+        "y": 423.4576416015625,
+        "w": 14.427947998046875,
+        "h": 54.249114990234375,
+        "cls": "window",
+        "score": 0.6374723315238953,
+        "cx": 178.17415237426758,
+        "cy": 450.5821990966797,
+        "area": 782.7034100191668,
+        "horizontal": false
+      },
+      "onExteriorWall": true,
+      "nearestWall": {
+        "distance": 1.3258476257324219,
+        "thickness": 19,
+        "ratio": 0.06978145398591694,
+        "centerLine": 179.5,
+        "bbox": {
+          "x0": 170,
+          "y0": 473,
+          "x1": 188,
+          "y1": 502
+        }
+      },
+      "aspectRatio": 3.7600021151710643,
+      "withinWallDistance": true,
+      "valid": true,
+      "endA": true,
+      "endB": true,
+      "outsideSide": -1,
+      "sideA": 5,
+      "sideB": 0,
+      "footprint": {
+        "x0": 175,
+        "x1": 184,
+        "y0": 423.4576416015625,
+        "y1": 477.7067565917969
+      }
+    },
+    {
+      "index": 5,
+      "box": {
+        "x": 664.0347671508789,
+        "y": 322.88049697875977,
+        "w": 44.43809509277344,
+        "h": 13.850822448730469,
+        "cls": "window",
+        "score": 0.5929739475250244,
+        "cx": 686.2538146972656,
+        "cy": 329.805908203125,
+        "area": 615.5041650898056,
+        "horizontal": true
+      },
+      "onExteriorWall": true,
+      "nearestWall": {
+        "distance": 0.305908203125,
+        "thickness": 9,
+        "ratio": 0.033989800347222224,
+        "centerLine": 329.5,
+        "bbox": {
+          "x0": 708,
+          "y0": 325,
+          "x1": 740,
+          "y1": 333
+        }
+      },
+      "aspectRatio": 3.2083362022192783,
+      "withinWallDistance": true,
+      "valid": true,
+      "endA": true,
+      "endB": true,
+      "outsideSide": 1,
+      "sideA": 0,
+      "sideB": 5,
+      "footprint": {
+        "x0": 664.0347671508789,
+        "x1": 708.4728622436523,
+        "y0": 320,
+        "y1": 330
+      }
+    },
+    {
+      "index": 6,
+      "box": {
+        "x": 226.52207374572754,
+        "y": 289.2288303375244,
+        "w": 85.41349411010742,
+        "h": 13.850841522216797,
+        "cls": "window",
+        "score": 0.5,
+        "cx": 269.22882080078125,
+        "cy": 296.1542510986328,
+        "area": 1183.0487707778957,
+        "horizontal": true
+      },
+      "onExteriorWall": false,
+      "nearestWall": {
+        "distance": 1.6542510986328125,
+        "thickness": 11,
+        "ratio": 0.15038646351207385,
+        "centerLine": 294.5,
+        "bbox": {
+          "x0": 309,
+          "y0": 289,
+          "x1": 354,
+          "y1": 299
+        }
+      },
+      "aspectRatio": 6.166664601071631,
+      "withinWallDistance": true,
+      "valid": false,
+      "reason": "没有可验证的室内/屋外两侧",
+      "endA": true,
+      "endB": true,
+      "sideA": 0,
+      "sideB": 0
+    },
+    {
+      "index": 7,
+      "box": {
+        "x": 684.606819152832,
+        "y": 510.7356834411621,
+        "w": 49.63218688964844,
+        "h": 186.98627471923828,
+        "cls": "window",
+        "score": 0.47956404089927673,
+        "cx": 709.4229125976562,
+        "cy": 604.2288208007812,
+        "area": 9280.53773266438,
+        "horizontal": false
+      },
+      "onExteriorWall": true,
+      "nearestWall": {
+        "distance": 63.42291259765625,
+        "thickness": 14,
+        "ratio": 4.530208042689732,
+        "centerLine": 646,
+        "bbox": {
+          "x0": 639,
+          "y0": 475,
+          "x1": 652,
+          "y1": 497
+        }
+      },
+      "aspectRatio": 3.7674397691760215,
+      "withinWallDistance": true,
+      "valid": true,
+      "endA": true,
+      "endB": true,
+      "outsideSide": 1,
+      "footprint": {
+        "x0": 723,
+        "y0": 510.7356834411621,
+        "x1": 739,
+        "y1": 697.7219581604004
+      },
+      "bay": {
+        "side": "right",
+        "rootLine": 679,
+        "frontLine": 731,
+        "projection": 52,
+        "thickness": 16,
+        "panels": [
+          {
+            "horizontal": false,
+            "footprint": {
+              "x0": 723,
+              "y0": 510.7356834411621,
+              "x1": 739,
+              "y1": 697.7219581604004
+            }
+          },
+          {
+            "horizontal": true,
+            "footprint": {
+              "x0": 679,
+              "y0": 502.7356834411621,
+              "x1": 731,
+              "y1": 518.7356834411621
+            }
+          },
+          {
+            "horizontal": true,
+            "footprint": {
+              "x0": 679,
+              "y0": 689.7219581604004,
+              "x1": 731,
+              "y1": 705.7219581604004
+            }
+          }
+        ],
+        "seatFootprint": {
+          "x0": 679,
+          "y0": 502.7356834411621,
+          "x1": 739,
+          "y1": 705.7219581604004
+        },
+        "floorClip": {
+          "x0": 679,
+          "y0": 502.7356834411621,
+          "x1": 800,
+          "y1": 705.7219581604004
+        },
+        "evidence": [
+          {
+            "fraction": 0.85,
+            "root": {
+              "center": 685.5,
+              "thickness": 17
+            },
+            "front": {
+              "center": 729.5,
+              "thickness": 15
+            },
+            "floorPixels": 28
+          },
+          {
+            "fraction": 0.15,
+            "root": {
+              "center": 679,
+              "thickness": 14
+            },
+            "front": {
+              "center": 731,
+              "thickness": 16
+            },
+            "floorPixels": 44,
+            "rootSource": "两端墙垛"
+          },
+          {
+            "fraction": 0.275,
+            "root": {
+              "center": 679,
+              "thickness": 14
+            },
+            "front": {
+              "center": 731,
+              "thickness": 16
+            },
+            "floorPixels": 44,
+            "rootSource": "两端墙垛"
+          },
+          {
+            "fraction": 0.4,
+            "root": {
+              "center": 679,
+              "thickness": 14
+            },
+            "front": {
+              "center": 731,
+              "thickness": 16
+            },
+            "floorPixels": 44,
+            "rootSource": "两端墙垛"
+          },
+          {
+            "fraction": 0.5,
+            "root": {
+              "center": 679,
+              "thickness": 14
+            },
+            "front": {
+              "center": 732,
+              "thickness": 18
+            },
+            "floorPixels": 44,
+            "rootSource": "两端墙垛"
+          },
+          {
+            "fraction": 0.6,
+            "root": {
+              "center": 679,
+              "thickness": 14
+            },
+            "front": {
+              "center": 731,
+              "thickness": 16
+            },
+            "floorPixels": 44,
+            "rootSource": "两端墙垛"
+          },
+          {
+            "fraction": 0.725,
+            "root": {
+              "center": 679,
+              "thickness": 14
+            },
+            "front": {
+              "center": 730,
+              "thickness": 14
+            },
+            "floorPixels": 44,
+            "rootSource": "两端墙垛"
+          },
+          {
+            "fraction": 0.85,
+            "root": {
+              "center": 679,
+              "thickness": 14
+            },
+            "front": {
+              "center": 729.5,
+              "thickness": 15
+            },
+            "floorPixels": 28,
+            "rootSource": "两端墙垛"
+          }
+        ],
+        "capSupport": {
+          "endA": 1,
+          "endB": 1
+        }
+      }
+    },
+    {
+      "index": 8,
+      "box": {
+        "x": 69.02968406677246,
+        "y": 80.96016883850098,
+        "w": 38.66691589355469,
+        "h": 8.079662322998047,
+        "cls": "window",
+        "score": 0.36252766847610474,
+        "cx": 88.3631420135498,
+        "cy": 85,
+        "area": 312.41562349168817,
+        "horizontal": true
+      },
+      "onExteriorWall": true,
+      "nearestWall": {
+        "distance": 16.5,
+        "thickness": 13,
+        "ratio": 1.2692307692307692,
+        "centerLine": 101.5,
+        "bbox": {
+          "x0": 59,
+          "y0": 95,
+          "x1": 740,
+          "y1": 107
+        }
+      },
+      "aspectRatio": 4.785709395737086,
+      "withinWallDistance": true,
+      "valid": true,
+      "endA": true,
+      "endB": true,
+      "outsideSide": -1,
+      "sideA": 5,
+      "sideB": 0,
+      "footprint": {
+        "x0": 69.02968406677246,
+        "x1": 107.69659996032715,
+        "y0": 94,
+        "y1": 111
+      }
+    },
+    {
+      "index": 9,
+      "box": {
+        "x": 188.4272003173828,
+        "y": 77.28310585021973,
+        "w": 229.69303131103516,
+        "h": 198.5286521911621,
+        "cls": "window",
+        "score": 0.3062109351158142,
+        "cx": 303.2737159729004,
+        "cy": 176.54743194580078,
+        "area": 45600.64792388221,
+        "horizontal": true
+      },
+      "onExteriorWall": false,
+      "nearestWall": {
+        "distance": 37.95256805419922,
+        "thickness": 11,
+        "ratio": 3.4502334594726562,
+        "centerLine": 214.5,
+        "bbox": {
+          "x0": 170,
+          "y0": 209,
+          "x1": 186,
+          "y1": 219
+        }
+      },
+      "aspectRatio": 1.156976732456054,
+      "withinWallDistance": true,
+      "valid": false,
+      "reason": "远墙候选长宽比小于 2，疑似方形大假框"
+    },
+    {
+      "index": 10,
+      "box": {
+        "x": 404.188232421875,
+        "y": 78.43734741210938,
+        "w": 245.85235595703125,
+        "h": 211.2252426147461,
+        "cls": "window",
+        "score": 0.27259963750839233,
+        "cx": 527.1144104003906,
+        "cy": 184.04996871948242,
+        "area": 51930.22353443084,
+        "horizontal": true
+      },
+      "onExteriorWall": false,
+      "nearestWall": {
+        "distance": 82.54996871948242,
+        "thickness": 13,
+        "ratio": 6.34999759380634,
+        "centerLine": 101.5,
+        "bbox": {
+          "x0": 59,
+          "y0": 95,
+          "x1": 740,
+          "y1": 107
+        }
+      },
+      "aspectRatio": 1.1639345416941553,
+      "withinWallDistance": false,
+      "valid": false,
+      "reason": "远墙候选长宽比小于 2，疑似方形大假框"
+    }
+  ],
+  "artifacts": {
+    "maskDiagnosis": ".screenshots/wall-round5/mask-diagnosis.png",
+    "comparison": ".screenshots/wall-round5/r2/plan-original-comparison.png",
+    "scene": ".screenshots/wall-round5/r2/contours-3d.png"
+  }
+}
