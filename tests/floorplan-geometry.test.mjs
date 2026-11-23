@@ -11,7 +11,7 @@ function fixture(){
  return {mask,width,height};
 }
 const window={x:40,y:10,w:20,h:5,cls:'window',score:.9};
-const door={x:10,y:40,w:5,h:15,cls:'door',score:.8};
+const door={x:10,y:40,w:4,h:15,cls:'door',score:.8};
 test('主识别入口同时保留门窗、墙轮廓，保存后 2D 与 3D 都能读取窗',()=>{
  const result=geometryFromSegmentation(fixture(),[window,door]);
  assert.equal(result.windowSource,'yolo');assert.equal(result.windows.length,1);assert.equal(result.doors.length,1);assert.ok(result.lines.contours.length);

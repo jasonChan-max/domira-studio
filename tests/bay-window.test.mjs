@@ -65,7 +65,7 @@ test('内缘被模型涂成连续地板时，四向飘窗仍须由两端墙垛�
 
 test('R(2) 的两个飘窗与两个大假框明确区分，14门原始数据不被删除',()=>{
  const {data,result,home}=recognize('r2'),checks=result.selection.windows.checks;
- assert.equal(home.windows.length,12);assert.equal(home.windows.filter(w=>w.bay).length,2);assert.equal(home.doors.length,14);
+ assert.equal(home.windows.length,12);assert.equal(home.windows.filter(w=>w.bay).length,2);assert.equal(home.doors.length,9);
  for(const index of [2,7]){assert.equal(checks[index].valid,true);assert.ok(checks[index].bay);assert.ok(checks[index].aspectRatio>=2);assert.ok(checks[index].nearestWall.ratio<5);}
  for(const index of [9,10]){assert.equal(checks[index].valid,false);assert.ok(checks[index].aspectRatio<2);}
  assert.equal(result.doors.length,data.boxes.filter(b=>b.cls==='door').length);

@@ -1,5 +1,28 @@
 import {doorsFromMask,windowsFromMask} from './room-polygon.js';
 
+export const DOOR_LIMITS=Object.freeze({minWidth:.45,maxWidth:2,minThickness:.10,maxThickness:.40,minScore:.30});
+
+export function doorsToHome(openings,frame,width,depth){
+ const doors=[],checks=[],rejected=[];
+ const between=(value,min,max)=>value>=min-1e-9&&value<=max+1e-9;
+ for(const [index,box] of (openings||[]).entries()){
+  const source={...box,cx:box.cx??box.x+box.w/2,cy:box.cy??box.y+box.h/2},converted=openingsToHome([source],frame,width,depth)[0];
+  const door=converted&&['x','z','w','d'].every(k=>Number.isFinite(converted[k]))?converted:null;
+  const longSide=door?Math.max(door.w,door.d):null,shortSide=door?Math.min(door.w,door.d):null,score=box.score??null;
+  const reasons=[];
+  if(!door)reasons.push('门坐标或房屋比例尺无效');
+  else{
+   if(!between(longSide,DOOR_LIMITS.minWidth,DOOR_LIMITS.maxWidth))reasons.push('门宽不在 0.45–2.0m');
+   if(!between(shortSide,DOOR_LIMITS.minThickness,DOOR_LIMITS.maxThickness))reasons.push('门厚不在 0.10–0.40m');
+  }
+  // 分割回退没有检测置信度，不能伪造分数；有 score 的检测框则必须通过同一置信度闸。
+  if(score!==null&&(!Number.isFinite(score)||score<DOOR_LIMITS.minScore))reasons.push('门检测置信度低于 0.30 或无效');
+  const check={index,box:{x:box.x,y:box.y,w:box.w,h:box.h},score,longSide,shortSide,valid:reasons.length===0,reasons};checks.push(check);
+  if(check.valid)doors.push({...door,...(score===null?{}:{score}),sourceIndex:index});else rejected.push(check);
+ }
+ return {doors,raw:checks.length,kept:doors.length,checks,rejected};
+}
+
 // Keep both sources available for reproducible comparison. Empty or failed
 // detector results fall back independently for doors and windows.
 export function selectOpenings(boxes,mask,width,height,{windowSource='yolo'}={}){
