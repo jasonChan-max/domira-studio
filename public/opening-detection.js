@@ -3,7 +3,7 @@ import {doorsFromMask,windowsFromMask} from './room-polygon.js';
 export const DOOR_LIMITS=Object.freeze({minWidth:.45,maxWidth:2,minThickness:.10,maxThickness:.40,minScore:.30});
 
 export function doorsToHome(openings,frame,width,depth){
- const doors=[],checks=[],rejected=[];
+ const doors=[],checks=[],rejected=[],candidates=[];
  const between=(value,min,max)=>value>=min-1e-9&&value<=max+1e-9;
  for(const [index,box] of (openings||[]).entries()){
   const source={...box,cx:box.cx??box.x+box.w/2,cy:box.cy??box.y+box.h/2},converted=openingsToHome([source],frame,width,depth)[0];
@@ -18,8 +18,33 @@ export function doorsToHome(openings,frame,width,depth){
   // 分割回退没有检测置信度，不能伪造分数；有 score 的检测框则必须通过同一置信度闸。
   if(score!==null&&(!Number.isFinite(score)||score<DOOR_LIMITS.minScore))reasons.push('门检测置信度低于 0.30 或无效');
   const check={index,box:{x:box.x,y:box.y,w:box.w,h:box.h},score,longSide,shortSide,valid:reasons.length===0,reasons};checks.push(check);
-  if(check.valid)doors.push({...door,...(score===null?{}:{score}),sourceIndex:index});else rejected.push(check);
+  if(check.valid)candidates.push({door:{...door,...(score===null?{}:{score}),sourceIndex:index},check,score});
+  else rejected.push(check);
  }
+ // 同一个门洞只放一个门。同一面墙上沿墙方向重叠超过 60% 就是同一个洞——
+ // 不去重的话一个洞会叠两片门板，3D 看起来像两堵墙（2026-11-23 用户回報「入户门那里叠加了两个门」）。
+ const overlaps=(a,b)=>{
+  // 用 w/d 判斷方向，不依賴 horizontal 欄位（轉換後不一定還在）。
+  const aH=a.w>a.d,bH=b.w>b.d;
+  if(aH!==bH)return false;
+  const along=aH?'x':'z',len=aH?'w':'d',cross=aH?'z':'x';
+  if(Math.abs(a[cross]-b[cross])>0.45)return false;
+  const overlap=Math.min(a[along]+a[len]/2,b[along]+b[len]/2)-Math.max(a[along]-a[len]/2,b[along]-b[len]/2);
+  // 分母用較長者：真實疊加是兩個長度接近的框幾乎重合；
+  // 若用較短者，一個小框落在長框裡也算「重疊 100%」，會誤合併大門旁的小門。
+  return overlap>0&&overlap/Math.max(a[len],b[len])>0.6;
+ };
+ const rank=candidates.map((_,i)=>i).sort((i,j)=>(candidates[j].score??-1)-(candidates[i].score??-1));
+ for(const i of rank){
+  const candidate=candidates[i];
+  if(doors.some(kept=>overlaps(kept,candidate.door))){
+   candidate.check.valid=false;candidate.check.reasons.push('同一门洞已有更高分的门');
+   rejected.push(candidate.check);continue;
+  }
+  doors.push(candidate.door);
+ }
+ // 按原始候选顺序输出，避免 2D/3D 里的门排序随分数变动。
+ doors.sort((a,b)=>(a.sourceIndex??0)-(b.sourceIndex??0));
  return {doors,raw:checks.length,kept:doors.length,checks,rejected};
 }
 
