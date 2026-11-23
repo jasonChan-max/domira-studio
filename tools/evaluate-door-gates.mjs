@@ -40,14 +40,14 @@ try{
   const r=await send('Runtime.evaluate',{expression:`(${evaluate.toString()})(${index})`,awaitPromise:true,returnByValue:true,timeout:180000});if(r.exceptionDetails)throw Error(JSON.stringify(r.exceptionDetails));
   const row={name:samples[index].name,imageSha256:samples[index].imageSha256,maskSha256:samples[index].maskSha256,...r.result.value};rows.push(row);
   await writeFile(resolve(out,'rows-progress.json'),JSON.stringify(rows,null,2));
-  console.log(JSON.stringify({index:index+1,name:row.name,ms:row.ms,truth:row.truth.length,raw:row.raw.matched,scoreOnly:row.scoreOnly.matched,afterGate:row.afterGate.matched,absolute:row.absolute.matched,scale:row.scale?.source,error:row.error||null}));
+  console.log(JSON.stringify({index:index+1,name:row.name,ms:row.ms,truth:row.truth.length,raw:row.raw.matched,scoreOnly:row.scoreOnly.matched,afterGate:row.afterGate.matched,scale:row.scale?.source,error:row.error||null}));
  }
  const total=key=>{const truth=rows.reduce((n,r)=>n+r.truth.length,0),matched=rows.reduce((n,r)=>n+r[key].matched,0),count=rows.reduce((n,r)=>n+r[key].count,0);return {truth,matched,count,recall:matched/truth,precision:count?matched/count:1};};
  const report={date:new Date().toISOString(),annotated:rows.length,modelHashes,baselineModelHashes:baseline.modelHashes,baselineDatasetMatches,referenceRecall:284/308,
-  definitions:{matching:'原始clean-masks-44蓝色门类的4连通域外接框，预测按score排序，IoU>=0.5一对一匹配；与92.21%记录相同口径。',physicalScale:'生产geometryFromSegmentation + readPlanNumbers + estimateScale，W/D取到0.01m；这是自动估计尺度，并非44张逐张人工实测尺度。',raw:'当前生产YOLO conf0.25原始门框',scoreOnly:'仅score>=0.30，无物理尺寸筛选',selected:'已由既有门窗来源逻辑选用但未加本轮尺寸闸',afterGate:'既有选择 + 门宽/墙厚3–12、门厚/墙厚1–2、score>=0.30；同坐标像素比，无米数依赖',absolute:'第六轮原始规则：0.45–2m宽、0.10–0.40m厚、score>=0.30',wallThickness:'优先候选nearestWall.thickness，否则全局块几何短边的上中位数；跨度为x1-x0/y1-y0，与原探针一致，非inclusive像素计数',unscalable:'自动尺度不可用时计入失败并记录，未臆造物理尺寸'},
-  raw:total('raw'),scoreOnly:total('scoreOnly'),selected:total('selected'),afterGate:total('afterGate'),absolute:total('absolute'),unscalable:rows.filter(r=>r.error).map(r=>({name:r.name,error:r.error})),rows};
- report.gatePassed=report.afterGate.recall>=.90;
- await writeFile(resolve(out,'report.json'),JSON.stringify(report,null,2)+'\n');console.log('REPORT '+JSON.stringify({datasetMatches:baselineDatasetMatches,raw:report.raw,scoreOnly:report.scoreOnly,afterGate:report.afterGate,absolute:report.absolute,gatePassed:report.gatePassed}));
+  definitions:{matching:'原始clean-masks-44蓝色门类的4连通域外接框，预测按score排序，IoU>=0.5一对一匹配；与92.21%记录相同口径。',physicalScale:'生产geometryFromSegmentation + readPlanNumbers + estimateScale，W/D取到0.01m；这是自动估计尺度，并非44张逐张人工实测尺度。',raw:'当前生产YOLO conf0.25原始门框',scoreOnly:'仅score>=0.30，无物理尺寸筛选',selected:'已由既有门窗来源逻辑选用但未加本轮尺寸闸',afterGate:'既有选择 + 0.45–2m宽 / 0.10–0.40m厚 / score>=0.30',unscalable:'自动尺度不可用时计入失败并记录，未臆造物理尺寸'},
+  raw:total('raw'),scoreOnly:total('scoreOnly'),selected:total('selected'),afterGate:total('afterGate'),unscalable:rows.filter(r=>r.error).map(r=>({name:r.name,error:r.error})),rows};
+ report.gatePassed=report.afterGate.recall>=.92;
+ await writeFile(resolve(out,'report.json'),JSON.stringify(report,null,2)+'\n');console.log('REPORT '+JSON.stringify({datasetMatches:baselineDatasetMatches,raw:report.raw,scoreOnly:report.scoreOnly,afterGate:report.afterGate,gatePassed:report.gatePassed}));
 }finally{ws?.close();proc.kill();server.closeAllConnections();server.close();}
 
 async function evaluate(index){
@@ -61,17 +61,16 @@ async function evaluate(index){
  const boxes=await detectDoors(canvas,{modelUrl:'/models/yolo-doors-int8.onnx',conf:.25}),rawDoors=boxes.filter(b=>b.cls==='door');
  function match(boxes){const used=new Set(),pairs=[];for(const [index,b] of [...boxes].sort((a,b)=>(b.score||0)-(a.score||0)).entries()){let at=-1,best=.5;truth.forEach((t,i)=>{const inter=Math.max(0,Math.min(b.x+b.w,t.x+t.w)-Math.max(b.x,t.x))*Math.max(0,Math.min(b.y+b.h,t.y+t.h)-Math.max(b.y,t.y)),iou=inter/(b.w*b.h+t.w*t.h-inter);if(!used.has(i)&&iou>=best){at=i;best=iou;}});if(at>=0){used.add(at);pairs.push({prediction:index,truthIndex:at,iou:best});}}return {count:boxes.length,matched:pairs.length,truthIndices:[...used],pairs};}
  const raw=match(rawDoors),scoreOnly=match(rawDoors.filter(b=>b.score>=.3));
- let scale=null,frame=null,dimensions=null,selection=[],checks=[],kept=[],absoluteChecks=[],absoluteKept=[],globalWallThickness=null,error=null,ocr=null;
+ let scale=null,frame=null,dimensions=null,selection=[],checks=[],kept=[],error=null,ocr=null;
  try{
   const seg=await segmentWalls(canvas,{modelUrl:'/models/unet-int8.onnx'}),predicted=geometryFromSegmentation(seg,boxes);frame=predicted.frame;selection=predicted.doors;
   if(!frame?.w||!frame?.h||!predicted.polygons.length)throw Error('生产识别没有可用的房屋外框/房间');
   try{ocr=await readPlanNumbers(canvas);}catch(e){ocr={areas:[],error:e.message};}
   scale=estimateScale({totalPixelArea:predicted.polygons.reduce((n,p)=>n+(Number(p.area)||0),0),frameSpanPx:Math.max(frame.w,frame.h),areas:ocr.areas,doors:predicted.doors,assumedMeters:.02});
   const mpp=scale.metersPerPixel>0?scale.metersPerPixel:.02,W=Math.round(frame.w*mpp*100)/100,D=Math.round(frame.h*mpp*100)/100;dimensions={width:W,depth:D};
-  const gated=doorsToHome(predicted.doors,frame,W,D,{wallBlocks:predicted.lines.blocks});checks=gated.checks;globalWallThickness=gated.globalWallThickness;kept=checks.filter(c=>c.valid).map(c=>predicted.doors[c.index]);
-  absoluteChecks=checks.map(c=>{const reasons=[];if(c.longSide===null||c.shortSide===null)reasons.push('无效世界坐标');else{if(c.longSide<.45-1e-9||c.longSide>2+1e-9)reasons.push('门宽不在0.45–2m');if(c.shortSide<.1-1e-9||c.shortSide>.4+1e-9)reasons.push('门厚不在0.10–0.40m');}if(c.score!==null&&(!Number.isFinite(c.score)||c.score<.3))reasons.push('score低于0.30或无效');return {...c,valid:!reasons.length,reasons};});absoluteKept=absoluteChecks.filter(c=>c.valid).map(c=>predicted.doors[c.index]);
+  const gated=doorsToHome(predicted.doors,frame,W,D);checks=gated.checks;kept=checks.filter(c=>c.valid).map(c=>predicted.doors[c.index]);
  }catch(e){error=e.message;}
- const selected=match(selection),afterGate=match(kept),absolute=match(absoluteKept),lostTruth=raw.truthIndices.filter(i=>!afterGate.truthIndices.includes(i));
+ const selected=match(selection),afterGate=match(kept),lostTruth=raw.truthIndices.filter(i=>!afterGate.truthIndices.includes(i));
  const iou=(a,b)=>{const inter=Math.max(0,Math.min(a.x+a.w,b.x+b.w)-Math.max(a.x,b.x))*Math.max(0,Math.min(a.y+a.h,b.y+b.h)-Math.max(a.y,b.y));return inter/(a.w*a.h+b.w*b.h-inter);};
- return {width:canvas.width,height:canvas.height,ms:performance.now()-start,truth,raw,scoreOnly,selected,afterGate,absolute,rawDoors,selectedDoors:selection,checks,absoluteChecks,globalWallThickness,scale,dimensions,ocr:ocr&&{areas:ocr.areas,lengths:ocr.lengths,error:ocr.error},frame,error,lostTruth:lostTruth.map(i=>({index:i,box:truth[i],stage:selected.truthIndices.includes(i)?'relative-gate':'existing-selection',rejected:checks.filter(c=>!c.valid&&iou(c.box,truth[i])>=.5).map(c=>({...c}))}))};
+ return {width:canvas.width,height:canvas.height,ms:performance.now()-start,truth,raw,scoreOnly,selected,afterGate,rawDoors,selectedDoors:selection,checks,scale,dimensions,ocr:ocr&&{areas:ocr.areas,lengths:ocr.lengths,error:ocr.error},frame,error,lostTruth:lostTruth.map(i=>({index:i,box:truth[i],stage:selected.truthIndices.includes(i)?'metric-gate':'existing-selection',rejected:checks.filter(c=>!c.valid&&iou(c.box,truth[i])>=.5).map(c=>({index:c.index,box:c.box,score:c.score,longSide:c.longSide,shortSide:c.shortSide,reasons:c.reasons}))}))};
 }

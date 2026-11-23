@@ -30,7 +30,7 @@ export function homeFromRecognition(result,width,depth,options={}){
  home.summary='房間位置與形狀由分割模型直接從圖上辨識（'+home.rooms.length+' 間），不是 AI 目測的矩形。';
  home.selection={...result.selection,rooms:{...result.selection?.rooms,removedBelowMinimum:rejected.map(r=>({name:r.name,width:r.width,depth:r.depth})),kept:home.rooms.length}};
  home.windowSource=result.windowSource;
- const doorSelection=doorsToHome(result.doors,result.frame,width,depth,{wallBlocks:result.lines?.blocks});
+ const doorSelection=doorsToHome(result.doors,result.frame,width,depth);
  home.doors=doorSelection.doors;
  home.selection.doors={raw:doorSelection.raw,kept:doorSelection.kept,checks:doorSelection.checks,rejected:doorSelection.rejected};
  home.windows=openingsToHome(result.windows,result.frame,width,depth);
@@ -39,7 +39,7 @@ export function homeFromRecognition(result,width,depth,options={}){
 
 export function attachDetectedOpenings(home,result){
  if(!result?.frame)return home;
- const selected=doorsToHome(result.doors,result.frame,home.width,home.depth,{wallBlocks:result.lines?.blocks});
+ const selected=doorsToHome(result.doors,result.frame,home.width,home.depth);
  home.doors=selected.doors;
  home.selection={...home.selection,doors:{raw:selected.raw,kept:selected.kept,checks:selected.checks,rejected:selected.rejected}};
  home.windows=openingsToHome(result.windows,result.frame,home.width,home.depth);
