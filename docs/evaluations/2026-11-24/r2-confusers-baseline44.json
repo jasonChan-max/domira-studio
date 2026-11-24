@@ -1,0 +1,2201 @@
+{
+  "sourceBase": "be9ec155d0d31d264c272ce45ce5fb992a61dabc",
+  "date": "2026-11-23T12:23:50.574Z",
+  "modelHashes": {
+    "yolo-doors-int8.onnx": "6f257e8060d025f233a1e525067b6a12c8807c6b3a371f989447a42fc57d82c9",
+    "unet-int8.onnx": "9e639256aa950ce2a6982593a1cb8324e2acac651e8fb6bea32769f74ba6aa98"
+  },
+  "raw": {
+    "truth": 308,
+    "matched": 281,
+    "count": 313,
+    "recall": 0.9123376623376623,
+    "precision": 0.8977635782747604
+  },
+  "selected": {
+    "truth": 308,
+    "matched": 278,
+    "count": 310,
+    "recall": 0.9025974025974026,
+    "precision": 0.896774193548387
+  },
+  "afterGate": {
+    "truth": 308,
+    "matched": 259,
+    "count": 284,
+    "recall": 0.8409090909090909,
+    "precision": 0.9119718309859155
+  },
+  "rows": [
+    {
+      "name": "3FO3ATDMDOTV-3.jpg",
+      "imageSha256": "97bdfcf9963b569717040f385af577d4fc5b829c8482f1293d2b3f3ade0916a7",
+      "maskSha256": "41ae2adfe895921c2f90c0e9521caa6fc290f09a165e7c3be414ed4877462d06",
+      "truth": 6,
+      "afterGate": {
+        "count": 6,
+        "matched": 6,
+        "truthIndices": [
+          0,
+          2,
+          4,
+          5,
+          3,
+          1
+        ],
+        "pairs": [
+          {
+            "prediction": 0,
+            "truthIndex": 0,
+            "iou": 0.9684974918330409
+          },
+          {
+            "prediction": 1,
+            "truthIndex": 2,
+            "iou": 0.8029264816442736
+          },
+          {
+            "prediction": 2,
+            "truthIndex": 4,
+            "iou": 0.9325910799492246
+          },
+          {
+            "prediction": 3,
+            "truthIndex": 5,
+            "iou": 0.895668714931501
+          },
+          {
+            "prediction": 4,
+            "truthIndex": 3,
+            "iou": 0.9018528615823145
+          },
+          {
+            "prediction": 5,
+            "truthIndex": 1,
+            "iou": 0.813032338571377
+          }
+        ]
+      }
+    },
+    {
+      "name": "3FO3BP3LLYSO-3.jpg",
+      "imageSha256": "c98e06a6a370561b26b0e53f8062d4c617178d8d6deaa31f624410b252bb65b6",
+      "maskSha256": "e655c58f9a46e688b5e67ab379bf6279b44753c9d7db2102a69a45ed52da9e7e",
+      "truth": 12,
+      "afterGate": {
+        "count": 11,
+        "matched": 9,
+        "truthIndices": [
+          8,
+          0,
+          1,
+          5,
+          4,
+          9,
+          3,
+          6,
+          7
+        ],
+        "pairs": [
+          {
+            "prediction": 0,
+            "truthIndex": 8,
+            "iou": 0.8927461962970958
+          },
+          {
+            "prediction": 1,
+            "truthIndex": 0,
+            "iou": 0.8619527696940269
+          },
+          {
+            "prediction": 2,
+            "truthIndex": 1,
+            "iou": 0.6159089340529722
+          },
+          {
+            "prediction": 3,
+            "truthIndex": 5,
+            "iou": 0.8078659546653569
+          },
+          {
+            "prediction": 5,
+            "truthIndex": 4,
+            "iou": 0.8101140458687451
+          },
+          {
+            "prediction": 6,
+            "truthIndex": 9,
+            "iou": 0.7960539368364908
+          },
+          {
+            "prediction": 7,
+            "truthIndex": 3,
+            "iou": 0.8057470168452284
+          },
+          {
+            "prediction": 8,
+            "truthIndex": 6,
+            "iou": 0.8105029571644643
+          },
+          {
+            "prediction": 9,
+            "truthIndex": 7,
+            "iou": 0.861159348586456
+          }
+        ]
+      }
+    },
+    {
+      "name": "3FO3CE4W1OPH-3.jpg",
+      "imageSha256": "1baeaffe792ed202069e47ccf950a428745a16d2fb5d0ab98e1fbe49d9279bda",
+      "maskSha256": "79d811cc0716df64827bf86bed2700d5c2dd991ef46c4a2a92e634852e5f6bdd",
+      "truth": 5,
+      "afterGate": {
+        "count": 5,
+        "matched": 5,
+        "truthIndices": [
+          1,
+          4,
+          0,
+          2,
+          3
+        ],
+        "pairs": [
+          {
+            "prediction": 0,
+            "truthIndex": 1,
+            "iou": 0.9012286631563338
+          },
+          {
+            "prediction": 1,
+            "truthIndex": 4,
+            "iou": 0.7262314225780849
+          },
+          {
+            "prediction": 2,
+            "truthIndex": 0,
+            "iou": 0.9242173734391107
+          },
+          {
+            "prediction": 3,
+            "truthIndex": 2,
+            "iou": 0.6655334922180103
+          },
+          {
+            "prediction": 4,
+            "truthIndex": 3,
+            "iou": 0.8626490692168851
+          }
+        ]
+      }
+    },
+    {
+      "name": "3FO3DV2AUT4S-3.jpg",
+      "imageSha256": "024ce453d6b2a723d45eb3ce06d6c36b39836502816f70c443895b00a09911fb",
+      "maskSha256": "77f382131734401c8927e3decca41ce67b80971fb900dc752ad1747d1014cdb0",
+      "truth": 10,
+      "afterGate": {
+        "count": 11,
+        "matched": 10,
+        "truthIndices": [
+          4,
+          3,
+          7,
+          9,
+          0,
+          2,
+          6,
+          1,
+          8,
+          5
+        ],
+        "pairs": [
+          {
+            "prediction": 0,
+            "truthIndex": 4,
+            "iou": 0.701900616912611
+          },
+          {
+            "prediction": 1,
+            "truthIndex": 3,
+            "iou": 0.7685775515142137
+          },
+          {
+            "prediction": 2,
+            "truthIndex": 7,
+            "iou": 0.7259888406085805
+          },
+          {
+            "prediction": 3,
+            "truthIndex": 9,
+            "iou": 0.6476966798753514
+          },
+          {
+            "prediction": 4,
+            "truthIndex": 0,
+            "iou": 0.6757840237700015
+          },
+          {
+            "prediction": 5,
+            "truthIndex": 2,
+            "iou": 0.9289940967139875
+          },
+          {
+            "prediction": 6,
+            "truthIndex": 6,
+            "iou": 0.5604169386744429
+          },
+          {
+            "prediction": 7,
+            "truthIndex": 1,
+            "iou": 0.8318886554477355
+          },
+          {
+            "prediction": 8,
+            "truthIndex": 8,
+            "iou": 0.843269430328974
+          },
+          {
+            "prediction": 9,
+            "truthIndex": 5,
+            "iou": 0.7518922892574077
+          }
+        ]
+      }
+    },
+    {
+      "name": "3FO3E6LDDPJ8-3.jpg",
+      "imageSha256": "a3d7759d9859732a560adce05ea74978b78c04c7f3ae42b6fa982875ea35aee2",
+      "maskSha256": "77b612b993101ce930227eac499854b83be1a82825bd29a266e18b6ef97eba5d",
+      "truth": 8,
+      "afterGate": {
+        "count": 8,
+        "matched": 8,
+        "truthIndices": [
+          2,
+          7,
+          1,
+          4,
+          3,
+          5,
+          6,
+          0
+        ],
+        "pairs": [
+          {
+            "prediction": 0,
+            "truthIndex": 2,
+            "iou": 0.721752230613768
+          },
+          {
+            "prediction": 1,
+            "truthIndex": 7,
+            "iou": 0.9599906740387261
+          },
+          {
+            "prediction": 2,
+            "truthIndex": 1,
+            "iou": 0.9105944345260235
+          },
+          {
+            "prediction": 3,
+            "truthIndex": 4,
+            "iou": 0.860938448678789
+          },
+          {
+            "prediction": 4,
+            "truthIndex": 3,
+            "iou": 0.6588564028790942
+          },
+          {
+            "prediction": 5,
+            "truthIndex": 5,
+            "iou": 0.6720456260707014
+          },
+          {
+            "prediction": 6,
+            "truthIndex": 6,
+            "iou": 0.6141079040414904
+          },
+          {
+            "prediction": 7,
+            "truthIndex": 0,
+            "iou": 0.8844990280360617
+          }
+        ]
+      }
+    },
+    {
+      "name": "3FO3ELQQN9HT-3.jpg",
+      "imageSha256": "96a559a56848c37725ffbe055a68ff6111a950e6fbff9167d4f1890ce9ecb7d0",
+      "maskSha256": "d115af7f0e03d559333ca20c89e0f60e639e3937302ed5957160815ee698fffb",
+      "truth": 9,
+      "afterGate": {
+        "count": 2,
+        "matched": 2,
+        "truthIndices": [
+          0,
+          3
+        ],
+        "pairs": [
+          {
+            "prediction": 0,
+            "truthIndex": 0,
+            "iou": 0.7389480787561363
+          },
+          {
+            "prediction": 1,
+            "truthIndex": 3,
+            "iou": 0.7171368970469749
+          }
+        ]
+      }
+    },
+    {
+      "name": "3FO3ETA40SSS-3.jpg",
+      "imageSha256": "ae34639db670d215608a6b55fc6c972f5f8d98d50e4257e7d74e2186ab9d13b9",
+      "maskSha256": "c67dd5b0d4e1201cde1f3a6b3a16d3ed092f1ef800c728631f1db13e8824efed",
+      "truth": 7,
+      "afterGate": {
+        "count": 6,
+        "matched": 5,
+        "truthIndices": [
+          1,
+          4,
+          5,
+          0,
+          2
+        ],
+        "pairs": [
+          {
+            "prediction": 1,
+            "truthIndex": 1,
+            "iou": 0.7398503089895787
+          },
+          {
+            "prediction": 2,
+            "truthIndex": 4,
+            "iou": 0.7764544073484845
+          },
+          {
+            "prediction": 3,
+            "truthIndex": 5,
+            "iou": 0.8625394472909641
+          },
+          {
+            "prediction": 4,
+            "truthIndex": 0,
+            "iou": 0.804418849330252
+          },
+          {
+            "prediction": 5,
+            "truthIndex": 2,
+            "iou": 0.8739989434298627
+          }
+        ]
+      }
+    },
+    {
+      "name": "3FO3GJQNCI3E-3.jpg",
+      "imageSha256": "db0a3aa6f90e581f36d9a4b54dea03fab4b44d1efdbf82b56178ae7b0be36fd1",
+      "maskSha256": "9d21c300bffe7ea8e476a271c203776577c672683ab1034edf25cb2812bc2b4b",
+      "truth": 5,
+      "afterGate": {
+        "count": 5,
+        "matched": 5,
+        "truthIndices": [
+          0,
+          2,
+          4,
+          1,
+          3
+        ],
+        "pairs": [
+          {
+            "prediction": 0,
+            "truthIndex": 0,
+            "iou": 0.8497785071031809
+          },
+          {
+            "prediction": 1,
+            "truthIndex": 2,
+            "iou": 0.7085717679701923
+          },
+          {
+            "prediction": 2,
+            "truthIndex": 4,
+            "iou": 0.8215547313560857
+          },
+          {
+            "prediction": 3,
+            "truthIndex": 1,
+            "iou": 0.8030252578603647
+          },
+          {
+            "prediction": 4,
+            "truthIndex": 3,
+            "iou": 0.6192338851434109
+          }
+        ]
+      }
+    },
+    {
+      "name": "3FO3GYYPV7GO-3.jpg",
+      "imageSha256": "c519928db0284d9010593710cb1cd7798d515798c322906165fb78bbdf664c89",
+      "maskSha256": "1cd23b953033941dcdfe33cec6363ad9807a1bc10bad7344faf865c3bba8d7c6",
+      "truth": 6,
+      "afterGate": {
+        "count": 6,
+        "matched": 6,
+        "truthIndices": [
+          4,
+          2,
+          3,
+          5,
+          1,
+          0
+        ],
+        "pairs": [
+          {
+            "prediction": 0,
+            "truthIndex": 4,
+            "iou": 0.7992208955831629
+          },
+          {
+            "prediction": 1,
+            "truthIndex": 2,
+            "iou": 0.8384403008755419
+          },
+          {
+            "prediction": 2,
+            "truthIndex": 3,
+            "iou": 0.8331826829787913
+          },
+          {
+            "prediction": 3,
+            "truthIndex": 5,
+            "iou": 0.8043956916308415
+          },
+          {
+            "prediction": 4,
+            "truthIndex": 1,
+            "iou": 0.7961215539450109
+          },
+          {
+            "prediction": 5,
+            "truthIndex": 0,
+            "iou": 0.8148309256211883
+          }
+        ]
+      }
+    },
+    {
+      "name": "3FO3H003Q9IA-3.jpg",
+      "imageSha256": "60b87c6fb1f15842366db97ac4de131dd5a40c0fccb11003ca81894c888c4c6b",
+      "maskSha256": "3b3862ec1301621b2c2022e662b36a981ee102045802a9f258e419a569a571ba",
+      "truth": 5,
+      "afterGate": {
+        "count": 5,
+        "matched": 5,
+        "truthIndices": [
+          3,
+          2,
+          1,
+          4,
+          0
+        ],
+        "pairs": [
+          {
+            "prediction": 0,
+            "truthIndex": 3,
+            "iou": 0.8677113674382485
+          },
+          {
+            "prediction": 1,
+            "truthIndex": 2,
+            "iou": 0.920381920808621
+          },
+          {
+            "prediction": 2,
+            "truthIndex": 1,
+            "iou": 0.6458261898779417
+          },
+          {
+            "prediction": 3,
+            "truthIndex": 4,
+            "iou": 0.8853864973053582
+          },
+          {
+            "prediction": 4,
+            "truthIndex": 0,
+            "iou": 0.8334600295242146
+          }
+        ]
+      }
+    },
+    {
+      "name": "3FO3HLAR68IC-3.jpg",
+      "imageSha256": "50f5f5b76705c47c4ecce7617266f6aa43109b32573f1f0791bfb29324d84194",
+      "maskSha256": "f35bfaf6fa5358d2563367133c156cbce7fca6089e7157124503cc6f603dd5fe",
+      "truth": 13,
+      "afterGate": {
+        "count": 12,
+        "matched": 11,
+        "truthIndices": [
+          11,
+          5,
+          6,
+          8,
+          4,
+          2,
+          7,
+          10,
+          1,
+          3,
+          0
+        ],
+        "pairs": [
+          {
+            "prediction": 0,
+            "truthIndex": 11,
+            "iou": 0.8603726836446867
+          },
+          {
+            "prediction": 2,
+            "truthIndex": 5,
+            "iou": 0.6313069468626351
+          },
+          {
+            "prediction": 3,
+            "truthIndex": 6,
+            "iou": 0.8588252537596434
+          },
+          {
+            "prediction": 4,
+            "truthIndex": 8,
+            "iou": 0.7888441989886774
+          },
+          {
+            "prediction": 5,
+            "truthIndex": 4,
+            "iou": 0.7503300539584928
+          },
+          {
+            "prediction": 6,
+            "truthIndex": 2,
+            "iou": 0.9756866383764593
+          },
+          {
+            "prediction": 7,
+            "truthIndex": 7,
+            "iou": 0.5227446798031221
+          },
+          {
+            "prediction": 8,
+            "truthIndex": 10,
+            "iou": 0.7526643789810498
+          },
+          {
+            "prediction": 9,
+            "truthIndex": 1,
+            "iou": 0.8070103597211745
+          },
+          {
+            "prediction": 10,
+            "truthIndex": 3,
+            "iou": 0.7994345660684239
+          },
+          {
+            "prediction": 11,
+            "truthIndex": 0,
+            "iou": 0.8557807147136695
+          }
+        ]
+      }
+    },
+    {
+      "name": "3FO3JGQGJKO1-3.jpg",
+      "imageSha256": "62e85c617fafdda91fe2d035755955b1c6280dfd6222b1363fb17775d0eede71",
+      "maskSha256": "a2f35d0dbf0488f993e7e939c6999d6aca254ca5c559182aa8af26ce6c4a17ff",
+      "truth": 7,
+      "afterGate": {
+        "count": 7,
+        "matched": 7,
+        "truthIndices": [
+          0,
+          1,
+          5,
+          3,
+          6,
+          2,
+          4
+        ],
+        "pairs": [
+          {
+            "prediction": 0,
+            "truthIndex": 0,
+            "iou": 0.8584661066586844
+          },
+          {
+            "prediction": 1,
+            "truthIndex": 1,
+            "iou": 0.8450346338614345
+          },
+          {
+            "prediction": 2,
+            "truthIndex": 5,
+            "iou": 0.7838002931174941
+          },
+          {
+            "prediction": 3,
+            "truthIndex": 3,
+            "iou": 0.8428105033759983
+          },
+          {
+            "prediction": 4,
+            "truthIndex": 6,
+            "iou": 0.7019043908237728
+          },
+          {
+            "prediction": 5,
+            "truthIndex": 2,
+            "iou": 0.9013155621631045
+          },
+          {
+            "prediction": 6,
+            "truthIndex": 4,
+            "iou": 0.5636957213842633
+          }
+        ]
+      }
+    },
+    {
+      "name": "3FO3JUKVQB60-3.jpg",
+      "imageSha256": "d1e7c9027f41631c7888ac89121190aaee45e86f86f3564924672dab9e49eb0d",
+      "maskSha256": "bddd4a84b125a0fa63880322bce8ff3a57920853c990e51aeef5973da08bb79f",
+      "truth": 9,
+      "afterGate": {
+        "count": 7,
+        "matched": 6,
+        "truthIndices": [
+          4,
+          7,
+          0,
+          5,
+          2,
+          6
+        ],
+        "pairs": [
+          {
+            "prediction": 0,
+            "truthIndex": 4,
+            "iou": 0.7944921793995103
+          },
+          {
+            "prediction": 1,
+            "truthIndex": 7,
+            "iou": 0.8374030618402879
+          },
+          {
+            "prediction": 2,
+            "truthIndex": 0,
+            "iou": 0.7488055111417269
+          },
+          {
+            "prediction": 3,
+            "truthIndex": 5,
+            "iou": 0.7931309296780359
+          },
+          {
+            "prediction": 4,
+            "truthIndex": 2,
+            "iou": 0.8553882969893413
+          },
+          {
+            "prediction": 6,
+            "truthIndex": 6,
+            "iou": 0.655497160637306
+          }
+        ]
+      }
+    },
+    {
+      "name": "3FO3MXF4YW69-3.jpg",
+      "imageSha256": "57a878a944e045c4a4c8539886bb863886b766e9421484b6cef72234abe67eed",
+      "maskSha256": "69fb1c6199e35006145fd7a02b99818441a148c5d8cde600800ae305f03f0b96",
+      "truth": 7,
+      "afterGate": {
+        "count": 7,
+        "matched": 6,
+        "truthIndices": [
+          0,
+          1,
+          5,
+          6,
+          2,
+          3
+        ],
+        "pairs": [
+          {
+            "prediction": 0,
+            "truthIndex": 0,
+            "iou": 0.8653011565185657
+          },
+          {
+            "prediction": 1,
+            "truthIndex": 1,
+            "iou": 0.851184724022891
+          },
+          {
+            "prediction": 2,
+            "truthIndex": 5,
+            "iou": 0.7184153083893955
+          },
+          {
+            "prediction": 4,
+            "truthIndex": 6,
+            "iou": 0.7396508081757718
+          },
+          {
+            "prediction": 5,
+            "truthIndex": 2,
+            "iou": 0.6944621051783295
+          },
+          {
+            "prediction": 6,
+            "truthIndex": 3,
+            "iou": 0.6596953951674637
+          }
+        ]
+      }
+    },
+    {
+      "name": "3FO3N742YBHN-3.jpg",
+      "imageSha256": "1cdc15db10b3ec63a30da07d482abbe068a8cc207ec6ebac7a3cedb1720831cd",
+      "maskSha256": "88e6e093c88123c9b5f3d3a052e673ca708d40637c6483870d0362baf06daf3c",
+      "truth": 8,
+      "afterGate": {
+        "count": 7,
+        "matched": 7,
+        "truthIndices": [
+          4,
+          5,
+          0,
+          2,
+          7,
+          3,
+          6
+        ],
+        "pairs": [
+          {
+            "prediction": 0,
+            "truthIndex": 4,
+            "iou": 0.8781972737464653
+          },
+          {
+            "prediction": 1,
+            "truthIndex": 5,
+            "iou": 0.7272782239859573
+          },
+          {
+            "prediction": 2,
+            "truthIndex": 0,
+            "iou": 0.9058653168576215
+          },
+          {
+            "prediction": 3,
+            "truthIndex": 2,
+            "iou": 0.9416652815929373
+          },
+          {
+            "prediction": 4,
+            "truthIndex": 7,
+            "iou": 0.6752987344739169
+          },
+          {
+            "prediction": 5,
+            "truthIndex": 3,
+            "iou": 0.8246040842542297
+          },
+          {
+            "prediction": 6,
+            "truthIndex": 6,
+            "iou": 0.7204453565144462
+          }
+        ]
+      }
+    },
+    {
+      "name": "3FO3RB9M9YMP-3.jpg",
+      "imageSha256": "c32b862faf7ed819430b79319d0dcc726274341d11d73f52c1aee4dc50785bdc",
+      "maskSha256": "90afed06e4bcaa662ee7c0a912fbe7bd9f78fe8882c7f65ba6e1facd02e3fd77",
+      "truth": 4,
+      "afterGate": {
+        "count": 4,
+        "matched": 4,
+        "truthIndices": [
+          3,
+          2,
+          0,
+          1
+        ],
+        "pairs": [
+          {
+            "prediction": 0,
+            "truthIndex": 3,
+            "iou": 0.8625924518234228
+          },
+          {
+            "prediction": 1,
+            "truthIndex": 2,
+            "iou": 0.8469736383735791
+          },
+          {
+            "prediction": 2,
+            "truthIndex": 0,
+            "iou": 0.9057116517863856
+          },
+          {
+            "prediction": 3,
+            "truthIndex": 1,
+            "iou": 0.8490504189115449
+          }
+        ]
+      }
+    },
+    {
+      "name": "3FO3REKPEK4N-3.jpg",
+      "imageSha256": "87f33fa20580c68d40ab1a40da59ab7416792de9651a8a0382cab0bac6c30a49",
+      "maskSha256": "9eedc4e62e13b925b627b5bace00f09d97a6397d4db19bf9cdd984a99aa53948",
+      "truth": 7,
+      "afterGate": {
+        "count": 7,
+        "matched": 7,
+        "truthIndices": [
+          3,
+          5,
+          2,
+          0,
+          6,
+          4,
+          1
+        ],
+        "pairs": [
+          {
+            "prediction": 0,
+            "truthIndex": 3,
+            "iou": 0.8241706390603968
+          },
+          {
+            "prediction": 1,
+            "truthIndex": 5,
+            "iou": 0.7533362467614156
+          },
+          {
+            "prediction": 2,
+            "truthIndex": 2,
+            "iou": 0.7782216057021687
+          },
+          {
+            "prediction": 3,
+            "truthIndex": 0,
+            "iou": 0.740651185692778
+          },
+          {
+            "prediction": 4,
+            "truthIndex": 6,
+            "iou": 0.9344753304601073
+          },
+          {
+            "prediction": 5,
+            "truthIndex": 4,
+            "iou": 0.7162433580409485
+          },
+          {
+            "prediction": 6,
+            "truthIndex": 1,
+            "iou": 0.939427926434808
+          }
+        ]
+      }
+    },
+    {
+      "name": "3FO3RGKECV5G-3.jpg",
+      "imageSha256": "5516e45735eed24e7d4a90ffeab9145369a1dd68e806ad9c1e8b1fa1658332d2",
+      "maskSha256": "fdc0ea5fdda7117b51cdb4215e12e016482d3d7ba996e05fad59ef588a1707b0",
+      "truth": 4,
+      "afterGate": {
+        "count": 4,
+        "matched": 4,
+        "truthIndices": [
+          3,
+          1,
+          0,
+          2
+        ],
+        "pairs": [
+          {
+            "prediction": 0,
+            "truthIndex": 3,
+            "iou": 0.9330997571171173
+          },
+          {
+            "prediction": 1,
+            "truthIndex": 1,
+            "iou": 0.7289550009906989
+          },
+          {
+            "prediction": 2,
+            "truthIndex": 0,
+            "iou": 0.8722195537567978
+          },
+          {
+            "prediction": 3,
+            "truthIndex": 2,
+            "iou": 0.6348016074527799
+          }
+        ]
+      }
+    },
+    {
+      "name": "3FO3RN3GPBY0-3.jpg",
+      "imageSha256": "ac1d86ac80cac225ce3d76ad0abd6515bb36e0c27e407f9a5a3a708439d8ed31",
+      "maskSha256": "3269792fa526c3c0fe053421dd81f3358419a7362503afceddaa5270629d2968",
+      "truth": 4,
+      "afterGate": {
+        "count": 4,
+        "matched": 4,
+        "truthIndices": [
+          2,
+          3,
+          0,
+          1
+        ],
+        "pairs": [
+          {
+            "prediction": 0,
+            "truthIndex": 2,
+            "iou": 0.8110207871102767
+          },
+          {
+            "prediction": 1,
+            "truthIndex": 3,
+            "iou": 0.8140234619776798
+          },
+          {
+            "prediction": 2,
+            "truthIndex": 0,
+            "iou": 0.8329112981180633
+          },
+          {
+            "prediction": 3,
+            "truthIndex": 1,
+            "iou": 0.7753481968378213
+          }
+        ]
+      }
+    },
+    {
+      "name": "3FO3RO2J13PI-3.jpg",
+      "imageSha256": "c69f64ea5e83054fcb88bf6aca432e479e6bd97f537106087b59d0216ac1225b",
+      "maskSha256": "3425306e5352819b898071ad032a5e1f29dbea531b8a716d2dde9447334e81df",
+      "truth": 8,
+      "afterGate": {
+        "count": 7,
+        "matched": 7,
+        "truthIndices": [
+          4,
+          2,
+          1,
+          5,
+          3,
+          7,
+          6
+        ],
+        "pairs": [
+          {
+            "prediction": 0,
+            "truthIndex": 4,
+            "iou": 0.8290086791000445
+          },
+          {
+            "prediction": 1,
+            "truthIndex": 2,
+            "iou": 0.7981908439757046
+          },
+          {
+            "prediction": 2,
+            "truthIndex": 1,
+            "iou": 0.8003529753516982
+          },
+          {
+            "prediction": 3,
+            "truthIndex": 5,
+            "iou": 0.9177400767463911
+          },
+          {
+            "prediction": 4,
+            "truthIndex": 3,
+            "iou": 0.6107050040339587
+          },
+          {
+            "prediction": 5,
+            "truthIndex": 7,
+            "iou": 0.6640193645725863
+          },
+          {
+            "prediction": 6,
+            "truthIndex": 6,
+            "iou": 0.7736237989945345
+          }
+        ]
+      }
+    },
+    {
+      "name": "3FO3S5V3NSMX-3.jpg",
+      "imageSha256": "72f6661101f7e60f329cfe2c00c66e274fdf0ea59e9c1aacaf9245e4d3f34bef",
+      "maskSha256": "a204804ee81c922773cc1d24ab3e91fef85e7be83931a8c8c7cdbe9631e15f5a",
+      "truth": 9,
+      "afterGate": {
+        "count": 5,
+        "matched": 5,
+        "truthIndices": [
+          8,
+          5,
+          7,
+          6,
+          4
+        ],
+        "pairs": [
+          {
+            "prediction": 0,
+            "truthIndex": 8,
+            "iou": 0.6738858278271381
+          },
+          {
+            "prediction": 1,
+            "truthIndex": 5,
+            "iou": 0.5877269430208909
+          },
+          {
+            "prediction": 2,
+            "truthIndex": 7,
+            "iou": 0.7742773299095428
+          },
+          {
+            "prediction": 3,
+            "truthIndex": 6,
+            "iou": 0.849606206946751
+          },
+          {
+            "prediction": 4,
+            "truthIndex": 4,
+            "iou": 0.935401445645167
+          }
+        ]
+      }
+    },
+    {
+      "name": "3FO3S6IRR074-3.jpg",
+      "imageSha256": "7ac5352c0c7dac5e8d82d0ab13a414079e4937e5f2fddd17892d8bf64cbb3e01",
+      "maskSha256": "6def0b1971b1fb44c9167e5553742de44189c64d6bca054cfaea0cb78351a054",
+      "truth": 9,
+      "afterGate": {
+        "count": 7,
+        "matched": 7,
+        "truthIndices": [
+          4,
+          7,
+          6,
+          3,
+          5,
+          1,
+          0
+        ],
+        "pairs": [
+          {
+            "prediction": 0,
+            "truthIndex": 4,
+            "iou": 0.8842648932662087
+          },
+          {
+            "prediction": 1,
+            "truthIndex": 7,
+            "iou": 0.712052154486383
+          },
+          {
+            "prediction": 2,
+            "truthIndex": 6,
+            "iou": 0.7051897576637748
+          },
+          {
+            "prediction": 3,
+            "truthIndex": 3,
+            "iou": 0.8500948039359174
+          },
+          {
+            "prediction": 4,
+            "truthIndex": 5,
+            "iou": 0.8190800394246306
+          },
+          {
+            "prediction": 5,
+            "truthIndex": 1,
+            "iou": 0.8211944287170728
+          },
+          {
+            "prediction": 6,
+            "truthIndex": 0,
+            "iou": 0.8521433456919422
+          }
+        ]
+      }
+    },
+    {
+      "name": "3FO3S6MHSB5A-3.jpg",
+      "imageSha256": "99ea387fd0f4cefd6ef6601394675249162798f33903cb221a38a46bab3c1255",
+      "maskSha256": "3d2e98cc0237199d215c8fab6c69793e67e92cfd0db3f714abd72cc040b1facf",
+      "truth": 6,
+      "afterGate": {
+        "count": 6,
+        "matched": 6,
+        "truthIndices": [
+          0,
+          2,
+          3,
+          4,
+          1,
+          5
+        ],
+        "pairs": [
+          {
+            "prediction": 0,
+            "truthIndex": 0,
+            "iou": 0.8530688348037981
+          },
+          {
+            "prediction": 1,
+            "truthIndex": 2,
+            "iou": 0.8382295664284592
+          },
+          {
+            "prediction": 2,
+            "truthIndex": 3,
+            "iou": 0.8436510911836911
+          },
+          {
+            "prediction": 3,
+            "truthIndex": 4,
+            "iou": 0.875210759092174
+          },
+          {
+            "prediction": 4,
+            "truthIndex": 1,
+            "iou": 0.8717347446173568
+          },
+          {
+            "prediction": 5,
+            "truthIndex": 5,
+            "iou": 0.808115383796765
+          }
+        ]
+      }
+    },
+    {
+      "name": "3FO3SDXT7W3U-3.jpg",
+      "imageSha256": "c23f05d0cc2bcce1e0a3d8b319039f27ee55cf00026b5baa91ae2418bd2cfbdc",
+      "maskSha256": "160e55e1d056e3768060a47351f404422aa2935ac696d44fbcdc9931da5705b3",
+      "truth": 4,
+      "afterGate": {
+        "count": 3,
+        "matched": 3,
+        "truthIndices": [
+          2,
+          3,
+          1
+        ],
+        "pairs": [
+          {
+            "prediction": 0,
+            "truthIndex": 2,
+            "iou": 0.8622153767878664
+          },
+          {
+            "prediction": 1,
+            "truthIndex": 3,
+            "iou": 0.9003745806049516
+          },
+          {
+            "prediction": 2,
+            "truthIndex": 1,
+            "iou": 0.8334637870434856
+          }
+        ]
+      }
+    },
+    {
+      "name": "3FO3SIA03UAC-3.jpg",
+      "imageSha256": "5ba3522baef8bab63f8231980c7e173fa49e884d0240283d4863bb1aad4df264",
+      "maskSha256": "10a5f5715d7e7fe37f75331afde3d5d94da83534cbce5d9e7ea1129f7e6c5723",
+      "truth": 9,
+      "afterGate": {
+        "count": 9,
+        "matched": 8,
+        "truthIndices": [
+          4,
+          5,
+          6,
+          3,
+          7,
+          1,
+          2,
+          8
+        ],
+        "pairs": [
+          {
+            "prediction": 0,
+            "truthIndex": 4,
+            "iou": 0.9647285909756578
+          },
+          {
+            "prediction": 1,
+            "truthIndex": 5,
+            "iou": 0.7555181720507684
+          },
+          {
+            "prediction": 2,
+            "truthIndex": 6,
+            "iou": 0.8929091354693828
+          },
+          {
+            "prediction": 3,
+            "truthIndex": 3,
+            "iou": 0.8320358942007468
+          },
+          {
+            "prediction": 4,
+            "truthIndex": 7,
+            "iou": 0.8047801287661507
+          },
+          {
+            "prediction": 5,
+            "truthIndex": 1,
+            "iou": 0.7779252990834715
+          },
+          {
+            "prediction": 6,
+            "truthIndex": 2,
+            "iou": 0.8180015377461198
+          },
+          {
+            "prediction": 8,
+            "truthIndex": 8,
+            "iou": 0.8430204956858957
+          }
+        ]
+      }
+    },
+    {
+      "name": "3FO3SLHBSL8L-3.jpg",
+      "imageSha256": "25ef433c8f23f8d51160005ebd1dcad1e8b787aa86f939f095bd9dcece804dba",
+      "maskSha256": "43287a7abdcd404e60ee73b61e275161ec7bd7a454a0e415abfad6b90cfc42f7",
+      "truth": 3,
+      "afterGate": {
+        "count": 3,
+        "matched": 3,
+        "truthIndices": [
+          0,
+          1,
+          2
+        ],
+        "pairs": [
+          {
+            "prediction": 0,
+            "truthIndex": 0,
+            "iou": 0.7983229004999844
+          },
+          {
+            "prediction": 1,
+            "truthIndex": 1,
+            "iou": 0.8612750294165061
+          },
+          {
+            "prediction": 2,
+            "truthIndex": 2,
+            "iou": 0.9274218658537177
+          }
+        ]
+      }
+    },
+    {
+      "name": "3FO3SV8DNOD1-3.jpg",
+      "imageSha256": "fe108c44002656a94946150b8a58653eb0145c6f3ba33d5cf88245afa0754419",
+      "maskSha256": "8799123ff79e488c927d7342eb132bc27a9ceda6afe516146498195668f0be65",
+      "truth": 5,
+      "afterGate": {
+        "count": 6,
+        "matched": 3,
+        "truthIndices": [
+          0,
+          1,
+          3
+        ],
+        "pairs": [
+          {
+            "prediction": 0,
+            "truthIndex": 0,
+            "iou": 0.6924269923651666
+          },
+          {
+            "prediction": 2,
+            "truthIndex": 1,
+            "iou": 0.7593173788126741
+          },
+          {
+            "prediction": 3,
+            "truthIndex": 3,
+            "iou": 0.6697013833404006
+          }
+        ]
+      }
+    },
+    {
+      "name": "3FO3UONGHR0O-3.jpg",
+      "imageSha256": "93bf22bd97af6f194b3a984ac5d2b4efccfc5c3ca5849fa3a9190d0fb8e5b39a",
+      "maskSha256": "962fd755cdd6073e804866b38f10564de763deb56dce1aea0b84b0fd5896d0a4",
+      "truth": 13,
+      "afterGate": {
+        "count": 13,
+        "matched": 13,
+        "truthIndices": [
+          9,
+          2,
+          5,
+          4,
+          7,
+          3,
+          0,
+          8,
+          10,
+          6,
+          1,
+          11,
+          12
+        ],
+        "pairs": [
+          {
+            "prediction": 0,
+            "truthIndex": 9,
+            "iou": 0.7738539579018896
+          },
+          {
+            "prediction": 1,
+            "truthIndex": 2,
+            "iou": 0.7938815892878702
+          },
+          {
+            "prediction": 2,
+            "truthIndex": 5,
+            "iou": 0.8137085725110096
+          },
+          {
+            "prediction": 3,
+            "truthIndex": 4,
+            "iou": 0.6916064299922596
+          },
+          {
+            "prediction": 4,
+            "truthIndex": 7,
+            "iou": 0.7368772305842807
+          },
+          {
+            "prediction": 5,
+            "truthIndex": 3,
+            "iou": 0.8852412230434813
+          },
+          {
+            "prediction": 6,
+            "truthIndex": 0,
+            "iou": 0.8340676102510536
+          },
+          {
+            "prediction": 7,
+            "truthIndex": 8,
+            "iou": 0.7763552060279258
+          },
+          {
+            "prediction": 8,
+            "truthIndex": 10,
+            "iou": 0.8223685435248923
+          },
+          {
+            "prediction": 9,
+            "truthIndex": 6,
+            "iou": 0.8239864487589221
+          },
+          {
+            "prediction": 10,
+            "truthIndex": 1,
+            "iou": 0.7298809864012562
+          },
+          {
+            "prediction": 11,
+            "truthIndex": 11,
+            "iou": 0.830812104747565
+          },
+          {
+            "prediction": 12,
+            "truthIndex": 12,
+            "iou": 0.7718585534994298
+          }
+        ]
+      }
+    },
+    {
+      "name": "3FO3UWRG1XT7-3.jpg",
+      "imageSha256": "272f942a59ea8126ba834f78851791b95de1d1a2551c6d1df0af72b128f968ee",
+      "maskSha256": "7591fabbbbb9f5484bda883c2f810e2e8f990d44d7b368d77ef82e28de70a5c4",
+      "truth": 10,
+      "afterGate": {
+        "count": 9,
+        "matched": 8,
+        "truthIndices": [
+          0,
+          4,
+          3,
+          5,
+          6,
+          1,
+          2,
+          8
+        ],
+        "pairs": [
+          {
+            "prediction": 0,
+            "truthIndex": 0,
+            "iou": 0.842102568256482
+          },
+          {
+            "prediction": 1,
+            "truthIndex": 4,
+            "iou": 0.7559777027710488
+          },
+          {
+            "prediction": 2,
+            "truthIndex": 3,
+            "iou": 0.5930163787841756
+          },
+          {
+            "prediction": 3,
+            "truthIndex": 5,
+            "iou": 0.7377629747397862
+          },
+          {
+            "prediction": 5,
+            "truthIndex": 6,
+            "iou": 0.7048199359549523
+          },
+          {
+            "prediction": 6,
+            "truthIndex": 1,
+            "iou": 0.8918872308175425
+          },
+          {
+            "prediction": 7,
+            "truthIndex": 2,
+            "iou": 0.8015993187453674
+          },
+          {
+            "prediction": 8,
+            "truthIndex": 8,
+            "iou": 0.927947558676335
+          }
+        ]
+      }
+    },
+    {
+      "name": "3FO3UXJKUBXD-3.jpg",
+      "imageSha256": "e0be07588d116870cd92a0d56304c4c845c9a4fa8b7f42b9046579d1ff18289f",
+      "maskSha256": "0de2139aa0535917876a73464dc83d206e4b79077d7ccd9e7157e3b6ec8e411d",
+      "truth": 9,
+      "afterGate": {
+        "count": 8,
+        "matched": 8,
+        "truthIndices": [
+          2,
+          8,
+          1,
+          3,
+          7,
+          5,
+          0,
+          4
+        ],
+        "pairs": [
+          {
+            "prediction": 0,
+            "truthIndex": 2,
+            "iou": 0.8114321565961756
+          },
+          {
+            "prediction": 1,
+            "truthIndex": 8,
+            "iou": 0.6689389601369077
+          },
+          {
+            "prediction": 2,
+            "truthIndex": 1,
+            "iou": 0.9141199224815951
+          },
+          {
+            "prediction": 3,
+            "truthIndex": 3,
+            "iou": 0.7748131803562628
+          },
+          {
+            "prediction": 4,
+            "truthIndex": 7,
+            "iou": 0.7791935368949852
+          },
+          {
+            "prediction": 5,
+            "truthIndex": 5,
+            "iou": 0.7931971572285638
+          },
+          {
+            "prediction": 6,
+            "truthIndex": 0,
+            "iou": 0.8428728717397276
+          },
+          {
+            "prediction": 7,
+            "truthIndex": 4,
+            "iou": 0.5835052595560549
+          }
+        ]
+      }
+    },
+    {
+      "name": "3FO3VNMHYPLG-3.jpg",
+      "imageSha256": "9c66d906521586bb7ee61045c3f52b120e9454cfc5f04141ab827a2201c929e0",
+      "maskSha256": "a68f8a03f7788ae5d5a873481876f45421bb87e53e1fe4a579f84cd2af9b7edc",
+      "truth": 11,
+      "afterGate": {
+        "count": 10,
+        "matched": 10,
+        "truthIndices": [
+          5,
+          2,
+          4,
+          7,
+          1,
+          3,
+          6,
+          8,
+          9,
+          10
+        ],
+        "pairs": [
+          {
+            "prediction": 0,
+            "truthIndex": 5,
+            "iou": 0.8074218208257484
+          },
+          {
+            "prediction": 1,
+            "truthIndex": 2,
+            "iou": 0.8218448188648702
+          },
+          {
+            "prediction": 2,
+            "truthIndex": 4,
+            "iou": 0.6534046886589434
+          },
+          {
+            "prediction": 3,
+            "truthIndex": 7,
+            "iou": 0.5469631024514374
+          },
+          {
+            "prediction": 4,
+            "truthIndex": 1,
+            "iou": 0.7844594137892423
+          },
+          {
+            "prediction": 5,
+            "truthIndex": 3,
+            "iou": 0.6335200155600996
+          },
+          {
+            "prediction": 6,
+            "truthIndex": 6,
+            "iou": 0.5995754912692434
+          },
+          {
+            "prediction": 7,
+            "truthIndex": 8,
+            "iou": 0.7317969455311945
+          },
+          {
+            "prediction": 8,
+            "truthIndex": 9,
+            "iou": 0.732988030423347
+          },
+          {
+            "prediction": 9,
+            "truthIndex": 10,
+            "iou": 0.5856305799447943
+          }
+        ]
+      }
+    },
+    {
+      "name": "3FO3VYPVGB2J-3.jpg",
+      "imageSha256": "2e81928fb66449f986578f540429a487394bf6a51f878307cbba1f475fbd6ca7",
+      "maskSha256": "6a57dd3c2c35be82f7c004b6f74a1e8ce31824fe14753a1805b8e4c9bd19cf43",
+      "truth": 7,
+      "afterGate": {
+        "count": 7,
+        "matched": 7,
+        "truthIndices": [
+          4,
+          1,
+          3,
+          5,
+          6,
+          0,
+          2
+        ],
+        "pairs": [
+          {
+            "prediction": 0,
+            "truthIndex": 4,
+            "iou": 0.9041178408005106
+          },
+          {
+            "prediction": 1,
+            "truthIndex": 1,
+            "iou": 0.7564486687917383
+          },
+          {
+            "prediction": 2,
+            "truthIndex": 3,
+            "iou": 0.7850612495491205
+          },
+          {
+            "prediction": 3,
+            "truthIndex": 5,
+            "iou": 0.8898235578133628
+          },
+          {
+            "prediction": 4,
+            "truthIndex": 6,
+            "iou": 0.933633511315928
+          },
+          {
+            "prediction": 5,
+            "truthIndex": 0,
+            "iou": 0.5034595854990731
+          },
+          {
+            "prediction": 6,
+            "truthIndex": 2,
+            "iou": 0.8166262844329037
+          }
+        ]
+      }
+    },
+    {
+      "name": "3FO3W4Q0VUWO-3.jpg",
+      "imageSha256": "3df80687266493dcc1701a6adac21968ea0b6b63e3459a7c4ba0ab694954abf5",
+      "maskSha256": "9971beff03a5628fc68c9b3b0bf00102ac55c987f85e79ec3fce1d9a1bf9bdad",
+      "truth": 7,
+      "afterGate": {
+        "count": 8,
+        "matched": 6,
+        "truthIndices": [
+          1,
+          0,
+          5,
+          3,
+          4,
+          6
+        ],
+        "pairs": [
+          {
+            "prediction": 0,
+            "truthIndex": 1,
+            "iou": 0.766519114200317
+          },
+          {
+            "prediction": 1,
+            "truthIndex": 0,
+            "iou": 0.8840329287399006
+          },
+          {
+            "prediction": 2,
+            "truthIndex": 5,
+            "iou": 0.7945495809020763
+          },
+          {
+            "prediction": 3,
+            "truthIndex": 3,
+            "iou": 0.6091217375085601
+          },
+          {
+            "prediction": 5,
+            "truthIndex": 4,
+            "iou": 0.5114715896439688
+          },
+          {
+            "prediction": 6,
+            "truthIndex": 6,
+            "iou": 0.7635823562328445
+          }
+        ]
+      }
+    },
+    {
+      "name": "3FO3YDD288DY-3.jpg",
+      "imageSha256": "b3e3bd4a602cc8722beecee6e3482a2380a787d6ec4f78986867bb38d8f4b93e",
+      "maskSha256": "d31e0f927dfd527723a2be4fe54e4e32c095b50df8d2850fccdd8afd0b41c008",
+      "truth": 4,
+      "afterGate": {
+        "count": 4,
+        "matched": 3,
+        "truthIndices": [
+          1,
+          3,
+          0
+        ],
+        "pairs": [
+          {
+            "prediction": 0,
+            "truthIndex": 1,
+            "iou": 0.8447514647416953
+          },
+          {
+            "prediction": 2,
+            "truthIndex": 3,
+            "iou": 0.8325273788393734
+          },
+          {
+            "prediction": 3,
+            "truthIndex": 0,
+            "iou": 0.8098136483375387
+          }
+        ]
+      }
+    },
+    {
+      "name": "3FO3YJ49Q0HM-3.jpg",
+      "imageSha256": "c7541e77260383eb361ee78406409c0785fe5ef1d9cac81e5211e1d3d13c5bdb",
+      "maskSha256": "f878413c6beee6b07a24091c5d2b486a3a7a4cdc4a42e461b56cf146e5619356",
+      "truth": 4,
+      "afterGate": {
+        "count": 4,
+        "matched": 4,
+        "truthIndices": [
+          0,
+          2,
+          3,
+          1
+        ],
+        "pairs": [
+          {
+            "prediction": 0,
+            "truthIndex": 0,
+            "iou": 0.9363113021751959
+          },
+          {
+            "prediction": 1,
+            "truthIndex": 2,
+            "iou": 0.8775818343506173
+          },
+          {
+            "prediction": 2,
+            "truthIndex": 3,
+            "iou": 0.9283449805204614
+          },
+          {
+            "prediction": 3,
+            "truthIndex": 1,
+            "iou": 0.8757491902599043
+          }
+        ]
+      }
+    },
+    {
+      "name": "3FO3YP2T0W03-3.jpg",
+      "imageSha256": "a7b036e32f291a2ca4cf816724b495317a2d51afe5cbf30acbc2296da83901b1",
+      "maskSha256": "76a4f6401e1e5b8c9d112fa278e6ea4ad86bf77eb55793429f6fe06026320df2",
+      "truth": 6,
+      "afterGate": {
+        "count": 7,
+        "matched": 5,
+        "truthIndices": [
+          3,
+          1,
+          0,
+          4,
+          2
+        ],
+        "pairs": [
+          {
+            "prediction": 0,
+            "truthIndex": 3,
+            "iou": 0.7354063927991121
+          },
+          {
+            "prediction": 1,
+            "truthIndex": 1,
+            "iou": 0.7849542752722615
+          },
+          {
+            "prediction": 2,
+            "truthIndex": 0,
+            "iou": 0.8952409093311193
+          },
+          {
+            "prediction": 4,
+            "truthIndex": 4,
+            "iou": 0.7606735845626331
+          },
+          {
+            "prediction": 5,
+            "truthIndex": 2,
+            "iou": 0.7874775045846514
+          }
+        ]
+      }
+    },
+    {
+      "name": "3FO40589XB0G-3.jpg",
+      "imageSha256": "dbd3e01502b8fe40fbedf55be951f884a5be8010ac308deb6f49ac0f618c0192",
+      "maskSha256": "81a86b7bf8ff931fd1273dd7dc2c7c64a70ad1c69b5a792b6479888bd3153784",
+      "truth": 5,
+      "afterGate": {
+        "count": 6,
+        "matched": 4,
+        "truthIndices": [
+          3,
+          2,
+          4,
+          1
+        ],
+        "pairs": [
+          {
+            "prediction": 0,
+            "truthIndex": 3,
+            "iou": 0.900925096965932
+          },
+          {
+            "prediction": 1,
+            "truthIndex": 2,
+            "iou": 0.8954761424998817
+          },
+          {
+            "prediction": 2,
+            "truthIndex": 4,
+            "iou": 0.9034279133299336
+          },
+          {
+            "prediction": 3,
+            "truthIndex": 1,
+            "iou": 0.8312159514754127
+          }
+        ]
+      }
+    },
+    {
+      "name": "3FO40IQGCBDE-3.jpg",
+      "imageSha256": "fa2cf7b4c7bf348a07d1f788ee274094cfc3fdffbcc552d1e76c7baa1467218f",
+      "maskSha256": "ca3bd0a7e99726758456dca5b34a05805945a86c62d3c82c7349f08cdc05163f",
+      "truth": 7,
+      "afterGate": {
+        "count": 8,
+        "matched": 6,
+        "truthIndices": [
+          1,
+          0,
+          3,
+          4,
+          5,
+          6
+        ],
+        "pairs": [
+          {
+            "prediction": 0,
+            "truthIndex": 1,
+            "iou": 0.7775704649278151
+          },
+          {
+            "prediction": 2,
+            "truthIndex": 0,
+            "iou": 0.7753400431551318
+          },
+          {
+            "prediction": 3,
+            "truthIndex": 3,
+            "iou": 0.8287208550483587
+          },
+          {
+            "prediction": 5,
+            "truthIndex": 4,
+            "iou": 0.8515706975890035
+          },
+          {
+            "prediction": 6,
+            "truthIndex": 5,
+            "iou": 0.7546511370212716
+          },
+          {
+            "prediction": 7,
+            "truthIndex": 6,
+            "iou": 0.8039016503211428
+          }
+        ]
+      }
+    },
+    {
+      "name": "3FO40S0F95YR-3.jpg",
+      "imageSha256": "bd4650ca83e9871a6fb8cf3f6cbf3d7b9bc39b25c7dcf8ee75196bf330477f7f",
+      "maskSha256": "9cf7c908fe316900a4effb33da0b8483b206bc052a28443835bfd18aee2a7dba",
+      "truth": 3,
+      "afterGate": {
+        "count": 4,
+        "matched": 3,
+        "truthIndices": [
+          1,
+          2,
+          0
+        ],
+        "pairs": [
+          {
+            "prediction": 0,
+            "truthIndex": 1,
+            "iou": 0.9247881823520815
+          },
+          {
+            "prediction": 1,
+            "truthIndex": 2,
+            "iou": 0.9065872174838381
+          },
+          {
+            "prediction": 2,
+            "truthIndex": 0,
+            "iou": 0.8633066774786036
+          }
+        ]
+      }
+    },
+    {
+      "name": "3FO42Y97XJ8K-3.jpg",
+      "imageSha256": "a322949cc2453302b8ac02c87441ea84f47846931ea4923c6fa80347c69ec933",
+      "maskSha256": "36e97737fe355e82689c60a811e42c8057aa415c821abb5eaf00388dbcfbfee5",
+      "truth": 4,
+      "afterGate": {
+        "count": 3,
+        "matched": 3,
+        "truthIndices": [
+          3,
+          2,
+          1
+        ],
+        "pairs": [
+          {
+            "prediction": 0,
+            "truthIndex": 3,
+            "iou": 0.8994445317529304
+          },
+          {
+            "prediction": 1,
+            "truthIndex": 2,
+            "iou": 0.7796476036703266
+          },
+          {
+            "prediction": 2,
+            "truthIndex": 1,
+            "iou": 0.836986568238614
+          }
+        ]
+      }
+    },
+    {
+      "name": "3FO43K77UN46-3.jpg",
+      "imageSha256": "d9b9999cffe78655d7a0ac15ef2cfb44702760f1bd5aec482dac9da60a3b3fbc",
+      "maskSha256": "45cb60859cefeaeef57a0300c49e50327194cd751b5da97c9153fd445ca1f186",
+      "truth": 5,
+      "afterGate": {
+        "count": 5,
+        "matched": 5,
+        "truthIndices": [
+          0,
+          1,
+          3,
+          4,
+          2
+        ],
+        "pairs": [
+          {
+            "prediction": 0,
+            "truthIndex": 0,
+            "iou": 0.8292898192582305
+          },
+          {
+            "prediction": 1,
+            "truthIndex": 1,
+            "iou": 0.6521839041046438
+          },
+          {
+            "prediction": 2,
+            "truthIndex": 3,
+            "iou": 0.8995201145011392
+          },
+          {
+            "prediction": 3,
+            "truthIndex": 4,
+            "iou": 0.9049012400607852
+          },
+          {
+            "prediction": 4,
+            "truthIndex": 2,
+            "iou": 0.8395171114888854
+          }
+        ]
+      }
+    },
+    {
+      "name": "3FO44SRKCOU9-3.jpg",
+      "imageSha256": "c62e6f28bd69d9984b2b8f223826f5be67c08cdc16f90f66b8dbf1af4e88953a",
+      "maskSha256": "72950b7b39be6aa9c243c9de8feb19d7a6a35fe19e5629932c76aeda27befb52",
+      "truth": 11,
+      "afterGate": {
+        "count": 11,
+        "matched": 9,
+        "truthIndices": [
+          10,
+          7,
+          6,
+          3,
+          5,
+          9,
+          1,
+          8,
+          4
+        ],
+        "pairs": [
+          {
+            "prediction": 0,
+            "truthIndex": 10,
+            "iou": 0.8364446284593766
+          },
+          {
+            "prediction": 1,
+            "truthIndex": 7,
+            "iou": 0.5816477887206998
+          },
+          {
+            "prediction": 2,
+            "truthIndex": 6,
+            "iou": 0.7921896174302313
+          },
+          {
+            "prediction": 3,
+            "truthIndex": 3,
+            "iou": 0.685122282211552
+          },
+          {
+            "prediction": 4,
+            "truthIndex": 5,
+            "iou": 0.8854472432094515
+          },
+          {
+            "prediction": 5,
+            "truthIndex": 9,
+            "iou": 0.8403175313067046
+          },
+          {
+            "prediction": 6,
+            "truthIndex": 1,
+            "iou": 0.5894753980418925
+          },
+          {
+            "prediction": 7,
+            "truthIndex": 8,
+            "iou": 0.8187060279904705
+          },
+          {
+            "prediction": 9,
+            "truthIndex": 4,
+            "iou": 0.6213636072125935
+          }
+        ]
+      }
+    },
+    {
+      "name": "3FO47WC6WB0Y-3.jpg",
+      "imageSha256": "ebcba07e2ad7d1c7261b0a8696886cb55279b5914fd8c6ac05693a5d3b6a0ce1",
+      "maskSha256": "5791454d2bb0cd06cdad105f4e2bf16ee0e92890f2cbc2d0e9e26fe88360976f",
+      "truth": 5,
+      "afterGate": {
+        "count": 6,
+        "matched": 5,
+        "truthIndices": [
+          0,
+          4,
+          2,
+          1,
+          3
+        ],
+        "pairs": [
+          {
+            "prediction": 0,
+            "truthIndex": 0,
+            "iou": 0.8839451309804383
+          },
+          {
+            "prediction": 1,
+            "truthIndex": 4,
+            "iou": 0.6247509739533733
+          },
+          {
+            "prediction": 2,
+            "truthIndex": 2,
+            "iou": 0.8879526745795557
+          },
+          {
+            "prediction": 3,
+            "truthIndex": 1,
+            "iou": 0.7287527577126578
+          },
+          {
+            "prediction": 4,
+            "truthIndex": 3,
+            "iou": 0.5212790686113772
+          }
+        ]
+      }
+    },
+    {
+      "name": "3FO498AT2FVC-3.jpg",
+      "imageSha256": "a239cb534c9ddf958b95f78e5e994d76b2657e87af5b955bf44922d241d1ea84",
+      "maskSha256": "f41f7cc95bf80fb1cd1edfd4c5e61bc0c533f52f591e85c4aad54098baeb770b",
+      "truth": 8,
+      "afterGate": {
+        "count": 1,
+        "matched": 1,
+        "truthIndices": [
+          4
+        ],
+        "pairs": [
+          {
+            "prediction": 0,
+            "truthIndex": 4,
+            "iou": 0.941532064922986
+          }
+        ]
+      }
+    }
+  ]
+}

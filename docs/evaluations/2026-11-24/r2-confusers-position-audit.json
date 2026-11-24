@@ -1,0 +1,551 @@
+{
+  "baseline": {
+    "r2": {
+      "doors": 10,
+      "rooms": 8,
+      "windows": 12
+    },
+    "image46": {
+      "doors": 4
+    }
+  },
+  "matching": "IoU>=0.3 locates supplied false-door regions; IoU>=0.5 checks retained baseline doors. Raw detector conf remains0.25.",
+  "trials": {
+    "50": {
+      "r2": {
+        "doors": 10,
+        "rooms": 8,
+        "windows": 12,
+        "windowsAllValid": true,
+        "noExposedBayFloors": true,
+        "falseRegions": [
+          {
+            "name": "gray-wall",
+            "baselineBox": {
+              "x": 56.92034721374512,
+              "y": 225.37797927856445,
+              "w": 15.582189559936523,
+              "h": 56.557579040527344,
+              "cls": "door",
+              "score": 0.7192376852035522
+            },
+            "rawMatches": [
+              {
+                "x": 57.458505630493164,
+                "y": 224.69597816467285,
+                "w": 13.922758102416992,
+                "h": 58.59159469604492,
+                "cls": "door",
+                "score": 0.5
+              },
+              {
+                "x": 53.25965404510498,
+                "y": 224.69599723815918,
+                "w": 12.762527465820312,
+                "h": 63.23251724243164,
+                "cls": "door",
+                "score": 0.3125630021095276
+              }
+            ],
+            "adoptedMatches": [
+              {
+                "index": 8,
+                "box": {
+                  "x": 57.458505630493164,
+                  "y": 224.69597816467285,
+                  "w": 13.922758102416992,
+                  "h": 58.59159469604492
+                },
+                "score": 0.5,
+                "longSide": 0.8631285307503294,
+                "shortSide": 0.20509989201134696,
+                "valid": true,
+                "reasons": [],
+                "kind": "swing"
+              }
+            ]
+          },
+          {
+            "name": "fixed-window",
+            "baselineBox": {
+              "x": 172.11440086364746,
+              "y": 138.64155292510986,
+              "w": 13.27371597290039,
+              "h": 69.8313045501709,
+              "cls": "door",
+              "score": 0.7192376852035522
+            },
+            "rawMatches": [
+              {
+                "x": 172.09941864013672,
+                "y": 138.59081268310547,
+                "w": 13.922767639160156,
+                "h": 70.77400207519531,
+                "cls": "door",
+                "score": 0.6627490520477295
+              }
+            ],
+            "adoptedMatches": [
+              {
+                "index": 1,
+                "box": {
+                  "x": 172.09941864013672,
+                  "y": 138.59081268310547,
+                  "w": 13.922767639160156,
+                  "h": 70.77400207519531
+                },
+                "score": 0.6627490520477295,
+                "longSide": 1.0425908484550535,
+                "shortSide": 0.20510003249967396,
+                "valid": true,
+                "reasons": [],
+                "kind": "swing"
+              }
+            ]
+          }
+        ],
+        "newAdopted": [
+          {
+            "index": 6,
+            "box": {
+              "x": 640.3591537475586,
+              "y": 357.56860733032227,
+              "w": 11.602249145507812,
+              "h": 106.16100311279297
+            },
+            "score": 0.5281190276145935,
+            "longSide": 1.5638862726825804,
+            "shortSide": 0.17091585081976626,
+            "valid": true,
+            "reasons": [],
+            "kind": "sliding"
+          },
+          {
+            "index": 9,
+            "box": {
+              "x": 672.6794815063477,
+              "y": 594.3919563293457,
+              "w": 9.861984252929688,
+              "h": 99.19963836669922
+            },
+            "score": 0.4439392685890198,
+            "longSide": 1.4613365374093974,
+            "shortSide": 0.14527954090808656,
+            "valid": true,
+            "reasons": [],
+            "kind": "sliding"
+          }
+        ],
+        "originalSlidingDoorPreserved": false,
+        "windowsRawByteEqual": true,
+        "passed": false
+      },
+      "image46": {
+        "doors": 6,
+        "rooms": 4,
+        "windows": 7,
+        "windowsAllValid": true,
+        "precision": 1,
+        "vertices": 64,
+        "existingDoors": [
+          {
+            "baselineIndex": 0,
+            "longSide": 0.9049271456240408,
+            "preserved": true
+          },
+          {
+            "baselineIndex": 1,
+            "longSide": 1.0139544604707424,
+            "preserved": true
+          },
+          {
+            "baselineIndex": 2,
+            "longSide": 1.8643679486714326,
+            "preserved": true
+          },
+          {
+            "baselineIndex": 3,
+            "longSide": 0.9703436786642002,
+            "preserved": true
+          }
+        ],
+        "wideDoorMatches": [
+          {
+            "index": 3,
+            "box": {
+              "x": 737.2789478302002,
+              "y": 492.0160388946533,
+              "w": 25.234966278076172,
+              "h": 145.3187370300293
+            },
+            "score": 0.5836522579193115,
+            "longSide": 1.8302107938290844,
+            "shortSide": 0.31782073398080823,
+            "valid": true,
+            "reasons": [],
+            "kind": "sliding"
+          }
+        ],
+        "windowsRawByteEqual": true,
+        "passed": false
+      }
+    },
+    "100": {
+      "r2": {
+        "doors": 11,
+        "rooms": 8,
+        "windows": 12,
+        "windowsAllValid": true,
+        "noExposedBayFloors": true,
+        "falseRegions": [
+          {
+            "name": "gray-wall",
+            "baselineBox": {
+              "x": 56.92034721374512,
+              "y": 225.37797927856445,
+              "w": 15.582189559936523,
+              "h": 56.557579040527344,
+              "cls": "door",
+              "score": 0.7192376852035522
+            },
+            "rawMatches": [
+              {
+                "x": 56.90353870391846,
+                "y": 225.16858100891113,
+                "w": 16.771240234375,
+                "h": 58.98847579956055,
+                "cls": "door",
+                "score": 0.42771217226982117
+              }
+            ],
+            "adoptedMatches": [
+              {
+                "index": 10,
+                "box": {
+                  "x": 56.90353870391846,
+                  "y": 225.16858100891113,
+                  "w": 16.771240234375,
+                  "h": 58.98847579956055
+                },
+                "score": 0.42771217226982117,
+                "longSide": 0.8689750929669255,
+                "shortSide": 0.24706164796251998,
+                "valid": true,
+                "reasons": [],
+                "kind": "swing"
+              }
+            ]
+          },
+          {
+            "name": "fixed-window",
+            "baselineBox": {
+              "x": 172.11440086364746,
+              "y": 138.64155292510986,
+              "w": 13.27371597290039,
+              "h": 69.8313045501709,
+              "cls": "door",
+              "score": 0.7192376852035522
+            },
+            "rawMatches": [
+              {
+                "x": 172.10841178894043,
+                "y": 138.565936088562,
+                "w": 13.879642486572266,
+                "h": 70.55485725402832,
+                "cls": "door",
+                "score": 0.7875738143920898
+              }
+            ],
+            "adoptedMatches": [
+              {
+                "index": 0,
+                "box": {
+                  "x": 172.10841178894043,
+                  "y": 138.565936088562,
+                  "w": 13.879642486572266,
+                  "h": 70.55485725402832
+                },
+                "score": 0.7875738143920898,
+                "longSide": 1.03936256718883,
+                "shortSide": 0.2044647442849621,
+                "valid": true,
+                "reasons": [],
+                "kind": "swing"
+              }
+            ]
+          }
+        ],
+        "newAdopted": [
+          {
+            "index": 7,
+            "box": {
+              "x": 639.7951126098633,
+              "y": 358.3247756958008,
+              "w": 14.457931518554688,
+              "h": 108.72390747070312
+            },
+            "score": 0.5,
+            "longSide": 1.6016411056816202,
+            "shortSide": 0.2129836754578273,
+            "valid": true,
+            "reasons": [],
+            "kind": "sliding"
+          },
+          {
+            "index": 9,
+            "box": {
+              "x": 672.686653137207,
+              "y": 521.3849639892578,
+              "w": 10.409774780273438,
+              "h": 167.13401794433594
+            },
+            "score": 0.5,
+            "longSide": 2.4620961435690645,
+            "shortSide": 0.1533491904111931,
+            "valid": true,
+            "reasons": [],
+            "kind": "sliding"
+          }
+        ],
+        "originalSlidingDoorPreserved": true,
+        "windowsRawByteEqual": true,
+        "passed": false
+      },
+      "image46": {
+        "doors": 5,
+        "rooms": 4,
+        "windows": 7,
+        "windowsAllValid": true,
+        "precision": 1,
+        "vertices": 64,
+        "existingDoors": [
+          {
+            "baselineIndex": 0,
+            "longSide": 0.9049271456240408,
+            "preserved": true
+          },
+          {
+            "baselineIndex": 1,
+            "longSide": 1.0139544604707424,
+            "preserved": true
+          },
+          {
+            "baselineIndex": 2,
+            "longSide": 1.8643679486714326,
+            "preserved": true
+          },
+          {
+            "baselineIndex": 3,
+            "longSide": 0.9703436786642002,
+            "preserved": true
+          }
+        ],
+        "wideDoorMatches": [
+          {
+            "index": 3,
+            "box": {
+              "x": 735.8130741119385,
+              "y": 489.74069595336914,
+              "w": 28.626766204833984,
+              "h": 144.86881256103516
+            },
+            "score": 0.641615629196167,
+            "longSide": 1.8245442388039692,
+            "shortSide": 0.3605386171893449,
+            "valid": true,
+            "reasons": [],
+            "kind": "sliding"
+          }
+        ],
+        "windowsRawByteEqual": true,
+        "passed": false
+      }
+    },
+    "fixed-window": {
+      "r2": {
+        "doors": 13,
+        "rooms": 9,
+        "windows": 12,
+        "windowsAllValid": false,
+        "noExposedBayFloors": true,
+        "falseRegions": [
+          {
+            "name": "gray-wall",
+            "baselineBox": {
+              "x": 56.92034721374512,
+              "y": 225.37797927856445,
+              "w": 15.582189559936523,
+              "h": 56.557579040527344,
+              "cls": "door",
+              "score": 0.7192376852035522
+            },
+            "rawMatches": [
+              {
+                "x": 56.831181049346924,
+                "y": 225.08070945739746,
+                "w": 16.921133995056152,
+                "h": 59.51570510864258,
+                "cls": "door",
+                "score": 0.6547342538833618
+              }
+            ],
+            "adoptedMatches": [
+              {
+                "index": 4,
+                "box": {
+                  "x": 56.831181049346924,
+                  "y": 225.08070945739746,
+                  "w": 16.921133995056152,
+                  "h": 59.51570510864258
+                },
+                "score": 0.6547342538833618,
+                "longSide": 0.8767418496370114,
+                "shortSide": 0.24926977324220448,
+                "valid": true,
+                "reasons": [],
+                "kind": "swing"
+              }
+            ]
+          },
+          {
+            "name": "fixed-window",
+            "baselineBox": {
+              "x": 172.11440086364746,
+              "y": 138.64155292510986,
+              "w": 13.27371597290039,
+              "h": 69.8313045501709,
+              "cls": "door",
+              "score": 0.7192376852035522
+            },
+            "rawMatches": [
+              {
+                "x": 173.24953079223633,
+                "y": 137.73752212524414,
+                "w": 12.836723327636719,
+                "h": 71.76895141601562,
+                "cls": "door",
+                "score": 0.625259280204773
+              }
+            ],
+            "adoptedMatches": [
+              {
+                "index": 7,
+                "box": {
+                  "x": 173.24953079223633,
+                  "y": 137.73752212524414,
+                  "w": 12.836723327636719,
+                  "h": 71.76895141601562
+                },
+                "score": 0.625259280204773,
+                "longSide": 1.0572477146347212,
+                "shortSide": 0.18910122182046482,
+                "valid": true,
+                "reasons": [],
+                "kind": "swing"
+              }
+            ]
+          }
+        ],
+        "newAdopted": [
+          {
+            "index": 10,
+            "box": {
+              "x": 640.9156036376953,
+              "y": 360.0714874267578,
+              "w": 11.669769287109375,
+              "h": 107.36167907714844
+            },
+            "score": 0.5636444091796875,
+            "longSide": 1.581573753052377,
+            "shortSide": 0.1719105081749542,
+            "valid": true,
+            "reasons": [],
+            "kind": "sliding"
+          },
+          {
+            "index": 11,
+            "box": {
+              "x": 672.6660537719727,
+              "y": 517.3154449462891,
+              "w": 9.919357299804688,
+              "h": 175.62973022460938
+            },
+            "score": 0.4680478572845459,
+            "longSide": 2.587248764797258,
+            "shortSide": 0.1461247186833423,
+            "valid": true,
+            "reasons": [],
+            "kind": "sliding"
+          },
+          {
+            "index": 12,
+            "box": {
+              "x": 175.6641960144043,
+              "y": 316.24768257141113,
+              "w": 10.502777099609375,
+              "h": 47.84597396850586
+            },
+            "score": 0.3452657461166382,
+            "longSide": 0.7048319034153654,
+            "shortSide": 0.15471923257613557,
+            "valid": true,
+            "reasons": [],
+            "kind": "swing"
+          }
+        ],
+        "originalSlidingDoorPreserved": true,
+        "windowsRawByteEqual": true,
+        "passed": false
+      },
+      "image46": {
+        "doors": 8,
+        "rooms": 4,
+        "windows": 7,
+        "windowsAllValid": true,
+        "precision": 1,
+        "vertices": 64,
+        "existingDoors": [
+          {
+            "baselineIndex": 0,
+            "longSide": 0.9049271456240408,
+            "preserved": true
+          },
+          {
+            "baselineIndex": 1,
+            "longSide": 1.0139544604707424,
+            "preserved": true
+          },
+          {
+            "baselineIndex": 2,
+            "longSide": 1.8643679486714326,
+            "preserved": true
+          },
+          {
+            "baselineIndex": 3,
+            "longSide": 0.9703436786642002,
+            "preserved": true
+          }
+        ],
+        "wideDoorMatches": [
+          {
+            "index": 3,
+            "box": {
+              "x": 737.3696994781494,
+              "y": 489.4926166534424,
+              "w": 27.13216781616211,
+              "h": 149.6645164489746
+            },
+            "score": 0.710102379322052,
+            "longSide": 1.8849435321029548,
+            "shortSide": 0.34171495990128603,
+            "valid": true,
+            "reasons": [],
+            "kind": "sliding"
+          }
+        ],
+        "windowsRawByteEqual": true,
+        "passed": false
+      }
+    }
+  }
+}

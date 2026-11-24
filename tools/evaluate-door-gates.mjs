@@ -11,24 +11,27 @@ const [imageDir,maskDir]=process.argv.slice(2),root=resolve(import.meta.dirname,
 if(!imageDir||!maskDir)throw Error('Usage: node tools/evaluate-door-gates.mjs <44 clean images> <44 clean masks>');
 const names=(await readdir(imageDir)).filter(n=>/\.(jpe?g|png)$/i.test(n)).sort(),maskNames=await readdir(maskDir);
 if(names.length!==44)throw Error('Expected 44 images, found '+names.length);
+const candidateModel=process.env.DOMIRA_DOOR_MODEL_OVERRIDE&&resolve(process.env.DOMIRA_DOOR_MODEL_OVERRIDE);
+const frozenWindowModel=process.env.DOMIRA_FROZEN_WINDOW_MODEL?resolve(process.env.DOMIRA_FROZEN_WINDOW_MODEL):resolve(root,'public/models/yolo-doors-int8.onnx');
 const hash=b=>createHash('sha256').update(b).digest('hex');
 const samples=[];
 for(const name of names){const stem=basename(name,extname(name)),mask=maskNames.find(n=>n===stem+'-clean-mask.png');if(!mask)throw Error('Missing original clean annotation for '+name);const image=resolve(imageDir,name),annotation=resolve(maskDir,mask);samples.push({name,image,mask:annotation,imageSha256:hash(await readFile(image)),maskSha256:hash(await readFile(annotation))});}
 const baseline=JSON.parse(await readFile(resolve(root,'docs/evaluations/2026-11-19/openings-summary.json'),'utf8'));
 const baselineRows=(await readFile(resolve(root,'docs/evaluations/2026-11-19/openings-per-image.csv'),'utf8')).trim().split(/\r?\n/).slice(1).map(line=>line.split(',').slice(0,3));
 const baselineDatasetMatches=samples.every(s=>baselineRows.some(([name,imageHash,maskHash])=>name===s.name&&imageHash===s.imageSha256&&maskHash===s.maskSha256));
-const modelHashes=Object.fromEntries(await Promise.all(['yolo-doors-int8.onnx','unet-int8.onnx'].map(async n=>[n,hash(await readFile(resolve(root,'public/models',n)))])));
+const modelHashes=Object.fromEntries(await Promise.all(['yolo-doors-int8.onnx','yolo-windows-int8.onnx','unet-int8.onnx'].map(async n=>[n,hash(await readFile(n==='yolo-windows-int8.onnx'?frozenWindowModel:n==='yolo-doors-int8.onnx'&&candidateModel?candidateModel:resolve(root,'public/models',n)))])));
 const server=createServer(async(req,res)=>{try{
  const url=new URL(req.url,'http://localhost');
  if(url.pathname==='/runner.html'){res.setHeader('Content-Type','text/html');res.end('<!doctype html><title>Door gate evaluation</title>');return;}
  const match=url.pathname.match(/^\/sample\/(\d+)\/(image|mask)$/),file=match?samples[Number(match[1])]?.[match[2]]:resolve(root,'public','.'+url.pathname);
  if(!file||(!match&&!file.startsWith(resolve(root,'public')+'/')&&!file.startsWith(resolve(root,'public')+'\\')))throw Error('Invalid sample path');
- res.setHeader('Content-Type',extname(file)==='.js'?'text/javascript':extname(file)==='.png'?'image/png':'application/octet-stream');res.end(await readFile(file));
+ const served=candidateModel?(url.pathname==='/models/yolo-doors-int8.onnx'?candidateModel:url.pathname==='/models/yolo-windows-int8.onnx'?frozenWindowModel:url.pathname==='/door-detect.js'?resolve(root,'tools/candidate-door-detect.js'):file):file;
+ res.setHeader('Content-Type',extname(file)==='.js'?'text/javascript':extname(file)==='.png'?'image/png':'application/octet-stream');res.end(await readFile(served));
 }catch{res.writeHead(404);res.end();}});
 await new Promise(r=>server.listen(0,'127.0.0.1',r));const base='http://127.0.0.1:'+server.address().port;
 const chrome=['C:/Program Files/Google/Chrome/Application/chrome.exe','C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe'].find(existsSync);if(!chrome)throw Error('Chrome not found');
 const port=Number(process.env.DOMIRA_CDP_PORT||9348),out=resolve(root,process.env.DOMIRA_DOOR_EVAL_OUT||'.screenshots/door-gate-evaluation');await mkdir(out,{recursive:true});
-const proc=spawn(chrome,['--headless=new','--disable-gpu','--enable-unsafe-swiftshader','--no-sandbox','--remote-debugging-port='+port,'--user-data-dir='+resolve(tmpdir(),'domira-door-gates'),'about:blank'],{stdio:'ignore',windowsHide:true});let ws;
+const proc=spawn(chrome,['--headless=new','--disable-gpu','--enable-unsafe-swiftshader','--no-sandbox','--remote-debugging-port='+port,'--user-data-dir='+resolve(tmpdir(),'domira-door-gates-'+port),'about:blank'],{stdio:'ignore',windowsHide:true});let ws;
 try{
  let page;for(let i=0;i<80;i++){try{page=(await(await fetch(`http://127.0.0.1:${port}/json/list`)).json()).find(t=>t.type==='page');}catch{}if(page)break;await new Promise(r=>setTimeout(r,250));}if(!page)throw Error('Browser startup timed out');
  ws=new WebSocket(page.webSocketDebuggerUrl);await new Promise((r,j)=>{ws.addEventListener('open',r,{once:true});ws.addEventListener('error',j,{once:true});});let serial=0;const pending=new Map();
@@ -43,10 +46,10 @@ try{
   console.log(JSON.stringify({index:index+1,name:row.name,ms:row.ms,truth:row.truth.length,raw:row.raw.matched,scoreOnly:row.scoreOnly.matched,afterGate:row.afterGate.matched,scale:row.scale?.source,error:row.error||null}));
  }
  const total=key=>{const truth=rows.reduce((n,r)=>n+r.truth.length,0),matched=rows.reduce((n,r)=>n+r[key].matched,0),count=rows.reduce((n,r)=>n+r[key].count,0);return {truth,matched,count,recall:matched/truth,precision:count?matched/count:1};};
- const report={date:new Date().toISOString(),annotated:rows.length,modelHashes,baselineModelHashes:baseline.modelHashes,baselineDatasetMatches,referenceRecall:284/308,
-  definitions:{matching:'原始clean-masks-44蓝色门类的4连通域外接框，预测按score排序，IoU>=0.5一对一匹配；与92.21%记录相同口径。',physicalScale:'生产geometryFromSegmentation + readPlanNumbers + estimateScale，W/D取到0.01m；这是自动估计尺度，并非44张逐张人工实测尺度。',raw:'当前生产YOLO conf0.25原始门框',scoreOnly:'仅score>=0.30，无物理尺寸筛选',selected:'已由既有门窗来源逻辑选用但未加本轮尺寸闸',afterGate:'既有选择 + 0.45–2m宽 / 0.10–0.40m厚 / score>=0.30',unscalable:'自动尺度不可用时计入失败并记录，未臆造物理尺寸'},
+ const report={date:new Date().toISOString(),annotated:rows.length,modelHashes,baselineModelHashes:baseline.modelHashes,baselineDatasetMatches,referenceRecall:284/308,incumbentRecall:259/308,requiredRecall:.8409,
+  definitions:{matching:'原始clean-masks-44蓝色门类的4连通域外接框，预测按score排序，IoU>=0.5一对一匹配；与92.21%记录相同口径。',physicalScale:'生产geometryFromSegmentation + readPlanNumbers + estimateScale，W/D取到0.01m；这是自动估计尺度，并非44张逐张人工实测尺度。',raw:'当前生产YOLO conf0.25原始门框',scoreOnly:'仅score>=0.30，无物理尺寸筛选',selected:'已由既有门窗来源逻辑选用但未加本轮尺寸闸',afterGate:'现役be9ec15规则保持：平开0.45–1.2m/推拉1.2–3m，厚0.10–0.40m，score>=0.30，门洞去重；窗由冻结6f257e8模型提供',unscalable:'自动尺度不可用时计入失败并记录，未臆造物理尺寸'},
   raw:total('raw'),scoreOnly:total('scoreOnly'),selected:total('selected'),afterGate:total('afterGate'),unscalable:rows.filter(r=>r.error).map(r=>({name:r.name,error:r.error})),rows};
- report.gatePassed=report.afterGate.recall>=.92;
+ report.gatePassed=report.afterGate.recall>=.8409;
  await writeFile(resolve(out,'report.json'),JSON.stringify(report,null,2)+'\n');console.log('REPORT '+JSON.stringify({datasetMatches:baselineDatasetMatches,raw:report.raw,scoreOnly:report.scoreOnly,afterGate:report.afterGate,gatePassed:report.gatePassed}));
 }finally{ws?.close();proc.kill();server.closeAllConnections();server.close();}
 

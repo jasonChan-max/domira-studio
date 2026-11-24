@@ -1,0 +1,83 @@
+{
+  "50": {
+    "bytes": 3505290,
+    "sha256": "003caff3a800dc934dd3a9aa35de49f0a0b7c7b1289915fe94688aa16c3d66bd",
+    "onnxCheckerPassed": true,
+    "initializerTypes": {
+      "INT8": 251,
+      "FLOAT": 250,
+      "INT32": 126
+    },
+    "quantizeNodes": 123,
+    "dequantizeNodes": 250,
+    "inputs": [
+      [
+        1,
+        3,
+        640,
+        640
+      ]
+    ],
+    "outputs": [
+      [
+        1,
+        6,
+        8400
+      ]
+    ]
+  },
+  "100": {
+    "bytes": 3505281,
+    "sha256": "8a283b7e0870c55eea03c6ad6fc412ba1fa4b0873442e497c002ac694dd1e072",
+    "onnxCheckerPassed": true,
+    "initializerTypes": {
+      "INT8": 251,
+      "FLOAT": 250,
+      "INT32": 126
+    },
+    "quantizeNodes": 123,
+    "dequantizeNodes": 250,
+    "inputs": [
+      [
+        1,
+        3,
+        640,
+        640
+      ]
+    ],
+    "outputs": [
+      [
+        1,
+        6,
+        8400
+      ]
+    ]
+  },
+  "fixed-window": {
+    "bytes": 3505302,
+    "sha256": "817209a9fd1ccc95bf35a0d8de88c4432070a52f7b5d3d692c61024dbc323ac8",
+    "onnxCheckerPassed": true,
+    "initializerTypes": {
+      "INT8": 251,
+      "FLOAT": 250,
+      "INT32": 126
+    },
+    "quantizeNodes": 123,
+    "dequantizeNodes": 250,
+    "inputs": [
+      [
+        1,
+        3,
+        640,
+        640
+      ]
+    ],
+    "outputs": [
+      [
+        1,
+        6,
+        8400
+      ]
+    ]
+  }
+}

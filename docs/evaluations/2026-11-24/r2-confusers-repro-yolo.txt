@@ -1,0 +1,25 @@
+圖片 800x800   耗時 1652ms   檢出 22 個
+  door    conf 0.79  bbox (172,139) 14x71
+  window  conf 0.74  bbox (355,695) 47x12
+  door    conf 0.73  bbox (173,222) 12x57
+  door    conf 0.71  bbox (407,345) 10x46
+  door    conf 0.71  bbox (407,515) 10x46
+  window  conf 0.68  bbox (175,316) 11x47
+  door    conf 0.67  bbox (339,446) 13x47
+  window  conf 0.66  bbox (663,355) 40x117
+  window  conf 0.66  bbox (212,693) 93x16
+  window  conf 0.64  bbox (171,423) 14x54
+  door    conf 0.61  bbox (341,517) 9x49
+  window  conf 0.59  bbox (664,323) 44x14
+  door    conf 0.54  bbox (640,126) 15x161
+  door    conf 0.50  bbox (640,358) 14x109
+  door    conf 0.50  bbox (417,568) 38x8
+  door    conf 0.50  bbox (673,521) 10x167
+  window  conf 0.50  bbox (227,289) 85x14
+  window  conf 0.48  bbox (685,511) 50x187
+  door    conf 0.43  bbox (57,225) 17x59
+  window  conf 0.36  bbox (69,81) 39x8
+  window  conf 0.31  bbox (188,77) 230x199
+  window  conf 0.27  bbox (404,78) 246x211
+
+門 11 個，窗 11 個

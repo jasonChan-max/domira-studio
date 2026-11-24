@@ -1,0 +1,3894 @@
+{
+  "imgSize": [
+    800,
+    800
+  ],
+  "segMs": 21289.89999999851,
+  "rooms": 9,
+  "roomAudit": [
+    {
+      "name": "空間1",
+      "bounds": {
+        "x0": -3.2439999999999998,
+        "x1": 3.665,
+        "z0": -4.537,
+        "z1": 2.511
+      },
+      "withinHouse": true
+    },
+    {
+      "name": "空間2",
+      "bounds": {
+        "x0": 0.17399999999999993,
+        "x1": 4.106999999999999,
+        "z0": 1.435,
+        "z1": 4.4830000000000005
+      },
+      "withinHouse": true
+    },
+    {
+      "name": "空間3",
+      "bounds": {
+        "x0": 0.2470000000000001,
+        "x1": 3.724,
+        "z0": -1.069,
+        "z1": 1.553
+      },
+      "withinHouse": true
+    },
+    {
+      "name": "空間4",
+      "bounds": {
+        "x0": -3.406,
+        "x1": -0.7550000000000001,
+        "z0": 1.597,
+        "z1": 4.513999999999999
+      },
+      "withinHouse": true
+    },
+    {
+      "name": "空間5",
+      "bounds": {
+        "x0": -5,
+        "x1": -3.1699999999999995,
+        "z0": -4.537,
+        "z1": -0.9369999999999998
+      },
+      "withinHouse": true
+    },
+    {
+      "name": "空間6",
+      "bounds": {
+        "x0": -3.436,
+        "x1": -0.8280000000000001,
+        "z0": -0.126,
+        "z1": 1.627
+      },
+      "withinHouse": true
+    },
+    {
+      "name": "空間7",
+      "bounds": {
+        "x0": 3.6799999999999997,
+        "x1": 5,
+        "z0": -4.516,
+        "z1": -0.9649999999999999
+      },
+      "withinHouse": true
+    },
+    {
+      "name": "空間8",
+      "bounds": {
+        "x0": -3.318,
+        "x1": -0.7690000000000001,
+        "z0": -1.541,
+        "z1": -0.03799999999999992
+      },
+      "withinHouse": true
+    },
+    {
+      "name": "空間9",
+      "bounds": {
+        "x0": -0.7839999999999999,
+        "x1": 0.8510000000000001,
+        "z0": 2.482,
+        "z1": 4.529
+      },
+      "withinHouse": true
+    }
+  ],
+  "doors": 13,
+  "doorAudit": {
+    "raw": 14,
+    "kept": 13,
+    "checks": [
+      {
+        "index": 0,
+        "box": {
+          "x": 340.33212661743164,
+          "y": 444.7393608093262,
+          "w": 11.669731140136719,
+          "h": 46.67896270751953
+        },
+        "score": 0.710102379322052,
+        "longSide": 0.6876403468398927,
+        "shortSide": 0.17190994622164618,
+        "valid": true,
+        "reasons": [],
+        "kind": "swing"
+      },
+      {
+        "index": 1,
+        "box": {
+          "x": 640.332145690918,
+          "y": 118.72459411621094,
+          "w": 15.754165649414062,
+          "h": 167.4608612060547
+        },
+        "score": 0.6830660700798035,
+        "longSide": 2.466910959512144,
+        "shortSide": 0.23207884886420335,
+        "valid": true,
+        "reasons": [],
+        "kind": "sliding"
+      },
+      {
+        "index": 2,
+        "box": {
+          "x": 172.66605377197266,
+          "y": 221.6604995727539,
+          "w": 12.253227233886719,
+          "h": 56.59828186035156
+        },
+        "score": 0.6830660700798035,
+        "longSide": 0.833764503569927,
+        "shortSide": 0.1805055840210555,
+        "valid": true,
+        "reasons": [],
+        "kind": "swing"
+      },
+      {
+        "index": 3,
+        "box": {
+          "x": 407.99816131591797,
+          "y": 345.2421569824219,
+          "w": 8.752288818359375,
+          "h": 46.09550476074219
+        },
+        "score": 0.6830660700798035,
+        "longSide": 0.6790452709937914,
+        "shortSide": 0.12893231917790762,
+        "valid": true,
+        "reasons": [],
+        "kind": "swing"
+      },
+      {
+        "index": 4,
+        "box": {
+          "x": 56.831181049346924,
+          "y": 225.08070945739746,
+          "w": 16.921133995056152,
+          "h": 59.51570510864258
+        },
+        "score": 0.6547342538833618,
+        "longSide": 0.8767418496370114,
+        "shortSide": 0.24926977324220448,
+        "valid": true,
+        "reasons": [],
+        "kind": "swing"
+      },
+      {
+        "index": 5,
+        "box": {
+          "x": 226.14849090576172,
+          "y": 287.99816131591797,
+          "w": 86.35612487792969,
+          "h": 14.587173461914062
+        },
+        "score": 0.6547342538833618,
+        "longSide": 1.2721352879001058,
+        "shortSide": 0.2148875732653847,
+        "valid": true,
+        "reasons": [],
+        "kind": "sliding"
+      },
+      {
+        "index": 6,
+        "box": {
+          "x": 340.9156036376953,
+          "y": 516.8311882019043,
+          "w": 8.752288818359375,
+          "h": 48.42945098876953
+        },
+        "score": 0.6547342538833618,
+        "longSide": 0.7134272602381206,
+        "shortSide": 0.12893231917790762,
+        "valid": true,
+        "reasons": [],
+        "kind": "swing"
+      },
+      {
+        "index": 7,
+        "box": {
+          "x": 173.24953079223633,
+          "y": 137.73752212524414,
+          "w": 12.836723327636719,
+          "h": 71.76895141601562
+        },
+        "score": 0.625259280204773,
+        "longSide": 1.0572477146347212,
+        "shortSide": 0.18910122182046482,
+        "valid": true,
+        "reasons": [],
+        "kind": "swing"
+      },
+      {
+        "index": 8,
+        "box": {
+          "x": 407.41466522216797,
+          "y": 516.2476539611816,
+          "w": 9.335784912109375,
+          "h": 44.928550720214844
+        },
+        "score": 0.5948252081871033,
+        "longSide": 0.6618545573482808,
+        "shortSide": 0.13752795697731696,
+        "valid": true,
+        "reasons": [],
+        "kind": "swing"
+      },
+      {
+        "index": 9,
+        "box": {
+          "x": 415.8256149291992,
+          "y": 566.2476921081543,
+          "w": 37.92671203613281,
+          "h": 8.752326965332031
+        },
+        "score": 0.5948252081871033,
+        "longSide": 0.5587085896152931,
+        "shortSide": 0.12893288113121565,
+        "valid": true,
+        "reasons": [],
+        "kind": "swing"
+      },
+      {
+        "index": 10,
+        "box": {
+          "x": 640.9156036376953,
+          "y": 360.0714874267578,
+          "w": 11.669769287109375,
+          "h": 107.36167907714844
+        },
+        "score": 0.5636444091796875,
+        "longSide": 1.581573753052377,
+        "shortSide": 0.1719105081749542,
+        "valid": true,
+        "reasons": [],
+        "kind": "sliding"
+      },
+      {
+        "index": 11,
+        "box": {
+          "x": 672.6660537719727,
+          "y": 517.3154449462891,
+          "w": 9.919357299804688,
+          "h": 175.62973022460938
+        },
+        "score": 0.4680478572845459,
+        "longSide": 2.587248764797258,
+        "shortSide": 0.1461247186833423,
+        "valid": true,
+        "reasons": [],
+        "kind": "sliding"
+      },
+      {
+        "index": 12,
+        "box": {
+          "x": 175.6641960144043,
+          "y": 316.24768257141113,
+          "w": 10.502777099609375,
+          "h": 47.84597396850586
+        },
+        "score": 0.3452657461166382,
+        "longSide": 0.7048319034153654,
+        "shortSide": 0.15471923257613557,
+        "valid": true,
+        "reasons": [],
+        "kind": "swing"
+      },
+      {
+        "index": 13,
+        "box": {
+          "x": 222.1448040008545,
+          "y": 384.49724197387695,
+          "w": 116.11398696899414,
+          "h": 12.253227233886719
+        },
+        "score": 0.289897620677948,
+        "longSide": 1.7105063532069387,
+        "shortSide": 0.1805055840210555,
+        "valid": false,
+        "reasons": [
+          "门检测置信度低于 0.30 或无效"
+        ],
+        "kind": "sliding"
+      }
+    ],
+    "rejected": [
+      {
+        "index": 13,
+        "box": {
+          "x": 222.1448040008545,
+          "y": 384.49724197387695,
+          "w": 116.11398696899414,
+          "h": 12.253227233886719
+        },
+        "score": 0.289897620677948,
+        "longSide": 1.7105063532069387,
+        "shortSide": 0.1805055840210555,
+        "valid": false,
+        "reasons": [
+          "门检测置信度低于 0.30 或无效"
+        ],
+        "kind": "sliding"
+      }
+    ],
+    "maxWidth": 2.587248764797258,
+    "minThickness": 0.12893231917790762,
+    "maxThickness": 0.24926977324220448,
+    "height": {
+      "configuredHeight": 2.05,
+      "meshCount": 13,
+      "heights": [
+        2.049999952316284,
+        2.049999952316284,
+        2.049999952316284,
+        2.049999952316284,
+        2.049999952316284,
+        2.049999952316284,
+        2.049999952316284,
+        2.049999952316284,
+        2.049999952316284,
+        2.049999952316284,
+        2.049999952316284,
+        2.049999952316284,
+        2.049999952316284
+      ],
+      "changed": false
+    }
+  },
+  "doorDetections": [
+    {
+      "x": 340.33212661743164,
+      "y": 444.7393608093262,
+      "w": 11.669731140136719,
+      "h": 46.67896270751953,
+      "cls": "door",
+      "score": 0.710102379322052
+    },
+    {
+      "x": 640.332145690918,
+      "y": 118.72459411621094,
+      "w": 15.754165649414062,
+      "h": 167.4608612060547,
+      "cls": "door",
+      "score": 0.6830660700798035
+    },
+    {
+      "x": 172.66605377197266,
+      "y": 221.6604995727539,
+      "w": 12.253227233886719,
+      "h": 56.59828186035156,
+      "cls": "door",
+      "score": 0.6830660700798035
+    },
+    {
+      "x": 407.99816131591797,
+      "y": 345.2421569824219,
+      "w": 8.752288818359375,
+      "h": 46.09550476074219,
+      "cls": "door",
+      "score": 0.6830660700798035
+    },
+    {
+      "x": 56.831181049346924,
+      "y": 225.08070945739746,
+      "w": 16.921133995056152,
+      "h": 59.51570510864258,
+      "cls": "door",
+      "score": 0.6547342538833618
+    },
+    {
+      "x": 226.14849090576172,
+      "y": 287.99816131591797,
+      "w": 86.35612487792969,
+      "h": 14.587173461914062,
+      "cls": "door",
+      "score": 0.6547342538833618
+    },
+    {
+      "x": 340.9156036376953,
+      "y": 516.8311882019043,
+      "w": 8.752288818359375,
+      "h": 48.42945098876953,
+      "cls": "door",
+      "score": 0.6547342538833618
+    },
+    {
+      "x": 173.24953079223633,
+      "y": 137.73752212524414,
+      "w": 12.836723327636719,
+      "h": 71.76895141601562,
+      "cls": "door",
+      "score": 0.625259280204773
+    },
+    {
+      "x": 407.41466522216797,
+      "y": 516.2476539611816,
+      "w": 9.335784912109375,
+      "h": 44.928550720214844,
+      "cls": "door",
+      "score": 0.5948252081871033
+    },
+    {
+      "x": 415.8256149291992,
+      "y": 566.2476921081543,
+      "w": 37.92671203613281,
+      "h": 8.752326965332031,
+      "cls": "door",
+      "score": 0.5948252081871033
+    },
+    {
+      "x": 640.9156036376953,
+      "y": 360.0714874267578,
+      "w": 11.669769287109375,
+      "h": 107.36167907714844,
+      "cls": "door",
+      "score": 0.5636444091796875
+    },
+    {
+      "x": 672.6660537719727,
+      "y": 517.3154449462891,
+      "w": 9.919357299804688,
+      "h": 175.62973022460938,
+      "cls": "door",
+      "score": 0.4680478572845459
+    },
+    {
+      "x": 175.6641960144043,
+      "y": 316.24768257141113,
+      "w": 10.502777099609375,
+      "h": 47.84597396850586,
+      "cls": "door",
+      "score": 0.3452657461166382
+    },
+    {
+      "x": 222.1448040008545,
+      "y": 384.49724197387695,
+      "w": 116.11398696899414,
+      "h": 12.253227233886719,
+      "cls": "door",
+      "score": 0.289897620677948
+    }
+  ],
+  "homeDoors": [
+    {
+      "x": -0.7960931392957333,
+      "z": 0.9944649609241087,
+      "w": 0.17190994622164618,
+      "d": 0.6876403468398927,
+      "horizontal": false,
+      "score": 0.710102379322052,
+      "kind": "swing",
+      "sourceIndex": 0
+    },
+    {
+      "x": 3.6533722322968285,
+      "z": -2.9185108928987957,
+      "w": 0.23207884886420335,
+      "d": 2.466910959512144,
+      "horizontal": false,
+      "score": 0.6830660700798035,
+      "kind": "sliding",
+      "sourceIndex": 1
+    },
+    {
+      "x": -3.2617293077286433,
+      "z": -2.2187076286602094,
+      "w": 0.1805055840210555,
+      "d": 0.833764503569927,
+      "horizontal": false,
+      "score": 0.6830660700798035,
+      "kind": "swing",
+      "sourceIndex": 2
+    },
+    {
+      "x": 0.1792245927968276,
+      "z": -0.47555263118751634,
+      "w": 0.12893231917790762,
+      "d": 0.6790452709937914,
+      "horizontal": false,
+      "score": 0.6830660700798035,
+      "kind": "swing",
+      "sourceIndex": 3
+    },
+    {
+      "x": -4.933741859336501,
+      "z": -2.146834924471608,
+      "w": 0.24926977324220448,
+      "d": 0.8767418496370114,
+      "horizontal": false,
+      "score": 0.6547342538833618,
+      "kind": "swing",
+      "sourceIndex": 4
+    },
+    {
+      "x": -1.9280502984179198,
+      "z": -1.5509081672664298,
+      "w": 1.2721352879001058,
+      "d": 0.2148875732653847,
+      "horizontal": true,
+      "score": 0.6547342538833618,
+      "kind": "sliding",
+      "sourceIndex": 5
+    },
+    {
+      "x": -0.8089865959948473,
+      "z": 2.069362505056989,
+      "w": 0.12893231917790762,
+      "d": 0.7134272602381206,
+      "horizontal": false,
+      "score": 0.6547342538833618,
+      "kind": "swing",
+      "sourceIndex": 6
+    },
+    {
+      "x": -3.2488361320061836,
+      "z": -3.343257962206094,
+      "w": 0.18910122182046482,
+      "d": 1.0572477146347212,
+      "horizontal": false,
+      "score": 0.625259280204773,
+      "kind": "swing",
+      "sourceIndex": 7
+    },
+    {
+      "x": 0.17492677389712294,
+      "z": 2.034979953859352,
+      "w": 0.13752795697731696,
+      "d": 0.6618545573482808,
+      "horizontal": false,
+      "score": 0.5948252081871033,
+      "kind": "swing",
+      "sourceIndex": 8
+    },
+    {
+      "x": 0.5094210511938935,
+      "z": 2.5050831175865658,
+      "w": 0.5587085896152931,
+      "d": 0.12893288113121565,
+      "horizontal": true,
+      "score": 0.5948252081871033,
+      "kind": "swing",
+      "sourceIndex": 9
+    },
+    {
+      "x": 3.631883137798305,
+      "z": 0.19416646270644522,
+      "w": 0.1719105081749542,
+      "d": 1.581573753052377,
+      "horizontal": false,
+      "score": 0.5636444091796875,
+      "kind": "sliding",
+      "sourceIndex": 10
+    },
+    {
+      "x": 4.086714658426882,
+      "z": 3.0134069736051643,
+      "w": 0.1461247186833423,
+      "d": 2.587248764797258,
+      "horizontal": false,
+      "score": 0.4680478572845459,
+      "kind": "sliding",
+      "sourceIndex": 11
+    },
+    {
+      "x": -3.2304560441842574,
+      "z": -0.8897847111718774,
+      "w": 0.15471923257613557,
+      "d": 0.7048319034153654,
+      "horizontal": false,
+      "score": 0.3452657461166382,
+      "kind": "swing",
+      "sourceIndex": 12
+    }
+  ],
+  "windowsRaw": [
+    {
+      "x": 355.1788330078125,
+      "y": 694.6118927001953,
+      "w": 46.74659729003906,
+      "h": 11.5423583984375,
+      "cls": "window",
+      "score": 0.7378361225128174
+    },
+    {
+      "x": 174.61186408996582,
+      "y": 315.56697845458984,
+      "w": 10.965251922607422,
+      "h": 47.32368469238281,
+      "cls": "window",
+      "score": 0.679733395576477
+    },
+    {
+      "x": 663.0694961547852,
+      "y": 354.98985290527344,
+      "w": 39.82109069824219,
+      "h": 117.15499877929688,
+      "cls": "window",
+      "score": 0.6589184999465942
+    },
+    {
+      "x": 212.48225212097168,
+      "y": 693.4576797485352,
+      "w": 93.49313735961914,
+      "h": 15.582199096679688,
+      "cls": "window",
+      "score": 0.6589184999465942
+    },
+    {
+      "x": 170.96017837524414,
+      "y": 423.4576416015625,
+      "w": 14.427947998046875,
+      "h": 54.249114990234375,
+      "cls": "window",
+      "score": 0.6374723315238953
+    },
+    {
+      "x": 664.0347671508789,
+      "y": 322.88049697875977,
+      "w": 44.43809509277344,
+      "h": 13.850822448730469,
+      "cls": "window",
+      "score": 0.5929739475250244
+    },
+    {
+      "x": 226.52207374572754,
+      "y": 289.2288303375244,
+      "w": 85.41349411010742,
+      "h": 13.850841522216797,
+      "cls": "window",
+      "score": 0.5
+    },
+    {
+      "x": 684.606819152832,
+      "y": 510.7356834411621,
+      "w": 49.63218688964844,
+      "h": 186.98627471923828,
+      "cls": "window",
+      "score": 0.47956404089927673
+    },
+    {
+      "x": 69.02968406677246,
+      "y": 80.96016883850098,
+      "w": 38.66691589355469,
+      "h": 8.079662322998047,
+      "cls": "window",
+      "score": 0.36252766847610474
+    },
+    {
+      "x": 188.4272003173828,
+      "y": 77.28310585021973,
+      "w": 229.69303131103516,
+      "h": 198.5286521911621,
+      "cls": "window",
+      "score": 0.3062109351158142
+    },
+    {
+      "x": 404.188232421875,
+      "y": 78.43734741210938,
+      "w": 245.85235595703125,
+      "h": 211.2252426147461,
+      "cls": "window",
+      "score": 0.27259963750839233
+    }
+  ],
+  "windows": 12,
+  "windowMeshCount": 12,
+  "windowAudit": [
+    {
+      "index": 0,
+      "x": -0.319018944782584,
+      "z": 4.388860973685142,
+      "onExteriorWall": true,
+      "kind": "flat",
+      "wallFootprint": {
+        "x0": -0.6633372898100864,
+        "x1": 0.025299400244918335,
+        "y0": 4.322570264095722,
+        "y1": 4.455151683274561
+      },
+      "glassLength": 0.6886366900550047,
+      "footprintLength": 0.6886366900550047,
+      "alongLengthDelta": 0,
+      "alongCenterDelta": -5.551115123125783e-17,
+      "samples": [
+        {
+          "offset": -0.25,
+          "lowerWall": true,
+          "openingClear": true,
+          "upperWall": true,
+          "glassPresent": true
+        },
+        {
+          "offset": 0,
+          "lowerWall": true,
+          "openingClear": true,
+          "upperWall": true,
+          "glassPresent": true
+        },
+        {
+          "offset": 0.25,
+          "lowerWall": true,
+          "openingClear": true,
+          "upperWall": true,
+          "glassPresent": true
+        }
+      ],
+      "panels": [
+        {
+          "horizontal": true,
+          "wallFootprint": {
+            "x0": -0.6633372898100864,
+            "x1": 0.025299400244918335,
+            "y0": 4.322570264095722,
+            "y1": 4.455151683274561
+          },
+          "samples": [
+            {
+              "offset": -0.25,
+              "lowerWall": true,
+              "openingClear": true,
+              "upperWall": true,
+              "glassPresent": true
+            },
+            {
+              "offset": 0,
+              "lowerWall": true,
+              "openingClear": true,
+              "upperWall": true,
+              "glassPresent": true
+            },
+            {
+              "offset": 0.25,
+              "lowerWall": true,
+              "openingClear": true,
+              "upperWall": true,
+              "glassPresent": true
+            }
+          ]
+        }
+      ],
+      "valid": true
+    },
+    {
+      "index": 1,
+      "x": -3.221846863310125,
+      "z": -0.903659338346787,
+      "onExteriorWall": true,
+      "kind": "flat",
+      "wallFootprint": {
+        "x0": -3.2881375728995446,
+        "x1": -3.1555561537207053,
+        "y0": -1.2522282981961208,
+        "y1": -0.5550903784974534
+      },
+      "glassLength": 0.6971379196986673,
+      "footprintLength": 0.6971379196986675,
+      "alongLengthDelta": 1.1102230246251565e-16,
+      "alongCenterDelta": 0,
+      "samples": [
+        {
+          "offset": -0.25,
+          "lowerWall": false,
+          "openingClear": true,
+          "upperWall": false,
+          "glassPresent": true
+        },
+        {
+          "offset": 0,
+          "lowerWall": false,
+          "openingClear": true,
+          "upperWall": false,
+          "glassPresent": true
+        },
+        {
+          "offset": 0.25,
+          "lowerWall": false,
+          "openingClear": true,
+          "upperWall": false,
+          "glassPresent": true
+        }
+      ],
+      "panels": [
+        {
+          "horizontal": false,
+          "wallFootprint": {
+            "x0": -3.2881375728995446,
+            "x1": -3.1555561537207053,
+            "y0": -1.2522282981961208,
+            "y1": -0.5550903784974534
+          },
+          "samples": [
+            {
+              "offset": -0.25,
+              "lowerWall": false,
+              "openingClear": true,
+              "upperWall": false,
+              "glassPresent": true
+            },
+            {
+              "offset": 0,
+              "lowerWall": false,
+              "openingClear": true,
+              "upperWall": false,
+              "glassPresent": true
+            },
+            {
+              "offset": 0.25,
+              "lowerWall": false,
+              "openingClear": true,
+              "upperWall": false,
+              "glassPresent": true
+            }
+          ]
+        }
+      ],
+      "valid": false
+    },
+    {
+      "index": 2,
+      "x": 4.372122201877813,
+      "z": 0.1914415511158767,
+      "onExteriorWall": true,
+      "kind": "bay",
+      "wallFootprint": {
+        "x0": 4.254272051496623,
+        "x1": 4.489972352259003,
+        "y0": -0.6714793378871409,
+        "y1": 1.0543624401188942
+      },
+      "glassLength": 1.725841778006035,
+      "footprintLength": 1.725841778006035,
+      "alongLengthDelta": 0,
+      "alongCenterDelta": -2.7755575615628914e-17,
+      "samples": [
+        {
+          "offset": -0.25,
+          "lowerWall": true,
+          "openingClear": true,
+          "upperWall": true,
+          "glassPresent": true
+        },
+        {
+          "offset": 0,
+          "lowerWall": true,
+          "openingClear": true,
+          "upperWall": true,
+          "glassPresent": true
+        },
+        {
+          "offset": 0.25,
+          "lowerWall": true,
+          "openingClear": true,
+          "upperWall": true,
+          "glassPresent": true
+        }
+      ],
+      "panels": [
+        {
+          "horizontal": false,
+          "wallFootprint": {
+            "x0": 4.254272051496623,
+            "x1": 4.489972352259003,
+            "y0": -0.6714793378871408,
+            "y1": 1.0543624401188942
+          },
+          "samples": [
+            {
+              "offset": -0.25,
+              "lowerWall": true,
+              "openingClear": true,
+              "upperWall": true,
+              "glassPresent": true
+            },
+            {
+              "offset": 0,
+              "lowerWall": true,
+              "openingClear": true,
+              "upperWall": true,
+              "glassPresent": true
+            },
+            {
+              "offset": 0.25,
+              "lowerWall": true,
+              "openingClear": true,
+              "upperWall": true,
+              "glassPresent": true
+            }
+          ]
+        },
+        {
+          "horizontal": true,
+          "wallFootprint": {
+            "x0": 3.701849471584794,
+            "x1": 4.372122201877813,
+            "y0": -0.7893294882683309,
+            "y1": -0.5536291875059507
+          },
+          "samples": [
+            {
+              "offset": -0.25,
+              "lowerWall": true,
+              "openingClear": true,
+              "upperWall": true,
+              "glassPresent": true
+            },
+            {
+              "offset": 0,
+              "lowerWall": true,
+              "openingClear": true,
+              "upperWall": true,
+              "glassPresent": true
+            },
+            {
+              "offset": 0.25,
+              "lowerWall": true,
+              "openingClear": true,
+              "upperWall": true,
+              "glassPresent": true
+            }
+          ]
+        },
+        {
+          "horizontal": true,
+          "wallFootprint": {
+            "x0": 3.701849471584794,
+            "x1": 4.372122201877813,
+            "y0": 0.9365122897377042,
+            "y1": 1.1722125905000844
+          },
+          "samples": [
+            {
+              "offset": -0.25,
+              "lowerWall": true,
+              "openingClear": true,
+              "upperWall": true,
+              "glassPresent": true
+            },
+            {
+              "offset": 0,
+              "lowerWall": true,
+              "openingClear": true,
+              "upperWall": true,
+              "glassPresent": true
+            },
+            {
+              "offset": 0.25,
+              "lowerWall": true,
+              "openingClear": true,
+              "upperWall": true,
+              "glassPresent": true
+            }
+          ]
+        }
+      ],
+      "valid": true
+    },
+    {
+      "index": 3,
+      "x": -2.076802710769544,
+      "z": 4.366764070488668,
+      "onExteriorWall": true,
+      "kind": "flat",
+      "wallFootprint": {
+        "x0": -2.7654389793595677,
+        "x1": -1.3881664421795201,
+        "y0": 4.293107726500424,
+        "y1": 4.440420414476912
+      },
+      "glassLength": 1.3772725371800474,
+      "footprintLength": 1.3772725371800476,
+      "alongLengthDelta": 2.220446049250313e-16,
+      "alongCenterDelta": 0,
+      "samples": [
+        {
+          "offset": -0.25,
+          "lowerWall": true,
+          "openingClear": true,
+          "upperWall": true,
+          "glassPresent": true
+        },
+        {
+          "offset": 0,
+          "lowerWall": true,
+          "openingClear": true,
+          "upperWall": true,
+          "glassPresent": true
+        },
+        {
+          "offset": 0.25,
+          "lowerWall": true,
+          "openingClear": true,
+          "upperWall": true,
+          "glassPresent": true
+        }
+      ],
+      "panels": [
+        {
+          "horizontal": true,
+          "wallFootprint": {
+            "x0": -2.7654389793595677,
+            "x1": -1.3881664421795201,
+            "y0": 4.293107726500424,
+            "y1": 4.440420414476912
+          },
+          "samples": [
+            {
+              "offset": -0.25,
+              "lowerWall": true,
+              "openingClear": true,
+              "upperWall": true,
+              "glassPresent": true
+            },
+            {
+              "offset": 0,
+              "lowerWall": true,
+              "openingClear": true,
+              "upperWall": true,
+              "glassPresent": true
+            },
+            {
+              "offset": 0.25,
+              "lowerWall": true,
+              "openingClear": true,
+              "upperWall": true,
+              "glassPresent": true
+            }
+          ]
+        }
+      ],
+      "valid": true
+    },
+    {
+      "index": 4,
+      "x": -3.2513094009054226,
+      "z": 0.7367172088563607,
+      "onExteriorWall": true,
+      "kind": "flat",
+      "wallFootprint": {
+        "x0": -3.317600110494842,
+        "x1": -3.185018691316003,
+        "y0": 0.337138061378511,
+        "y1": 1.1362963563342103
+      },
+      "glassLength": 0.7991582949556995,
+      "footprintLength": 0.7991582949556993,
+      "alongLengthDelta": -1.1102230246251565e-16,
+      "alongCenterDelta": 0,
+      "samples": [
+        {
+          "offset": -0.25,
+          "lowerWall": true,
+          "openingClear": true,
+          "upperWall": true,
+          "glassPresent": true
+        },
+        {
+          "offset": 0,
+          "lowerWall": true,
+          "openingClear": true,
+          "upperWall": true,
+          "glassPresent": true
+        },
+        {
+          "offset": 0.25,
+          "lowerWall": true,
+          "openingClear": true,
+          "upperWall": true,
+          "glassPresent": true
+        }
+      ],
+      "panels": [
+        {
+          "horizontal": false,
+          "wallFootprint": {
+            "x0": -3.317600110494842,
+            "x1": -3.185018691316003,
+            "y0": 0.337138061378511,
+            "y1": 1.1362963563342103
+          },
+          "samples": [
+            {
+              "offset": -0.25,
+              "lowerWall": true,
+              "openingClear": true,
+              "upperWall": true,
+              "glassPresent": true
+            },
+            {
+              "offset": 0,
+              "lowerWall": true,
+              "openingClear": true,
+              "upperWall": true,
+              "glassPresent": true
+            },
+            {
+              "offset": 0.25,
+              "lowerWall": true,
+              "openingClear": true,
+              "upperWall": true,
+              "glassPresent": true
+            }
+          ]
+        }
+      ],
+      "valid": true
+    },
+    {
+      "index": 5,
+      "x": 4.21381725763389,
+      "z": -1.1132679222366715,
+      "onExteriorWall": true,
+      "kind": "flat",
+      "wallFootprint": {
+        "x0": 3.886502495800329,
+        "x1": 4.541132019467451,
+        "y0": -1.1869242662249153,
+        "y1": -1.0396115782484276
+      },
+      "glassLength": 0.654629523667122,
+      "footprintLength": 0.654629523667122,
+      "alongLengthDelta": 0,
+      "alongCenterDelta": 0,
+      "samples": [
+        {
+          "offset": -0.25,
+          "lowerWall": true,
+          "openingClear": true,
+          "upperWall": true,
+          "glassPresent": true
+        },
+        {
+          "offset": 0,
+          "lowerWall": true,
+          "openingClear": true,
+          "upperWall": true,
+          "glassPresent": true
+        },
+        {
+          "offset": 0.25,
+          "lowerWall": true,
+          "openingClear": true,
+          "upperWall": true,
+          "glassPresent": true
+        }
+      ],
+      "panels": [
+        {
+          "horizontal": true,
+          "wallFootprint": {
+            "x0": 3.886502495800329,
+            "x1": 4.541132019467451,
+            "y0": -1.1869242662249153,
+            "y1": -1.0396115782484276
+          },
+          "samples": [
+            {
+              "offset": -0.25,
+              "lowerWall": true,
+              "openingClear": true,
+              "upperWall": true,
+              "glassPresent": true
+            },
+            {
+              "offset": 0,
+              "lowerWall": true,
+              "openingClear": true,
+              "upperWall": true,
+              "glassPresent": true
+            },
+            {
+              "offset": 0.25,
+              "lowerWall": true,
+              "openingClear": true,
+              "upperWall": true,
+              "glassPresent": true
+            }
+          ]
+        }
+      ],
+      "valid": true
+    },
+    {
+      "index": 6,
+      "x": 4.872985340997871,
+      "z": 3.0001268930301355,
+      "onExteriorWall": true,
+      "kind": "bay",
+      "wallFootprint": {
+        "x0": 4.755135190616681,
+        "x1": 4.990835491379061,
+        "y0": 1.622854355850088,
+        "y1": 4.377399430210183
+      },
+      "glassLength": 2.7545450743600948,
+      "footprintLength": 2.7545450743600943,
+      "alongLengthDelta": -4.440892098500626e-16,
+      "alongCenterDelta": 0,
+      "samples": [
+        {
+          "offset": -0.25,
+          "lowerWall": true,
+          "openingClear": true,
+          "upperWall": true,
+          "glassPresent": true
+        },
+        {
+          "offset": 0,
+          "lowerWall": true,
+          "openingClear": true,
+          "upperWall": true,
+          "glassPresent": true
+        },
+        {
+          "offset": 0.25,
+          "lowerWall": true,
+          "openingClear": true,
+          "upperWall": true,
+          "glassPresent": true
+        }
+      ],
+      "panels": [
+        {
+          "horizontal": false,
+          "wallFootprint": {
+            "x0": 4.755135190616681,
+            "x1": 4.990835491379061,
+            "y0": 1.622854355850088,
+            "y1": 4.377399430210183
+          },
+          "samples": [
+            {
+              "offset": -0.25,
+              "lowerWall": true,
+              "openingClear": true,
+              "upperWall": true,
+              "glassPresent": true
+            },
+            {
+              "offset": 0,
+              "lowerWall": true,
+              "openingClear": true,
+              "upperWall": true,
+              "glassPresent": true
+            },
+            {
+              "offset": 0.25,
+              "lowerWall": true,
+              "openingClear": true,
+              "upperWall": true,
+              "glassPresent": true
+            }
+          ]
+        },
+        {
+          "horizontal": true,
+          "wallFootprint": {
+            "x0": 4.106959363520136,
+            "x1": 4.872985340997871,
+            "y0": 1.505004205468898,
+            "y1": 1.7407045062312783
+          },
+          "samples": [
+            {
+              "offset": -0.25,
+              "lowerWall": true,
+              "openingClear": true,
+              "upperWall": true,
+              "glassPresent": true
+            },
+            {
+              "offset": 0,
+              "lowerWall": true,
+              "openingClear": true,
+              "upperWall": true,
+              "glassPresent": true
+            },
+            {
+              "offset": 0.25,
+              "lowerWall": true,
+              "openingClear": true,
+              "upperWall": true,
+              "glassPresent": true
+            }
+          ]
+        },
+        {
+          "horizontal": true,
+          "wallFootprint": {
+            "x0": 4.106959363520136,
+            "x1": 4.872985340997871,
+            "y0": 4.259549279828993,
+            "y1": 4.4952495805913735
+          },
+          "samples": [
+            {
+              "offset": -0.25,
+              "lowerWall": true,
+              "openingClear": true,
+              "upperWall": true,
+              "glassPresent": true
+            },
+            {
+              "offset": 0,
+              "lowerWall": true,
+              "openingClear": true,
+              "upperWall": true,
+              "glassPresent": true
+            },
+            {
+              "offset": 0.25,
+              "lowerWall": true,
+              "openingClear": true,
+              "upperWall": true,
+              "glassPresent": true
+            }
+          ]
+        }
+      ],
+      "valid": true
+    },
+    {
+      "index": 7,
+      "x": -4.593870953276963,
+      "z": -4.390975229713522,
+      "onExteriorWall": true,
+      "kind": "flat",
+      "wallFootprint": {
+        "x0": -4.878677319078979,
+        "x1": -4.309064587474947,
+        "y0": -4.516191014493536,
+        "y1": -4.265759444933507
+      },
+      "glassLength": 0.5696127316040313,
+      "footprintLength": 0.5696127316040318,
+      "alongLengthDelta": 5.551115123125783e-16,
+      "alongCenterDelta": 0,
+      "samples": [
+        {
+          "offset": -0.25,
+          "lowerWall": true,
+          "openingClear": true,
+          "upperWall": true,
+          "glassPresent": true
+        },
+        {
+          "offset": 0,
+          "lowerWall": true,
+          "openingClear": true,
+          "upperWall": true,
+          "glassPresent": true
+        },
+        {
+          "offset": 0.25,
+          "lowerWall": true,
+          "openingClear": true,
+          "upperWall": true,
+          "glassPresent": true
+        }
+      ],
+      "panels": [
+        {
+          "horizontal": true,
+          "wallFootprint": {
+            "x0": -4.878677319078979,
+            "x1": -4.309064587474947,
+            "y0": -4.516191014493536,
+            "y1": -4.265759444933507
+          },
+          "samples": [
+            {
+              "offset": -0.25,
+              "lowerWall": true,
+              "openingClear": true,
+              "upperWall": true,
+              "glassPresent": true
+            },
+            {
+              "offset": 0,
+              "lowerWall": true,
+              "openingClear": true,
+              "upperWall": true,
+              "glassPresent": true
+            },
+            {
+              "offset": 0.25,
+              "lowerWall": true,
+              "openingClear": true,
+              "upperWall": true,
+              "glassPresent": true
+            }
+          ]
+        }
+      ],
+      "valid": true
+    },
+    {
+      "index": 8,
+      "x": 4.872985340997871,
+      "z": -2.9460986779410647,
+      "onExteriorWall": true,
+      "kind": "flat",
+      "wallFootprint": {
+        "x0": 4.755135190616681,
+        "x1": 4.990835491379061,
+        "y0": -4.470784998497711,
+        "y1": -1.4214123573844177
+      },
+      "glassLength": 3.049372641113294,
+      "footprintLength": 3.0493726411132935,
+      "alongLengthDelta": -4.440892098500626e-16,
+      "alongCenterDelta": 4.440892098500626e-16,
+      "samples": [
+        {
+          "offset": -0.25,
+          "lowerWall": true,
+          "openingClear": true,
+          "upperWall": true,
+          "glassPresent": true
+        },
+        {
+          "offset": 0,
+          "lowerWall": true,
+          "openingClear": true,
+          "upperWall": true,
+          "glassPresent": true
+        },
+        {
+          "offset": 0.25,
+          "lowerWall": true,
+          "openingClear": true,
+          "upperWall": true,
+          "glassPresent": true
+        }
+      ],
+      "panels": [
+        {
+          "horizontal": false,
+          "wallFootprint": {
+            "x0": 4.755135190616681,
+            "x1": 4.990835491379061,
+            "y0": -4.470784998497711,
+            "y1": -1.4214123573844177
+          },
+          "samples": [
+            {
+              "offset": -0.25,
+              "lowerWall": true,
+              "openingClear": true,
+              "upperWall": true,
+              "glassPresent": true
+            },
+            {
+              "offset": 0,
+              "lowerWall": true,
+              "openingClear": true,
+              "upperWall": true,
+              "glassPresent": true
+            },
+            {
+              "offset": 0.25,
+              "lowerWall": true,
+              "openingClear": true,
+              "upperWall": true,
+              "glassPresent": true
+            }
+          ]
+        }
+      ],
+      "valid": true
+    },
+    {
+      "index": 9,
+      "x": 4.798462451786237,
+      "z": -1.0690741158437251,
+      "onExteriorWall": true,
+      "kind": "flat",
+      "wallFootprint": {
+        "x0": 4.680612301405047,
+        "x1": 4.916312602167427,
+        "y0": -1.1869242662249153,
+        "y1": -0.9512239654625351
+      },
+      "glassLength": 0.23570030076238022,
+      "footprintLength": 0.2357003007623799,
+      "alongLengthDelta": -3.0531133177191805e-16,
+      "alongCenterDelta": 0,
+      "samples": [
+        {
+          "offset": -0.25,
+          "lowerWall": true,
+          "openingClear": true,
+          "upperWall": true,
+          "glassPresent": true
+        },
+        {
+          "offset": 0,
+          "lowerWall": true,
+          "openingClear": true,
+          "upperWall": true,
+          "glassPresent": true
+        },
+        {
+          "offset": 0.25,
+          "lowerWall": true,
+          "openingClear": true,
+          "upperWall": true,
+          "glassPresent": true
+        }
+      ],
+      "panels": [
+        {
+          "horizontal": true,
+          "wallFootprint": {
+            "x0": 4.680612301405047,
+            "x1": 4.916312602167427,
+            "y0": -1.1869242662249153,
+            "y1": -0.9512239654625351
+          },
+          "samples": [
+            {
+              "offset": -0.25,
+              "lowerWall": true,
+              "openingClear": true,
+              "upperWall": true,
+              "glassPresent": true
+            },
+            {
+              "offset": 0,
+              "lowerWall": true,
+              "openingClear": true,
+              "upperWall": true,
+              "glassPresent": true
+            },
+            {
+              "offset": 0.25,
+              "lowerWall": true,
+              "openingClear": true,
+              "upperWall": true,
+              "glassPresent": true
+            }
+          ]
+        }
+      ],
+      "valid": true
+    },
+    {
+      "index": 10,
+      "x": 2.5038130243673153,
+      "z": 4.410957876881614,
+      "onExteriorWall": true,
+      "kind": "flat",
+      "wallFootprint": {
+        "x0": 2.3859628739861254,
+        "x1": 2.6216631747485053,
+        "y0": 4.293107726500424,
+        "y1": 4.528808027262805
+      },
+      "glassLength": 0.23570030076238022,
+      "footprintLength": 0.2357003007623799,
+      "alongLengthDelta": -3.0531133177191805e-16,
+      "alongCenterDelta": 0,
+      "samples": [
+        {
+          "offset": -0.25,
+          "lowerWall": true,
+          "openingClear": true,
+          "upperWall": true,
+          "glassPresent": true
+        },
+        {
+          "offset": 0,
+          "lowerWall": true,
+          "openingClear": true,
+          "upperWall": true,
+          "glassPresent": true
+        },
+        {
+          "offset": 0.25,
+          "lowerWall": true,
+          "openingClear": true,
+          "upperWall": true,
+          "glassPresent": true
+        }
+      ],
+      "panels": [
+        {
+          "horizontal": true,
+          "wallFootprint": {
+            "x0": 2.3859628739861254,
+            "x1": 2.6216631747485053,
+            "y0": 4.293107726500424,
+            "y1": 4.528808027262805
+          },
+          "samples": [
+            {
+              "offset": -0.25,
+              "lowerWall": true,
+              "openingClear": true,
+              "upperWall": true,
+              "glassPresent": true
+            },
+            {
+              "offset": 0,
+              "lowerWall": true,
+              "openingClear": true,
+              "upperWall": true,
+              "glassPresent": true
+            },
+            {
+              "offset": 0.25,
+              "lowerWall": true,
+              "openingClear": true,
+              "upperWall": true,
+              "glassPresent": true
+            }
+          ]
+        }
+      ],
+      "valid": true
+    },
+    {
+      "index": 11,
+      "x": 3.225679053951544,
+      "z": 4.4256891456792635,
+      "onExteriorWall": true,
+      "kind": "flat",
+      "wallFootprint": {
+        "x0": 2.7911066244209057,
+        "x1": 3.6602514834821824,
+        "y0": 4.322570264095722,
+        "y1": 4.528808027262805
+      },
+      "glassLength": 0.869144859061277,
+      "footprintLength": 0.8691448590612767,
+      "alongLengthDelta": -3.3306690738754696e-16,
+      "alongCenterDelta": 0,
+      "samples": [
+        {
+          "offset": -0.25,
+          "lowerWall": true,
+          "openingClear": true,
+          "upperWall": true,
+          "glassPresent": true
+        },
+        {
+          "offset": 0,
+          "lowerWall": true,
+          "openingClear": true,
+          "upperWall": true,
+          "glassPresent": true
+        },
+        {
+          "offset": 0.25,
+          "lowerWall": true,
+          "openingClear": true,
+          "upperWall": true,
+          "glassPresent": true
+        }
+      ],
+      "panels": [
+        {
+          "horizontal": true,
+          "wallFootprint": {
+            "x0": 2.7911066244209057,
+            "x1": 3.6602514834821824,
+            "y0": 4.322570264095722,
+            "y1": 4.528808027262805
+          },
+          "samples": [
+            {
+              "offset": -0.25,
+              "lowerWall": true,
+              "openingClear": true,
+              "upperWall": true,
+              "glassPresent": true
+            },
+            {
+              "offset": 0,
+              "lowerWall": true,
+              "openingClear": true,
+              "upperWall": true,
+              "glassPresent": true
+            },
+            {
+              "offset": 0.25,
+              "lowerWall": true,
+              "openingClear": true,
+              "upperWall": true,
+              "glassPresent": true
+            }
+          ]
+        }
+      ],
+      "valid": true
+    }
+  ],
+  "windowsAllValid": false,
+  "bayWindows": [
+    {
+      "index": 2,
+      "x": 4.372122201877813,
+      "z": 0.1914415511158767,
+      "frontLength": 1.725841778006035,
+      "totalGlassLength": 3.0663872385920734,
+      "side": "right",
+      "panels": [
+        {
+          "horizontal": false,
+          "x": 4.372122201877813,
+          "z": 0.19144155111587674,
+          "w": 0.2357003007623799,
+          "d": 1.725841778006035,
+          "wallFootprint": {
+            "x0": 4.254272051496623,
+            "x1": 4.489972352259003,
+            "y0": -0.6714793378871408,
+            "y1": 1.0543624401188942
+          }
+        },
+        {
+          "horizontal": true,
+          "x": 4.036985836731303,
+          "z": -0.6714793378871409,
+          "w": 0.6702727302930191,
+          "d": 0.23570030076238024,
+          "wallFootprint": {
+            "x0": 3.701849471584794,
+            "x1": 4.372122201877813,
+            "y0": -0.7893294882683309,
+            "y1": -0.5536291875059507
+          }
+        },
+        {
+          "horizontal": true,
+          "x": 4.036985836731303,
+          "z": 1.0543624401188942,
+          "w": 0.6702727302930191,
+          "d": 0.23570030076238024,
+          "wallFootprint": {
+            "x0": 3.701849471584794,
+            "x1": 4.372122201877813,
+            "y0": 0.9365122897377042,
+            "y1": 1.1722125905000844
+          }
+        }
+      ],
+      "seatFootprint": {
+        "x0": 3.701849471584794,
+        "x1": 4.489972352259003,
+        "y0": -0.7893294882683309,
+        "y1": 1.1722125905000844
+      },
+      "sourceBox": {
+        "x": 663.0694961547852,
+        "y": 354.98985290527344,
+        "w": 39.82109069824219,
+        "h": 117.15499877929688,
+        "cls": "window",
+        "score": 0.6589184999465942,
+        "cx": 682.9800415039062,
+        "cy": 413.5673522949219,
+        "area": 4665.239832142834,
+        "horizontal": false
+      }
+    },
+    {
+      "index": 6,
+      "x": 4.872985340997871,
+      "z": 3.0001268930301355,
+      "frontLength": 2.7545450743600948,
+      "totalGlassLength": 4.286597029315565,
+      "side": "right",
+      "panels": [
+        {
+          "horizontal": false,
+          "x": 4.872985340997871,
+          "z": 3.0001268930301355,
+          "w": 0.2357003007623799,
+          "d": 2.7545450743600943,
+          "wallFootprint": {
+            "x0": 4.755135190616681,
+            "x1": 4.990835491379061,
+            "y0": 1.622854355850088,
+            "y1": 4.377399430210183
+          }
+        },
+        {
+          "horizontal": true,
+          "x": 4.489972352259003,
+          "z": 1.622854355850088,
+          "w": 0.7660259774777352,
+          "d": 0.23570030076238035,
+          "wallFootprint": {
+            "x0": 4.106959363520136,
+            "x1": 4.872985340997871,
+            "y0": 1.505004205468898,
+            "y1": 1.7407045062312783
+          }
+        },
+        {
+          "horizontal": true,
+          "x": 4.489972352259003,
+          "z": 4.377399430210183,
+          "w": 0.7660259774777352,
+          "d": 0.2357003007623808,
+          "wallFootprint": {
+            "x0": 4.106959363520136,
+            "x1": 4.872985340997871,
+            "y0": 4.259549279828993,
+            "y1": 4.4952495805913735
+          }
+        }
+      ],
+      "seatFootprint": {
+        "x0": 4.106959363520136,
+        "x1": 4.990835491379061,
+        "y0": 1.505004205468898,
+        "y1": 4.4952495805913735
+      },
+      "sourceBox": {
+        "x": 684.606819152832,
+        "y": 510.7356834411621,
+        "w": 49.63218688964844,
+        "h": 186.98627471923828,
+        "cls": "window",
+        "score": 0.47956404089927673,
+        "cx": 709.4229125976562,
+        "cy": 604.2288208007812,
+        "area": 9280.53773266438,
+        "horizontal": false
+      }
+    }
+  ],
+  "bayFloorAudit": [
+    {
+      "index": 2,
+      "overlaps": [
+        {
+          "room": "空間1",
+          "area": 0
+        },
+        {
+          "room": "空間2",
+          "area": 0
+        },
+        {
+          "room": "空間3",
+          "area": 0
+        },
+        {
+          "room": "空間4",
+          "area": 0
+        },
+        {
+          "room": "空間5",
+          "area": 0
+        },
+        {
+          "room": "空間6",
+          "area": 0
+        },
+        {
+          "room": "空間7",
+          "area": 0
+        },
+        {
+          "room": "空間8",
+          "area": 0
+        },
+        {
+          "room": "空間9",
+          "area": 0
+        }
+      ]
+    },
+    {
+      "index": 6,
+      "overlaps": [
+        {
+          "room": "空間1",
+          "area": 0
+        },
+        {
+          "room": "空間2",
+          "area": 0.000008726337200393175
+        },
+        {
+          "room": "空間3",
+          "area": 0
+        },
+        {
+          "room": "空間4",
+          "area": 0
+        },
+        {
+          "room": "空間5",
+          "area": 0
+        },
+        {
+          "room": "空間6",
+          "area": 0
+        },
+        {
+          "room": "空間7",
+          "area": 0
+        },
+        {
+          "room": "空間8",
+          "area": 0
+        },
+        {
+          "room": "空間9",
+          "area": 0
+        }
+      ]
+    }
+  ],
+  "noExposedBayFloors": true,
+  "edges": {
+    "edges": 104,
+    "under3": 1,
+    "under6": 1,
+    "under8": 3,
+    "under8Ratio": 0.028846153846153848,
+    "under10": 9,
+    "min": 2,
+    "median": 27.0265122205019,
+    "max": 678.7591831833124
+  },
+  "contoursRaw": [
+    {
+      "outer": [
+        [
+          739.5531421005726,
+          92.6082095503807
+        ],
+        [
+          739.5531421005726,
+          110.68674701452255
+        ],
+        [
+          656,
+          110.68674701452255
+        ],
+        [
+          656,
+          131.09999997913837
+        ],
+        [
+          641,
+          131.09999997913837
+        ],
+        [
+          641,
+          108
+        ],
+        [
+          187,
+          108
+        ],
+        [
+          187,
+          139.60352335870266
+        ],
+        [
+          170.43063285946846,
+          139.60352335870266
+        ],
+        [
+          170.43063285946846,
+          111.01682440936565
+        ],
+        [
+          77.84351654350758,
+          111.01682440936565
+        ],
+        [
+          77.84351654350758,
+          225.67022416421844
+        ],
+        [
+          60.79395891726017,
+          225.67022416421844
+        ],
+        [
+          60.79395891726017,
+          92.6082095503807
+        ]
+      ],
+      "holes": []
+    },
+    {
+      "outer": [
+        [
+          109.71221589144778,
+          284.1656251940743
+        ],
+        [
+          107.93418989804658,
+          303.7239111214876
+        ],
+        [
+          60.966248229146004,
+          303.7239111214876
+        ],
+        [
+          60.966248229146004,
+          284.1656251940743
+        ]
+      ],
+      "holes": []
+    },
+    {
+      "outer": [
+        [
+          172.69117645919323,
+          280
+        ],
+        [
+          187,
+          280
+        ],
+        [
+          187,
+          288.6000000089407
+        ],
+        [
+          228,
+          288.6000000089407
+        ],
+        [
+          228,
+          305.774558365345
+        ],
+        [
+          187.4607773763793,
+          305.774558365345
+        ],
+        [
+          186.05482000751155,
+          315.61625994741917
+        ],
+        [
+          172.69117645919323,
+          315.61625994741917
+        ]
+      ],
+      "holes": []
+    },
+    {
+      "outer": [
+        [
+          642,
+          286
+        ],
+        [
+          656.0228997915983,
+          286
+        ],
+        [
+          656.0228997915983,
+          318.7528624739498
+        ],
+        [
+          666,
+          320
+        ],
+        [
+          666,
+          331.0999375283718
+        ],
+        [
+          655.9875078089535,
+          331.0999375283718
+        ],
+        [
+          654.6111993305385,
+          342.1104053556919
+        ],
+        [
+          644.9889594644308,
+          342.1104053556919
+        ],
+        [
+          644,
+          352
+        ],
+        [
+          642,
+          352
+        ],
+        [
+          642,
+          335.9955357142857
+        ],
+        [
+          417.10044642857144,
+          335.9955357142857
+        ],
+        [
+          416,
+          347
+        ],
+        [
+          409,
+          348
+        ],
+        [
+          409,
+          321.9490287601948
+        ],
+        [
+          642,
+          321.9490287601948
+        ]
+      ],
+      "holes": []
+    },
+    {
+      "outer": [
+        [
+          354.04944510757923,
+          287.23229099810123
+        ],
+        [
+          354.04944510757923,
+          446.87345249099394
+        ],
+        [
+          337.2283348739147,
+          446.8734524909939
+        ],
+        [
+          337.2283348739147,
+          403.6956254541874
+        ],
+        [
+          186.3267195242068,
+          403.6956254541874
+        ],
+        [
+          186.3267195242068,
+          425
+        ],
+        [
+          172.5655737221241,
+          425
+        ],
+        [
+          172.5655737221241,
+          363.15531435608864
+        ],
+        [
+          187.16666667163372,
+          363.15531435608864
+        ],
+        [
+          187.16666667163372,
+          390.18182657659054
+        ],
+        [
+          202.9254729708083,
+          390.18182657659054
+        ],
+        [
+          202.9254729708083,
+          378.18859336629015
+        ],
+        [
+          217.2583334594965,
+          376.8856060491367
+        ],
+        [
+          217.2583334594965,
+          394.2662057188364
+        ],
+        [
+          338.3508775830269,
+          394.2662057188364
+        ],
+        [
+          338.3508775830269,
+          304.72578577697277
+        ],
+        [
+          311,
+          304.72578577697277
+        ],
+        [
+          311,
+          287.23229099810123
+        ]
+      ],
+      "holes": []
+    },
+    {
+      "outer": [
+        [
+          739.622112646699,
+          294.74444457888603
+        ],
+        [
+          739.622112646699,
+          335.85511549413206
+        ],
+        [
+          707.8168141543865,
+          335.85511549413206
+        ],
+        [
+          707.8168141543865,
+          319
+        ],
+        [
+          723,
+          319
+        ],
+        [
+          723,
+          294.74444457888603
+        ]
+      ],
+      "holes": []
+    },
+    {
+      "outer": [
+        [
+          408,
+          391
+        ],
+        [
+          416,
+          392
+        ],
+        [
+          416,
+          497.6005930453539
+        ],
+        [
+          641.0406494289637,
+          497.6005930453539
+        ],
+        [
+          641.0406494289637,
+          473
+        ],
+        [
+          649.4493288551391,
+          473
+        ],
+        [
+          649.4493288551391,
+          500.2477308064699
+        ],
+        [
+          687.194696577059,
+          500.2477308064699
+        ],
+        [
+          685.6976773440838,
+          513.7209039032459
+        ],
+        [
+          408,
+          513.7209039032459
+        ]
+      ],
+      "holes": []
+    },
+    {
+      "outer": [
+        [
+          187.51428578794003,
+          471.73811735212803
+        ],
+        [
+          187.51428578794003,
+          503.12777212262154
+        ],
+        [
+          336.9297480052635,
+          503.12777212262154
+        ],
+        [
+          336.9297480052635,
+          492.14787514248115
+        ],
+        [
+          352,
+          492.14787514248115
+        ],
+        [
+          352,
+          520
+        ],
+        [
+          187.02293464541435,
+          520
+        ],
+        [
+          187.02293464541435,
+          692
+        ],
+        [
+          214,
+          692
+        ],
+        [
+          214,
+          707.9363187638623
+        ],
+        [
+          172.29788426987454,
+          707.9363187638623
+        ],
+        [
+          172.29788426987454,
+          471.73811735212803
+        ]
+      ],
+      "holes": []
+    },
+    {
+      "outer": [
+        [
+          416,
+          565.72220300138
+        ],
+        [
+          416,
+          577
+        ],
+        [
+          352.8053723871708,
+          577
+        ],
+        [
+          352.8053723871708,
+          708.0105311721563
+        ],
+        [
+          305.68709018826485,
+          708.0105311721563
+        ],
+        [
+          305.68709018826485,
+          691.9809141614371
+        ],
+        [
+          341.00857611443286,
+          691.9809141614371
+        ],
+        [
+          341.00857611443286,
+          565.72220300138
+        ]
+      ],
+      "holes": []
+    },
+    {
+      "outer": [
+        [
+          454.19883720576763,
+          565.866472867628
+        ],
+        [
+          461.9887021034956,
+          567.164783683916
+        ],
+        [
+          461.9887021034956,
+          692.557777688002
+        ],
+        [
+          687,
+          692.557777688002
+        ],
+        [
+          687,
+          708.5353121012449
+        ],
+        [
+          400.37099945687464,
+          708.5353121012449
+        ],
+        [
+          400.37099945687464,
+          692
+        ],
+        [
+          454.19883720576763,
+          692
+        ]
+      ],
+      "holes": []
+    }
+  ],
+  "selection": {
+    "contours": {
+      "raw": 10,
+      "kept": 10,
+      "rejected": [],
+      "orthogonalize": true,
+      "postprocessing": {
+        "medianThickness": 16,
+        "areaThreshold": 256,
+        "removed": [
+          {
+            "index": 1,
+            "area": 202,
+            "threshold": 256,
+            "bounds": [
+              170,
+              209,
+              187,
+              222
+            ]
+          },
+          {
+            "index": 8,
+            "area": 91,
+            "threshold": 256,
+            "bounds": [
+              177,
+              445,
+              187,
+              461
+            ]
+          },
+          {
+            "index": 12,
+            "area": 6,
+            "threshold": 256,
+            "bounds": [
+              248,
+              619,
+              250,
+              622
+            ]
+          }
+        ],
+        "filledHoles": [
+          {
+            "index": 4,
+            "hole": 0,
+            "area": 2,
+            "threshold": 256
+          }
+        ],
+        "mergeCollinear": true,
+        "fitApplied": true,
+        "baselineVertices": 317,
+        "fitFidelity": {
+          "before": {
+            "precision": 0.9850981077655901,
+            "recall": 0.9417023498694517,
+            "extraPixels": 682,
+            "missedPixels": 2791
+          },
+          "after": {
+            "precision": 0.9497046378147388,
+            "recall": 0.9469869451697128,
+            "extraPixels": 2401,
+            "missedPixels": 2538
+          }
+        }
+      }
+    },
+    "rooms": {
+      "candidates": 10,
+      "insideHouse": 10,
+      "merged": [],
+      "bayFloorChanges": [
+        {
+          "windowIndex": 6,
+          "index": 1,
+          "bbox": [
+            412,
+            498,
+            686,
+            705
+          ],
+          "areaBefore": 46509,
+          "areaAfter": 46458.180052790354,
+          "action": "裁去飘窗窗台范围内的地板"
+        },
+        {
+          "windowIndex": 6,
+          "index": 9,
+          "bbox": [
+            678,
+            525,
+            724,
+            676
+          ],
+          "areaBefore": 6413,
+          "areaAfter": 0,
+          "action": "排除被当作独立房间的飘窗地板"
+        }
+      ],
+      "removedBelowMinimum": [],
+      "kept": 9
+    },
+    "windows": {
+      "raw": 11,
+      "kept": 12,
+      "checks": [
+        {
+          "index": 0,
+          "box": {
+            "x": 355.1788330078125,
+            "y": 694.6118927001953,
+            "w": 46.74659729003906,
+            "h": 11.5423583984375,
+            "cls": "window",
+            "score": 0.7378361225128174,
+            "cx": 378.55213165283203,
+            "cy": 700.3830718994141,
+            "area": 539.565979829058,
+            "horizontal": true
+          },
+          "onExteriorWall": true,
+          "nearestWall": {
+            "distance": 1.3830718994140625,
+            "thickness": 8,
+            "ratio": 0.1728839874267578,
+            "centerLine": 699,
+            "bbox": {
+              "x0": 398,
+              "y0": 695,
+              "x1": 686,
+              "y1": 702
+            }
+          },
+          "aspectRatio": 4.050003965945746,
+          "withinWallDistance": true,
+          "valid": true,
+          "endA": true,
+          "endB": true,
+          "outsideSide": 1,
+          "sideA": 0,
+          "sideB": 5,
+          "footprint": {
+            "x0": 355.1788330078125,
+            "x1": 401.92543029785156,
+            "y0": 694,
+            "y1": 703
+          }
+        },
+        {
+          "index": 1,
+          "box": {
+            "x": 174.61186408996582,
+            "y": 315.56697845458984,
+            "w": 10.965251922607422,
+            "h": 47.32368469238281,
+            "cls": "window",
+            "score": 0.679733395576477,
+            "cx": 180.09449005126953,
+            "cy": 339.22882080078125,
+            "area": 518.916124558018,
+            "horizontal": false
+          },
+          "onExteriorWall": true,
+          "nearestWall": {
+            "distance": 1.4055099487304688,
+            "thickness": 19,
+            "ratio": 0.07397420782791941,
+            "centerLine": 181.5,
+            "bbox": {
+              "x0": 172,
+              "y0": 364,
+              "x1": 190,
+              "y1": 383
+            }
+          },
+          "aspectRatio": 4.3157863609876586,
+          "withinWallDistance": true,
+          "valid": true,
+          "endA": true,
+          "endB": true,
+          "outsideSide": -1,
+          "sideA": 5,
+          "sideB": 0,
+          "footprint": {
+            "x0": 177,
+            "x1": 186,
+            "y0": 315.56697845458984,
+            "y1": 362.89066314697266
+          }
+        },
+        {
+          "index": 2,
+          "box": {
+            "x": 663.0694961547852,
+            "y": 354.98985290527344,
+            "w": 39.82109069824219,
+            "h": 117.15499877929688,
+            "cls": "window",
+            "score": 0.6589184999465942,
+            "cx": 682.9800415039062,
+            "cy": 413.5673522949219,
+            "area": 4665.239832142834,
+            "horizontal": false
+          },
+          "onExteriorWall": true,
+          "nearestWall": {
+            "distance": 36.98004150390625,
+            "thickness": 14,
+            "ratio": 2.6414315359933034,
+            "centerLine": 646,
+            "bbox": {
+              "x0": 639,
+              "y0": 475,
+              "x1": 652,
+              "y1": 497
+            }
+          },
+          "aspectRatio": 2.942033900253476,
+          "withinWallDistance": true,
+          "valid": true,
+          "endA": true,
+          "endB": true,
+          "outsideSide": 1,
+          "footprint": {
+            "x0": 689,
+            "y0": 354.98985290527344,
+            "x1": 705,
+            "y1": 472.1448516845703
+          },
+          "bay": {
+            "side": "right",
+            "rootLine": 651.5,
+            "frontLine": 697,
+            "projection": 45.5,
+            "thickness": 16,
+            "panels": [
+              {
+                "horizontal": false,
+                "footprint": {
+                  "x0": 689,
+                  "y0": 354.98985290527344,
+                  "x1": 705,
+                  "y1": 472.1448516845703
+                }
+              },
+              {
+                "horizontal": true,
+                "footprint": {
+                  "x0": 651.5,
+                  "y0": 346.98985290527344,
+                  "x1": 697,
+                  "y1": 362.98985290527344
+                }
+              },
+              {
+                "horizontal": true,
+                "footprint": {
+                  "x0": 651.5,
+                  "y0": 464.1448516845703,
+                  "x1": 697,
+                  "y1": 480.1448516845703
+                }
+              }
+            ],
+            "seatFootprint": {
+              "x0": 651.5,
+              "y0": 346.98985290527344,
+              "x1": 705,
+              "y1": 480.1448516845703
+            },
+            "floorClip": {
+              "x0": 651.5,
+              "y0": 346.98985290527344,
+              "x1": 800,
+              "y1": 480.1448516845703
+            },
+            "evidence": [
+              {
+                "fraction": 0.15,
+                "root": {
+                  "center": 654.5,
+                  "thickness": 13
+                },
+                "front": {
+                  "center": 697,
+                  "thickness": 16
+                },
+                "floorPixels": 28
+              },
+              {
+                "fraction": 0.275,
+                "root": {
+                  "center": 651.5,
+                  "thickness": 7
+                },
+                "front": {
+                  "center": 698.5,
+                  "thickness": 13
+                },
+                "floorPixels": 34
+              },
+              {
+                "fraction": 0.725,
+                "root": {
+                  "center": 651.5,
+                  "thickness": 19
+                },
+                "front": {
+                  "center": 697,
+                  "thickness": 16
+                },
+                "floorPixels": 28
+              }
+            ],
+            "capSupport": {
+              "endA": 1,
+              "endB": 1
+            }
+          }
+        },
+        {
+          "index": 3,
+          "box": {
+            "x": 212.48225212097168,
+            "y": 693.4576797485352,
+            "w": 93.49313735961914,
+            "h": 15.582199096679688,
+            "cls": "window",
+            "score": 0.6589184999465942,
+            "cx": 259.22882080078125,
+            "cy": 701.248779296875,
+            "area": 1456.8286805108073,
+            "horizontal": true
+          },
+          "onExteriorWall": true,
+          "nearestWall": {
+            "distance": 2.248779296875,
+            "thickness": 14,
+            "ratio": 0.16062709263392858,
+            "centerLine": 699,
+            "bbox": {
+              "x0": 173,
+              "y0": 692,
+              "x1": 213,
+              "y1": 705
+            }
+          },
+          "aspectRatio": 5.999996327831609,
+          "withinWallDistance": true,
+          "valid": true,
+          "endA": true,
+          "endB": true,
+          "outsideSide": 1,
+          "sideA": 0,
+          "sideB": 5,
+          "footprint": {
+            "x0": 212.48225212097168,
+            "x1": 305.9753894805908,
+            "y0": 692,
+            "y1": 702
+          }
+        },
+        {
+          "index": 4,
+          "box": {
+            "x": 170.96017837524414,
+            "y": 423.4576416015625,
+            "w": 14.427947998046875,
+            "h": 54.249114990234375,
+            "cls": "window",
+            "score": 0.6374723315238953,
+            "cx": 178.17415237426758,
+            "cy": 450.5821990966797,
+            "area": 782.7034100191668,
+            "horizontal": false
+          },
+          "onExteriorWall": true,
+          "nearestWall": {
+            "distance": 1.3258476257324219,
+            "thickness": 19,
+            "ratio": 0.06978145398591694,
+            "centerLine": 179.5,
+            "bbox": {
+              "x0": 170,
+              "y0": 473,
+              "x1": 188,
+              "y1": 502
+            }
+          },
+          "aspectRatio": 3.7600021151710643,
+          "withinWallDistance": true,
+          "valid": true,
+          "endA": true,
+          "endB": true,
+          "outsideSide": -1,
+          "sideA": 5,
+          "sideB": 0,
+          "footprint": {
+            "x0": 175,
+            "x1": 184,
+            "y0": 423.4576416015625,
+            "y1": 477.7067565917969
+          }
+        },
+        {
+          "index": 5,
+          "box": {
+            "x": 664.0347671508789,
+            "y": 322.88049697875977,
+            "w": 44.43809509277344,
+            "h": 13.850822448730469,
+            "cls": "window",
+            "score": 0.5929739475250244,
+            "cx": 686.2538146972656,
+            "cy": 329.805908203125,
+            "area": 615.5041650898056,
+            "horizontal": true
+          },
+          "onExteriorWall": true,
+          "nearestWall": {
+            "distance": 0.305908203125,
+            "thickness": 9,
+            "ratio": 0.033989800347222224,
+            "centerLine": 329.5,
+            "bbox": {
+              "x0": 708,
+              "y0": 325,
+              "x1": 740,
+              "y1": 333
+            }
+          },
+          "aspectRatio": 3.2083362022192783,
+          "withinWallDistance": true,
+          "valid": true,
+          "endA": true,
+          "endB": true,
+          "outsideSide": 1,
+          "sideA": 0,
+          "sideB": 5,
+          "footprint": {
+            "x0": 664.0347671508789,
+            "x1": 708.4728622436523,
+            "y0": 320,
+            "y1": 330
+          }
+        },
+        {
+          "index": 6,
+          "box": {
+            "x": 226.52207374572754,
+            "y": 289.2288303375244,
+            "w": 85.41349411010742,
+            "h": 13.850841522216797,
+            "cls": "window",
+            "score": 0.5,
+            "cx": 269.22882080078125,
+            "cy": 296.1542510986328,
+            "area": 1183.0487707778957,
+            "horizontal": true
+          },
+          "onExteriorWall": false,
+          "nearestWall": {
+            "distance": 1.6542510986328125,
+            "thickness": 11,
+            "ratio": 0.15038646351207385,
+            "centerLine": 294.5,
+            "bbox": {
+              "x0": 309,
+              "y0": 289,
+              "x1": 354,
+              "y1": 299
+            }
+          },
+          "aspectRatio": 6.166664601071631,
+          "withinWallDistance": true,
+          "valid": false,
+          "reason": "没有可验证的室内/屋外两侧",
+          "endA": true,
+          "endB": true,
+          "sideA": 0,
+          "sideB": 0
+        },
+        {
+          "index": 7,
+          "box": {
+            "x": 684.606819152832,
+            "y": 510.7356834411621,
+            "w": 49.63218688964844,
+            "h": 186.98627471923828,
+            "cls": "window",
+            "score": 0.47956404089927673,
+            "cx": 709.4229125976562,
+            "cy": 604.2288208007812,
+            "area": 9280.53773266438,
+            "horizontal": false
+          },
+          "onExteriorWall": true,
+          "nearestWall": {
+            "distance": 63.42291259765625,
+            "thickness": 14,
+            "ratio": 4.530208042689732,
+            "centerLine": 646,
+            "bbox": {
+              "x0": 639,
+              "y0": 475,
+              "x1": 652,
+              "y1": 497
+            }
+          },
+          "aspectRatio": 3.7674397691760215,
+          "withinWallDistance": true,
+          "valid": true,
+          "endA": true,
+          "endB": true,
+          "outsideSide": 1,
+          "footprint": {
+            "x0": 723,
+            "y0": 510.7356834411621,
+            "x1": 739,
+            "y1": 697.7219581604004
+          },
+          "bay": {
+            "side": "right",
+            "rootLine": 679,
+            "frontLine": 731,
+            "projection": 52,
+            "thickness": 16,
+            "panels": [
+              {
+                "horizontal": false,
+                "footprint": {
+                  "x0": 723,
+                  "y0": 510.7356834411621,
+                  "x1": 739,
+                  "y1": 697.7219581604004
+                }
+              },
+              {
+                "horizontal": true,
+                "footprint": {
+                  "x0": 679,
+                  "y0": 502.7356834411621,
+                  "x1": 731,
+                  "y1": 518.7356834411621
+                }
+              },
+              {
+                "horizontal": true,
+                "footprint": {
+                  "x0": 679,
+                  "y0": 689.7219581604004,
+                  "x1": 731,
+                  "y1": 705.7219581604004
+                }
+              }
+            ],
+            "seatFootprint": {
+              "x0": 679,
+              "y0": 502.7356834411621,
+              "x1": 739,
+              "y1": 705.7219581604004
+            },
+            "floorClip": {
+              "x0": 679,
+              "y0": 502.7356834411621,
+              "x1": 800,
+              "y1": 705.7219581604004
+            },
+            "evidence": [
+              {
+                "fraction": 0.85,
+                "root": {
+                  "center": 685.5,
+                  "thickness": 17
+                },
+                "front": {
+                  "center": 729.5,
+                  "thickness": 15
+                },
+                "floorPixels": 28
+              },
+              {
+                "fraction": 0.15,
+                "root": {
+                  "center": 679,
+                  "thickness": 14
+                },
+                "front": {
+                  "center": 731,
+                  "thickness": 16
+                },
+                "floorPixels": 44,
+                "rootSource": "两端墙垛"
+              },
+              {
+                "fraction": 0.275,
+                "root": {
+                  "center": 679,
+                  "thickness": 14
+                },
+                "front": {
+                  "center": 731,
+                  "thickness": 16
+                },
+                "floorPixels": 44,
+                "rootSource": "两端墙垛"
+              },
+              {
+                "fraction": 0.4,
+                "root": {
+                  "center": 679,
+                  "thickness": 14
+                },
+                "front": {
+                  "center": 731,
+                  "thickness": 16
+                },
+                "floorPixels": 44,
+                "rootSource": "两端墙垛"
+              },
+              {
+                "fraction": 0.5,
+                "root": {
+                  "center": 679,
+                  "thickness": 14
+                },
+                "front": {
+                  "center": 732,
+                  "thickness": 18
+                },
+                "floorPixels": 44,
+                "rootSource": "两端墙垛"
+              },
+              {
+                "fraction": 0.6,
+                "root": {
+                  "center": 679,
+                  "thickness": 14
+                },
+                "front": {
+                  "center": 731,
+                  "thickness": 16
+                },
+                "floorPixels": 44,
+                "rootSource": "两端墙垛"
+              },
+              {
+                "fraction": 0.725,
+                "root": {
+                  "center": 679,
+                  "thickness": 14
+                },
+                "front": {
+                  "center": 730,
+                  "thickness": 14
+                },
+                "floorPixels": 44,
+                "rootSource": "两端墙垛"
+              },
+              {
+                "fraction": 0.85,
+                "root": {
+                  "center": 679,
+                  "thickness": 14
+                },
+                "front": {
+                  "center": 729.5,
+                  "thickness": 15
+                },
+                "floorPixels": 28,
+                "rootSource": "两端墙垛"
+              }
+            ],
+            "capSupport": {
+              "endA": 1,
+              "endB": 1
+            }
+          }
+        },
+        {
+          "index": 8,
+          "box": {
+            "x": 69.02968406677246,
+            "y": 80.96016883850098,
+            "w": 38.66691589355469,
+            "h": 8.079662322998047,
+            "cls": "window",
+            "score": 0.36252766847610474,
+            "cx": 88.3631420135498,
+            "cy": 85,
+            "area": 312.41562349168817,
+            "horizontal": true
+          },
+          "onExteriorWall": true,
+          "nearestWall": {
+            "distance": 16.5,
+            "thickness": 13,
+            "ratio": 1.2692307692307692,
+            "centerLine": 101.5,
+            "bbox": {
+              "x0": 59,
+              "y0": 95,
+              "x1": 740,
+              "y1": 107
+            }
+          },
+          "aspectRatio": 4.785709395737086,
+          "withinWallDistance": true,
+          "valid": true,
+          "endA": true,
+          "endB": true,
+          "outsideSide": -1,
+          "sideA": 5,
+          "sideB": 0,
+          "footprint": {
+            "x0": 69.02968406677246,
+            "x1": 107.69659996032715,
+            "y0": 94,
+            "y1": 111
+          }
+        },
+        {
+          "index": 9,
+          "box": {
+            "x": 188.4272003173828,
+            "y": 77.28310585021973,
+            "w": 229.69303131103516,
+            "h": 198.5286521911621,
+            "cls": "window",
+            "score": 0.3062109351158142,
+            "cx": 303.2737159729004,
+            "cy": 176.54743194580078,
+            "area": 45600.64792388221,
+            "horizontal": true
+          },
+          "onExteriorWall": false,
+          "nearestWall": {
+            "distance": 37.95256805419922,
+            "thickness": 11,
+            "ratio": 3.4502334594726562,
+            "centerLine": 214.5,
+            "bbox": {
+              "x0": 170,
+              "y0": 209,
+              "x1": 186,
+              "y1": 219
+            }
+          },
+          "aspectRatio": 1.156976732456054,
+          "withinWallDistance": true,
+          "valid": false,
+          "reason": "远墙候选长宽比小于 2，疑似方形大假框"
+        },
+        {
+          "index": 10,
+          "box": {
+            "x": 404.188232421875,
+            "y": 78.43734741210938,
+            "w": 245.85235595703125,
+            "h": 211.2252426147461,
+            "cls": "window",
+            "score": 0.27259963750839233,
+            "cx": 527.1144104003906,
+            "cy": 184.04996871948242,
+            "area": 51930.22353443084,
+            "horizontal": true
+          },
+          "onExteriorWall": false,
+          "nearestWall": {
+            "distance": 82.54996871948242,
+            "thickness": 13,
+            "ratio": 6.34999759380634,
+            "centerLine": 101.5,
+            "bbox": {
+              "x0": 59,
+              "y0": 95,
+              "x1": 740,
+              "y1": 107
+            }
+          },
+          "aspectRatio": 1.1639345416941553,
+          "withinWallDistance": false,
+          "valid": false,
+          "reason": "远墙候选长宽比小于 2，疑似方形大假框"
+        }
+      ],
+      "rejected": [
+        {
+          "index": 6,
+          "box": {
+            "x": 226.52207374572754,
+            "y": 289.2288303375244,
+            "w": 85.41349411010742,
+            "h": 13.850841522216797,
+            "cls": "window",
+            "score": 0.5,
+            "cx": 269.22882080078125,
+            "cy": 296.1542510986328,
+            "area": 1183.0487707778957,
+            "horizontal": true
+          },
+          "onExteriorWall": false,
+          "nearestWall": {
+            "distance": 1.6542510986328125,
+            "thickness": 11,
+            "ratio": 0.15038646351207385,
+            "centerLine": 294.5,
+            "bbox": {
+              "x0": 309,
+              "y0": 289,
+              "x1": 354,
+              "y1": 299
+            }
+          },
+          "aspectRatio": 6.166664601071631,
+          "withinWallDistance": true,
+          "valid": false,
+          "reason": "没有可验证的室内/屋外两侧",
+          "endA": true,
+          "endB": true,
+          "sideA": 0,
+          "sideB": 0
+        },
+        {
+          "index": 9,
+          "box": {
+            "x": 188.4272003173828,
+            "y": 77.28310585021973,
+            "w": 229.69303131103516,
+            "h": 198.5286521911621,
+            "cls": "window",
+            "score": 0.3062109351158142,
+            "cx": 303.2737159729004,
+            "cy": 176.54743194580078,
+            "area": 45600.64792388221,
+            "horizontal": true
+          },
+          "onExteriorWall": false,
+          "nearestWall": {
+            "distance": 37.95256805419922,
+            "thickness": 11,
+            "ratio": 3.4502334594726562,
+            "centerLine": 214.5,
+            "bbox": {
+              "x0": 170,
+              "y0": 209,
+              "x1": 186,
+              "y1": 219
+            }
+          },
+          "aspectRatio": 1.156976732456054,
+          "withinWallDistance": true,
+          "valid": false,
+          "reason": "远墙候选长宽比小于 2，疑似方形大假框"
+        },
+        {
+          "index": 10,
+          "box": {
+            "x": 404.188232421875,
+            "y": 78.43734741210938,
+            "w": 245.85235595703125,
+            "h": 211.2252426147461,
+            "cls": "window",
+            "score": 0.27259963750839233,
+            "cx": 527.1144104003906,
+            "cy": 184.04996871948242,
+            "area": 51930.22353443084,
+            "horizontal": true
+          },
+          "onExteriorWall": false,
+          "nearestWall": {
+            "distance": 82.54996871948242,
+            "thickness": 13,
+            "ratio": 6.34999759380634,
+            "centerLine": 101.5,
+            "bbox": {
+              "x0": 59,
+              "y0": 95,
+              "x1": 740,
+              "y1": 107
+            }
+          },
+          "aspectRatio": 1.1639345416941553,
+          "withinWallDistance": false,
+          "valid": false,
+          "reason": "远墙候选长宽比小于 2，疑似方形大假框"
+        }
+      ],
+      "recovered": [
+        {
+          "box": {
+            "cx": 735.9731251599693,
+            "cy": 200.58228820066546,
+            "x": 723,
+            "y": 98,
+            "w": 24,
+            "h": 207,
+            "area": 3907,
+            "horizontal": false
+          },
+          "onExteriorWall": true,
+          "nearestWall": {
+            "distance": 3.5,
+            "thickness": 19,
+            "ratio": 0.18421052631578946,
+            "centerLine": 731.5,
+            "bbox": {
+              "x0": 722,
+              "y0": 295,
+              "x1": 740,
+              "y1": 319
+            }
+          },
+          "aspectRatio": 8.625,
+          "withinWallDistance": true,
+          "valid": true,
+          "endA": true,
+          "endB": true,
+          "outsideSide": 1,
+          "sideA": 0,
+          "sideB": 5,
+          "footprint": {
+            "x0": 723,
+            "x1": 739,
+            "y0": 98,
+            "y1": 305
+          }
+        },
+        {
+          "box": {
+            "cx": 725.9411764705883,
+            "cy": 337.2352941176471,
+            "x": 717,
+            "y": 336,
+            "w": 16,
+            "h": 4,
+            "area": 51,
+            "horizontal": true
+          },
+          "onExteriorWall": true,
+          "nearestWall": {
+            "distance": 8.5,
+            "thickness": 9,
+            "ratio": 0.9444444444444444,
+            "centerLine": 329.5,
+            "bbox": {
+              "x0": 708,
+              "y0": 325,
+              "x1": 740,
+              "y1": 333
+            }
+          },
+          "aspectRatio": 4,
+          "withinWallDistance": true,
+          "valid": true,
+          "endA": true,
+          "endB": true,
+          "outsideSide": 1,
+          "sideA": 0,
+          "sideB": 5,
+          "footprint": {
+            "x0": 717,
+            "x1": 733,
+            "y0": 320,
+            "y1": 336
+          }
+        },
+        {
+          "box": {
+            "cx": 570.1739130434783,
+            "cy": 708.3913043478261,
+            "x": 564,
+            "y": 708,
+            "w": 16,
+            "h": 2,
+            "area": 23,
+            "horizontal": true
+          },
+          "onExteriorWall": true,
+          "nearestWall": {
+            "distance": 10,
+            "thickness": 8,
+            "ratio": 1.25,
+            "centerLine": 699,
+            "bbox": {
+              "x0": 398,
+              "y0": 695,
+              "x1": 686,
+              "y1": 702
+            }
+          },
+          "aspectRatio": 8,
+          "withinWallDistance": true,
+          "valid": true,
+          "endA": true,
+          "endB": true,
+          "outsideSide": 1,
+          "sideA": 0,
+          "sideB": 5,
+          "footprint": {
+            "x0": 564,
+            "x1": 580,
+            "y0": 692,
+            "y1": 708
+          }
+        },
+        {
+          "box": {
+            "cx": 619.1762114537445,
+            "cy": 709.704845814978,
+            "x": 592,
+            "y": 708,
+            "w": 59,
+            "h": 5,
+            "area": 227,
+            "horizontal": true
+          },
+          "onExteriorWall": true,
+          "nearestWall": {
+            "distance": 11.5,
+            "thickness": 8,
+            "ratio": 1.4375,
+            "centerLine": 699,
+            "bbox": {
+              "x0": 398,
+              "y0": 695,
+              "x1": 686,
+              "y1": 702
+            }
+          },
+          "aspectRatio": 11.8,
+          "withinWallDistance": true,
+          "valid": true,
+          "endA": true,
+          "endB": true,
+          "outsideSide": 1,
+          "sideA": 0,
+          "sideB": 3,
+          "footprint": {
+            "x0": 592,
+            "x1": 651,
+            "y0": 694,
+            "y1": 708
+          }
+        }
+      ],
+      "reclassifiedDoors": []
+    },
+    "doors": {
+      "raw": 14,
+      "kept": 13,
+      "checks": [
+        {
+          "index": 0,
+          "box": {
+            "x": 340.33212661743164,
+            "y": 444.7393608093262,
+            "w": 11.669731140136719,
+            "h": 46.67896270751953
+          },
+          "score": 0.710102379322052,
+          "longSide": 0.6876403468398927,
+          "shortSide": 0.17190994622164618,
+          "valid": true,
+          "reasons": [],
+          "kind": "swing"
+        },
+        {
+          "index": 1,
+          "box": {
+            "x": 640.332145690918,
+            "y": 118.72459411621094,
+            "w": 15.754165649414062,
+            "h": 167.4608612060547
+          },
+          "score": 0.6830660700798035,
+          "longSide": 2.466910959512144,
+          "shortSide": 0.23207884886420335,
+          "valid": true,
+          "reasons": [],
+          "kind": "sliding"
+        },
+        {
+          "index": 2,
+          "box": {
+            "x": 172.66605377197266,
+            "y": 221.6604995727539,
+            "w": 12.253227233886719,
+            "h": 56.59828186035156
+          },
+          "score": 0.6830660700798035,
+          "longSide": 0.833764503569927,
+          "shortSide": 0.1805055840210555,
+          "valid": true,
+          "reasons": [],
+          "kind": "swing"
+        },
+        {
+          "index": 3,
+          "box": {
+            "x": 407.99816131591797,
+            "y": 345.2421569824219,
+            "w": 8.752288818359375,
+            "h": 46.09550476074219
+          },
+          "score": 0.6830660700798035,
+          "longSide": 0.6790452709937914,
+          "shortSide": 0.12893231917790762,
+          "valid": true,
+          "reasons": [],
+          "kind": "swing"
+        },
+        {
+          "index": 4,
+          "box": {
+            "x": 56.831181049346924,
+            "y": 225.08070945739746,
+            "w": 16.921133995056152,
+            "h": 59.51570510864258
+          },
+          "score": 0.6547342538833618,
+          "longSide": 0.8767418496370114,
+          "shortSide": 0.24926977324220448,
+          "valid": true,
+          "reasons": [],
+          "kind": "swing"
+        },
+        {
+          "index": 5,
+          "box": {
+            "x": 226.14849090576172,
+            "y": 287.99816131591797,
+            "w": 86.35612487792969,
+            "h": 14.587173461914062
+          },
+          "score": 0.6547342538833618,
+          "longSide": 1.2721352879001058,
+          "shortSide": 0.2148875732653847,
+          "valid": true,
+          "reasons": [],
+          "kind": "sliding"
+        },
+        {
+          "index": 6,
+          "box": {
+            "x": 340.9156036376953,
+            "y": 516.8311882019043,
+            "w": 8.752288818359375,
+            "h": 48.42945098876953
+          },
+          "score": 0.6547342538833618,
+          "longSide": 0.7134272602381206,
+          "shortSide": 0.12893231917790762,
+          "valid": true,
+          "reasons": [],
+          "kind": "swing"
+        },
+        {
+          "index": 7,
+          "box": {
+            "x": 173.24953079223633,
+            "y": 137.73752212524414,
+            "w": 12.836723327636719,
+            "h": 71.76895141601562
+          },
+          "score": 0.625259280204773,
+          "longSide": 1.0572477146347212,
+          "shortSide": 0.18910122182046482,
+          "valid": true,
+          "reasons": [],
+          "kind": "swing"
+        },
+        {
+          "index": 8,
+          "box": {
+            "x": 407.41466522216797,
+            "y": 516.2476539611816,
+            "w": 9.335784912109375,
+            "h": 44.928550720214844
+          },
+          "score": 0.5948252081871033,
+          "longSide": 0.6618545573482808,
+          "shortSide": 0.13752795697731696,
+          "valid": true,
+          "reasons": [],
+          "kind": "swing"
+        },
+        {
+          "index": 9,
+          "box": {
+            "x": 415.8256149291992,
+            "y": 566.2476921081543,
+            "w": 37.92671203613281,
+            "h": 8.752326965332031
+          },
+          "score": 0.5948252081871033,
+          "longSide": 0.5587085896152931,
+          "shortSide": 0.12893288113121565,
+          "valid": true,
+          "reasons": [],
+          "kind": "swing"
+        },
+        {
+          "index": 10,
+          "box": {
+            "x": 640.9156036376953,
+            "y": 360.0714874267578,
+            "w": 11.669769287109375,
+            "h": 107.36167907714844
+          },
+          "score": 0.5636444091796875,
+          "longSide": 1.581573753052377,
+          "shortSide": 0.1719105081749542,
+          "valid": true,
+          "reasons": [],
+          "kind": "sliding"
+        },
+        {
+          "index": 11,
+          "box": {
+            "x": 672.6660537719727,
+            "y": 517.3154449462891,
+            "w": 9.919357299804688,
+            "h": 175.62973022460938
+          },
+          "score": 0.4680478572845459,
+          "longSide": 2.587248764797258,
+          "shortSide": 0.1461247186833423,
+          "valid": true,
+          "reasons": [],
+          "kind": "sliding"
+        },
+        {
+          "index": 12,
+          "box": {
+            "x": 175.6641960144043,
+            "y": 316.24768257141113,
+            "w": 10.502777099609375,
+            "h": 47.84597396850586
+          },
+          "score": 0.3452657461166382,
+          "longSide": 0.7048319034153654,
+          "shortSide": 0.15471923257613557,
+          "valid": true,
+          "reasons": [],
+          "kind": "swing"
+        },
+        {
+          "index": 13,
+          "box": {
+            "x": 222.1448040008545,
+            "y": 384.49724197387695,
+            "w": 116.11398696899414,
+            "h": 12.253227233886719
+          },
+          "score": 0.289897620677948,
+          "longSide": 1.7105063532069387,
+          "shortSide": 0.1805055840210555,
+          "valid": false,
+          "reasons": [
+            "门检测置信度低于 0.30 或无效"
+          ],
+          "kind": "sliding"
+        }
+      ],
+      "rejected": [
+        {
+          "index": 13,
+          "box": {
+            "x": 222.1448040008545,
+            "y": 384.49724197387695,
+            "w": 116.11398696899414,
+            "h": 12.253227233886719
+          },
+          "score": 0.289897620677948,
+          "longSide": 1.7105063532069387,
+          "shortSide": 0.1805055840210555,
+          "valid": false,
+          "reasons": [
+            "门检测置信度低于 0.30 或无效"
+          ],
+          "kind": "sliding"
+        }
+      ]
+    }
+  },
+  "homeBlocks": 61,
+  "homeContours": 10,
+  "holes": 0,
+  "vertices": 104,
+  "orthogonalization": {
+    "enabled": true,
+    "originalVertices": 554,
+    "originalArea": 48343.5
+  },
+  "geometryMs": 450.5,
+  "contourArea": 47709.64586481507,
+  "maskFidelity": {
+    "precision": 0.9497046378147388,
+    "recall": 0.9469869451697128,
+    "extraPixels": 2401,
+    "missedPixels": 2538
+  },
+  "thickness": {
+    "min": 0.028999999999999915,
+    "median": 0.11800000000000001,
+    "max": 0.2939999999999996
+  },
+  "current": {
+    "buildMs": 4.399999998509884,
+    "buildSamples": [
+      4.399999998509884,
+      6,
+      5.600000001490116,
+      4,
+      4.399999998509884,
+      3.399999998509884,
+      4.899999998509884
+    ],
+    "frameMs": 0.6000000014901161,
+    "frameSamples": [
+      0.6000000014901161,
+      0.6000000014901161,
+      0.6000000014901161,
+      0.5999999940395355,
+      0.6000000014901161,
+      0.5,
+      0.6000000014901161,
+      0.5,
+      0.5,
+      0.5,
+      0.6000000014901161,
+      0.5
+    ],
+    "meshCount": 38,
+    "wallMeshes": 3,
+    "drawCalls": 59,
+    "triangles": 2550
+  },
+  "baseline": null,
+  "uiFlow": {
+    "initialBuildError": "",
+    "resizedBuildError": "",
+    "initialRooms": 9,
+    "initialWidth": 10,
+    "reviewedRooms": [],
+    "doors": 13,
+    "rooms": 9,
+    "windows": 12,
+    "windowSource": "yolo+segmentation",
+    "svgWindowCount": 12,
+    "windowsMatchData": true,
+    "svgWindowsMatchData": true,
+    "savedContours": 10,
+    "savedWidth": 12,
+    "savedBayWindows": [
+      {
+        "x": 5.246546642253375,
+        "z": 0.19137007307627818,
+        "panels": [
+          {
+            "horizontal": false,
+            "x": 5.246546642253375,
+            "z": 0.19137007307627812,
+            "w": 0.28284036091485587,
+            "d": 1.7251974048998302,
+            "wallFootprint": {
+              "x0": 5.1051264617959475,
+              "x1": 5.387966822710804,
+              "y0": -0.671228629373637,
+              "y1": 1.0539687755261933
+            }
+          },
+          {
+            "horizontal": true,
+            "x": 4.844383004077564,
+            "z": -0.671228629373637,
+            "w": 0.8043272763516229,
+            "d": 0.23561229794724903,
+            "wallFootprint": {
+              "x0": 4.442219365901753,
+              "x1": 5.246546642253375,
+              "y0": -0.7890347783472615,
+              "y1": -0.5534224804000125
+            }
+          },
+          {
+            "horizontal": true,
+            "x": 4.844383004077564,
+            "z": 1.0539687755261933,
+            "w": 0.8043272763516229,
+            "d": 0.23561229794724903,
+            "wallFootprint": {
+              "x0": 4.442219365901753,
+              "x1": 5.246546642253375,
+              "y0": 0.9361626265525689,
+              "y1": 1.171774924499818
+            }
+          }
+        ],
+        "seatFootprint": {
+          "x0": 4.442219365901753,
+          "x1": 5.387966822710804,
+          "y0": -0.7890347783472615,
+          "y1": 1.171774924499818
+        }
+      },
+      {
+        "x": 5.847582409197445,
+        "z": 2.999006743367689,
+        "panels": [
+          {
+            "horizontal": false,
+            "x": 5.847582409197445,
+            "z": 2.999006743367689,
+            "w": 0.28284036091485587,
+            "d": 2.753516616949708,
+            "wallFootprint": {
+              "x0": 5.706162228740017,
+              "x1": 5.989002589654873,
+              "y0": 1.622248434892835,
+              "y1": 4.375765051842543
+            }
+          },
+          {
+            "horizontal": true,
+            "x": 5.387966822710804,
+            "z": 1.622248434892835,
+            "w": 0.9192311729732822,
+            "d": 0.23561229794724903,
+            "wallFootprint": {
+              "x0": 4.928351236224162,
+              "x1": 5.847582409197445,
+              "y0": 1.5044422859192104,
+              "y1": 1.7400545838664594
+            }
+          },
+          {
+            "horizontal": true,
+            "x": 5.387966822710804,
+            "z": 4.375765051842543,
+            "w": 0.9192311729732822,
+            "d": 0.2356122979472488,
+            "wallFootprint": {
+              "x0": 4.928351236224162,
+              "x1": 5.847582409197445,
+              "y0": 4.257958902868919,
+              "y1": 4.4935712008161675
+            }
+          }
+        ],
+        "seatFootprint": {
+          "x0": 4.928351236224162,
+          "x1": 5.989002589654873,
+          "y0": 1.5044422859192104,
+          "y1": 4.4935712008161675
+        }
+      }
+    ]
+  }
+}

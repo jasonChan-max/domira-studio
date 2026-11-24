@@ -1,0 +1,216 @@
+{
+  "50": {
+    "baseCheckpoint": "C:\\Users\\20744\\Documents\\deepseek-harness\\default-workspace\\runs\\yolo-n-v2-confusers\\weights\\best.pt",
+    "baseSha256": "097220d243bd712c8d804fd75f3e5920f881b5fc886b2d3047ce1caee604e6cd",
+    "epochsRequested": 50,
+    "batch": 8,
+    "imgsz": 640,
+    "seed": 0,
+    "warmupEpochs": 3,
+    "samples": [
+      {
+        "name": "cf-外牆灰牆-01.jpg",
+        "imageSha256": "41005d0f702f18ba0f34a1aa05c294fbdadd788b8f5d146ed8175a3bb716f51d",
+        "labelSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "positive": false
+      },
+      {
+        "name": "cf-外牆灰牆-02.jpg",
+        "imageSha256": "90afb44aa0833c01581e0ea685a9638de1d10867fb856cf0ceddefd3cb82e15d",
+        "labelSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "positive": false
+      },
+      {
+        "name": "cf-外牆灰牆-03.jpg",
+        "imageSha256": "fc23a4fe9fcb4416ec5e6d25536c656bbd2863840b8a7a3dc4c892b0137b1230",
+        "labelSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "positive": false
+      },
+      {
+        "name": "cf-推拉門-01.jpg",
+        "imageSha256": "67d1277a9c7a840966fb121a45693a60ed61bacc5475460e6eedf1db1fd03fac",
+        "labelSha256": "5da9e6b7f192f6104977617221d4705043d840fa43a37b275a603afd7ca76e8b",
+        "positive": true
+      },
+      {
+        "name": "cf-推拉門-02.jpg",
+        "imageSha256": "46dd4b624a9e7f90eb8b95c73c4f8d4bdf284f6514a7bdb86afe28d437e53dc8",
+        "labelSha256": "5da9e6b7f192f6104977617221d4705043d840fa43a37b275a603afd7ca76e8b",
+        "positive": true
+      },
+      {
+        "name": "cf-煙台固定窗-01.jpg",
+        "imageSha256": "039fab521a18daad1aef1654038604402019d9296d99f1409a07552095b5289b",
+        "labelSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "positive": false
+      },
+      {
+        "name": "cf-煙台固定窗-02.jpg",
+        "imageSha256": "2136f39e41b3dd0ea7271179e096d238b1e0cfa21056a5e04d7a4a55472797d4",
+        "labelSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "positive": false
+      },
+      {
+        "name": "cf-煙台固定窗-03.jpg",
+        "imageSha256": "6f9875a9751c8f80782d517447d234ef18122d2583e3b289b7c5e6563fc2d79c",
+        "labelSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "positive": false
+      },
+      {
+        "name": "cf-真平開門-01.jpg",
+        "imageSha256": "d081e1360e03f73324e833fd26a07104b3d555e360afd6474b0a6c053549e50f",
+        "labelSha256": "0de6a3f87594c77727b16d598cdde6aece70cb249dc457a6038c723cca924be4",
+        "positive": true
+      },
+      {
+        "name": "cf-真平開門-02.jpg",
+        "imageSha256": "844efad7cb1a765fbbb3995db10908ce336990836345d5a3cc1fb5dc76089b81",
+        "labelSha256": "3700013c9d2644597372ce1d9b3644bf4f397ff7c366008c7acd42a888b3bf71",
+        "positive": true
+      },
+      {
+        "name": "cf-飄窗結構-01.jpg",
+        "imageSha256": "b7cda5020867c291de359c0d593f7d9241065733325a19838b1ed40e178624da",
+        "labelSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "positive": false
+      }
+    ],
+    "runDirectory": "C:\\Users\\20744\\Desktop\\domira-studio\\.screenshots\\wall-round9\\runs\\yolo-n-v3-confusers-50",
+    "bestCheckpoint": "C:\\Users\\20744\\Desktop\\domira-studio\\.screenshots\\wall-round9\\runs\\yolo-n-v3-confusers-50\\weights\\best.pt"
+  },
+  "100": {
+    "baseCheckpoint": "C:\\Users\\20744\\Documents\\deepseek-harness\\default-workspace\\runs\\yolo-n-v2-confusers\\weights\\best.pt",
+    "baseSha256": "097220d243bd712c8d804fd75f3e5920f881b5fc886b2d3047ce1caee604e6cd",
+    "epochsRequested": 100,
+    "batch": 8,
+    "imgsz": 640,
+    "seed": 0,
+    "warmupEpochs": 3,
+    "samples": [
+      {
+        "name": "cf-外牆灰牆-01.jpg",
+        "imageSha256": "41005d0f702f18ba0f34a1aa05c294fbdadd788b8f5d146ed8175a3bb716f51d",
+        "labelSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "positive": false
+      },
+      {
+        "name": "cf-外牆灰牆-02.jpg",
+        "imageSha256": "90afb44aa0833c01581e0ea685a9638de1d10867fb856cf0ceddefd3cb82e15d",
+        "labelSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "positive": false
+      },
+      {
+        "name": "cf-外牆灰牆-03.jpg",
+        "imageSha256": "fc23a4fe9fcb4416ec5e6d25536c656bbd2863840b8a7a3dc4c892b0137b1230",
+        "labelSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "positive": false
+      },
+      {
+        "name": "cf-推拉門-01.jpg",
+        "imageSha256": "67d1277a9c7a840966fb121a45693a60ed61bacc5475460e6eedf1db1fd03fac",
+        "labelSha256": "5da9e6b7f192f6104977617221d4705043d840fa43a37b275a603afd7ca76e8b",
+        "positive": true
+      },
+      {
+        "name": "cf-推拉門-02.jpg",
+        "imageSha256": "46dd4b624a9e7f90eb8b95c73c4f8d4bdf284f6514a7bdb86afe28d437e53dc8",
+        "labelSha256": "5da9e6b7f192f6104977617221d4705043d840fa43a37b275a603afd7ca76e8b",
+        "positive": true
+      },
+      {
+        "name": "cf-煙台固定窗-01.jpg",
+        "imageSha256": "039fab521a18daad1aef1654038604402019d9296d99f1409a07552095b5289b",
+        "labelSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "positive": false
+      },
+      {
+        "name": "cf-煙台固定窗-02.jpg",
+        "imageSha256": "2136f39e41b3dd0ea7271179e096d238b1e0cfa21056a5e04d7a4a55472797d4",
+        "labelSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "positive": false
+      },
+      {
+        "name": "cf-煙台固定窗-03.jpg",
+        "imageSha256": "6f9875a9751c8f80782d517447d234ef18122d2583e3b289b7c5e6563fc2d79c",
+        "labelSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "positive": false
+      },
+      {
+        "name": "cf-真平開門-01.jpg",
+        "imageSha256": "d081e1360e03f73324e833fd26a07104b3d555e360afd6474b0a6c053549e50f",
+        "labelSha256": "0de6a3f87594c77727b16d598cdde6aece70cb249dc457a6038c723cca924be4",
+        "positive": true
+      },
+      {
+        "name": "cf-真平開門-02.jpg",
+        "imageSha256": "844efad7cb1a765fbbb3995db10908ce336990836345d5a3cc1fb5dc76089b81",
+        "labelSha256": "3700013c9d2644597372ce1d9b3644bf4f397ff7c366008c7acd42a888b3bf71",
+        "positive": true
+      },
+      {
+        "name": "cf-飄窗結構-01.jpg",
+        "imageSha256": "b7cda5020867c291de359c0d593f7d9241065733325a19838b1ed40e178624da",
+        "labelSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "positive": false
+      }
+    ],
+    "runDirectory": "C:\\Users\\20744\\Desktop\\domira-studio\\.screenshots\\wall-round9\\runs\\yolo-n-v3-confusers",
+    "bestCheckpoint": "C:\\Users\\20744\\Desktop\\domira-studio\\.screenshots\\wall-round9\\runs\\yolo-n-v3-confusers\\weights\\best.pt"
+  },
+  "fixed-window": {
+    "baseCheckpoint": "C:\\Users\\20744\\Documents\\deepseek-harness\\default-workspace\\runs\\yolo-n-v2-confusers\\weights\\best.pt",
+    "baseSha256": "097220d243bd712c8d804fd75f3e5920f881b5fc886b2d3047ce1caee604e6cd",
+    "epochsRequested": 100,
+    "batch": 8,
+    "imgsz": 640,
+    "seed": 0,
+    "warmupEpochs": 3,
+    "negativeSubset": "fixed-window",
+    "samples": [
+      {
+        "name": "cf-推拉門-01.jpg",
+        "imageSha256": "67d1277a9c7a840966fb121a45693a60ed61bacc5475460e6eedf1db1fd03fac",
+        "labelSha256": "5da9e6b7f192f6104977617221d4705043d840fa43a37b275a603afd7ca76e8b",
+        "positive": true
+      },
+      {
+        "name": "cf-推拉門-02.jpg",
+        "imageSha256": "46dd4b624a9e7f90eb8b95c73c4f8d4bdf284f6514a7bdb86afe28d437e53dc8",
+        "labelSha256": "5da9e6b7f192f6104977617221d4705043d840fa43a37b275a603afd7ca76e8b",
+        "positive": true
+      },
+      {
+        "name": "cf-煙台固定窗-01.jpg",
+        "imageSha256": "039fab521a18daad1aef1654038604402019d9296d99f1409a07552095b5289b",
+        "labelSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "positive": false
+      },
+      {
+        "name": "cf-煙台固定窗-02.jpg",
+        "imageSha256": "2136f39e41b3dd0ea7271179e096d238b1e0cfa21056a5e04d7a4a55472797d4",
+        "labelSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "positive": false
+      },
+      {
+        "name": "cf-煙台固定窗-03.jpg",
+        "imageSha256": "6f9875a9751c8f80782d517447d234ef18122d2583e3b289b7c5e6563fc2d79c",
+        "labelSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "positive": false
+      },
+      {
+        "name": "cf-真平開門-01.jpg",
+        "imageSha256": "d081e1360e03f73324e833fd26a07104b3d555e360afd6474b0a6c053549e50f",
+        "labelSha256": "0de6a3f87594c77727b16d598cdde6aece70cb249dc457a6038c723cca924be4",
+        "positive": true
+      },
+      {
+        "name": "cf-真平開門-02.jpg",
+        "imageSha256": "844efad7cb1a765fbbb3995db10908ce336990836345d5a3cc1fb5dc76089b81",
+        "labelSha256": "3700013c9d2644597372ce1d9b3644bf4f397ff7c366008c7acd42a888b3bf71",
+        "positive": true
+      }
+    ],
+    "runDirectory": "C:\\Users\\20744\\Desktop\\domira-studio\\.screenshots\\wall-round9\\runs\\yolo-n-v3-fixed-window",
+    "bestCheckpoint": "C:\\Users\\20744\\Desktop\\domira-studio\\.screenshots\\wall-round9\\runs\\yolo-n-v3-fixed-window\\weights\\best.pt"
+  }
+}
