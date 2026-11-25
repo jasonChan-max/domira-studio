@@ -25,14 +25,15 @@ async function main(){
 async function probeInBrowser(baselineURL,exportData=false,knownWidth=10){
  const onnx=await import('/wall-onnx.js'),poly=await import('/room-polygon.js'),dom=await import('/home-domain.js');
  const {signedArea,pointInRing}=await import('/wall-contours.js'),{detectDoors}=await import('/door-detect.js');
+ const {imageGrayFromImageData}=await import('/opening-location.js');
  const {geometryFromSegmentation,homeFromRecognition}=await import('/floorplan-geometry.js');
  const sceneModule=await import('/home-scene.js'),THREE=await import('/vendor/three.module.js');
  const img=new Image();img.src='/__probe3d-input.jpg?t='+Date.now();await img.decode();const canvas=document.createElement('canvas');canvas.width=img.width;canvas.height=img.height;canvas.getContext('2d').drawImage(img,0,0);
  const t=performance.now(),seg=await onnx.segmentWalls(canvas,{modelUrl:'/models/unet-int8.onnx'}),segMs=performance.now()-t,min=Math.max(18,Math.round(Math.max(seg.width,seg.height)*.03));
  const boxes=await detectDoors(canvas,{modelUrl:'/models/yolo-doors-int8.onnx'});
  if(exportData){let encoded='';for(let i=0;i<seg.mask.length;i+=8192)encoded+=String.fromCharCode(...seg.mask.subarray(i,i+8192));return {exportData:{width:seg.width,height:seg.height,mask:btoa(encoded),boxes,stats:seg.stats}};}
- const traceStart=performance.now(),recognized=geometryFromSegmentation(seg,boxes),geometryMs=performance.now()-traceStart;
- const original=geometryFromSegmentation(seg,boxes,{orthogonalize:false,mergeCollinear:false,filterSmallContours:false});
+ const traceStart=performance.now(),recognized=geometryFromSegmentation(seg,boxes,{imageGray:imageGrayFromImageData(canvas.getContext('2d').getImageData(0,0,seg.width,seg.height))}),geometryMs=performance.now()-traceStart;
+ const original=geometryFromSegmentation(seg,boxes,{imageGray:imageGrayFromImageData(canvas.getContext('2d').getImageData(0,0,seg.width,seg.height)),orthogonalize:false,mergeCollinear:false,filterSmallContours:false});
  const {frame}=recognized,{contours}=recognized.lines,width=knownWidth,depth=width*frame.h/frame.w;
  // JSON 往返模拟项目保存；只测内存中的对象会漏掉窗字段在保存链上的丢失。
  const home=JSON.parse(JSON.stringify(homeFromRecognition(recognized,width,depth,{height:2.7})));

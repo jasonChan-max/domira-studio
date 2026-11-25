@@ -1,0 +1,5 @@
+
+> domira-spatial-studio@2.1.1 build
+> node scripts/build.mjs
+
+Built Domira v2.0 Worker with 110 assets, including renovation quotation modules.

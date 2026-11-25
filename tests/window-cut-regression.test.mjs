@@ -8,6 +8,8 @@ import {buildHomeGeometry} from '../public/home-scene.js';
 import {buildContourWallMeshes,contourWallLayers} from '../public/wall-mesh.js';
 import {openingsToHome} from '../public/opening-detection.js';
 import {validateHome} from '../public/home-domain.js';
+const symbols=JSON.parse(readFileSync(new URL('./fixtures/opening-symbols.json',import.meta.url)));
+const imageGray=name=>({...symbols[name],data:new Uint8Array(gunzipSync(Buffer.from(symbols[name].gray,'base64')))});
 const fixtures=JSON.parse(readFileSync(new URL('./fixtures/wall-repair-round4.json',import.meta.url)));
 const load=name=>{const data=fixtures.cases[name];return {...data,mask:new Uint8Array(gunzipSync(Buffer.from(data.mask,'base64')))};};
 const material=new THREE.MeshBasicMaterial({side:THREE.DoubleSide});
@@ -43,10 +45,10 @@ test('窄 footprint 不再留下堵窗的墙皮，洞的长度按玻璃而非旧
 });
 // 被封门步骤分离的下飘窗改为窗台，不再计作第九间房；两扇真实飘窗现在进入窗数据。
 for(const [name,rooms,windows] of [['r2',8,12],['46',4,7],['r10',13,13]])test(name+' 冻结原图可建房且逐窗三点下墙/洞口/上墙均通过',()=>{
- const data=load(name),recognized=geometryFromSegmentation(data,data.boxes),home=JSON.parse(JSON.stringify(homeFromRecognition(recognized,10,10*recognized.frame.h/recognized.frame.w)));
+ const data=load(name),recognized=geometryFromSegmentation(data,data.boxes,{imageGray:imageGray(name)}),home=JSON.parse(JSON.stringify(homeFromRecognition(recognized,10,10*recognized.frame.h/recognized.frame.w)));
  assert.equal(home.rooms.length,rooms);assert.equal(home.windows.length,windows);validateHome(home);
  if(name==='r2'){
-  assert.equal(home.doors.length,10);assert.deepEqual(recognized.doors.map(({x,y,w,h,score})=>({x,y,w,h,score})),data.boxes.filter(b=>b.cls==='door').map(({x,y,w,h,score})=>({x,y,w,h,score})));
+  assert.equal(home.doors.length,11);assert.ok(home.doors.some(d=>d.kind==='entrance'));assert.equal(recognized.selection.openingClassification.filter(c=>c.originalClass==='door').length,14);
   assert.equal(data.boxes.filter(b=>b.cls==='window'&&b.h>b.w&&b.x<100&&b.y<285&&b.y+b.h>150).length,0);
  }
  auditWindows(home,buildHomeGeometry(home,false));

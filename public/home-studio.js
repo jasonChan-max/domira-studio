@@ -1,3 +1,4 @@
+import {imageGrayFromImageData} from './opening-location.js';
 import {API_BASE} from './api-config.js';
 import {HOME_KINDS,HOME_COLORS,homeFromAnalysis,validateHome,homePlanSVG,readPlanDimensions} from './home-domain.js';
 import {readPlanNumbers,estimateScale} from './plan-ocr.js';
@@ -62,7 +63,7 @@ export function createHomeStudio({modal,setCleanup,createHome,notify}){
    let boxes=[];
    try{boxes=await detectDoors(upload.canvas,{modelUrl:new URL('./models/yolo-doors-int8.onnx',import.meta.url).href});}catch(error){console.warn('[opening-detect]',error);}
    if(!live||ticket!==sequence||upload!==image)return null;
-   return {...geometryFromSegmentation(result,boxes),source:result.calibrated?'Domira 牆體模型':'基礎牆體模型',weakWalls:result.weakWalls,wallRatio:result.wallRatio};
+   return {...geometryFromSegmentation(result,boxes,{imageGray:imageGrayFromImageData(upload.canvas.getContext('2d').getImageData(0,0,result.width,result.height))}),source:result.calibrated?'Domira 牆體模型':'基礎牆體模型',weakWalls:result.weakWalls,wallRatio:result.wallRatio};
   }catch(error){
    console.warn('[wall-model]',error);
    if(live&&ticket===sequence&&upload===image)hs('#floorplan-wall-status').textContent='牆體預覽暫時無法載入，仍可分析房間與尺寸。';

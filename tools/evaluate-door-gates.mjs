@@ -50,7 +50,7 @@ try{
  }
  const total=key=>{const truth=rows.reduce((n,r)=>n+r.truth.length,0),matched=rows.reduce((n,r)=>n+r[key].matched,0),count=rows.reduce((n,r)=>n+r[key].count,0);return {truth,matched,count,recall:matched/truth,precision:count?matched/count:1};};
  const report={date:new Date().toISOString(),annotated:rows.length,candidateMode:candidateModel?(joint?'joint':'frozen-window'):'incumbent',modelHashes,baselineModelHashes:baseline.modelHashes,baselineDatasetMatches,referenceRecall:284/308,incumbentRecall:259/308,requiredRecall:.8409,
-  definitions:{matching:'原始clean-masks-44蓝色门类的4连通域外接框，预测按score排序，IoU>=0.5一对一匹配；与92.21%记录相同口径。',physicalScale:'生产geometryFromSegmentation + readPlanNumbers + estimateScale，W/D取到0.01m；这是自动估计尺度，并非44张逐张人工实测尺度。',raw:'本次指定模型YOLO conf0.25原始门框，实际权重见modelHashes',scoreOnly:'仅score>=0.30，无物理尺寸筛选',selected:'现役尺寸/score/去重闸之前的门窗融合候选',afterGate:'现役be9ec15规则保持：平开0.45–1.2m/推拉1.2–3m，厚0.10–0.40m，score>=0.30，门洞去重；窗来源以candidateMode/modelHashes为准',unscalable:'自动尺度不可用时计入失败并记录，未臆造物理尺寸'},
+  definitions:{matching:'原始clean-masks-44蓝色门类的4连通域外接框，预测按score排序，IoU>=0.5一对一匹配；与92.21%记录相同口径。',physicalScale:'生产geometryFromSegmentation + readPlanNumbers + estimateScale，W/D取到0.01m；这是自动估计尺度，并非44张逐张人工实测尺度。',raw:'本次指定模型YOLO conf0.25原始门框，实际权重见modelHashes',scoreOnly:'仅score>=0.30，无物理尺寸筛选',selected:'现役尺寸/score/去重闸之前的门窗融合候选',afterGate:'位置分类：室内/unknown保留门，外墙局部门弧为入户门、无弧送窗选择；window>75%否决、score>=0.30、原门洞去重；不按米制尺寸否决',unscalable:'自动尺度不可用时计入失败并记录，未臆造物理尺寸'},
   raw:total('raw'),scoreOnly:total('scoreOnly'),selected:total('selected'),afterGate:total('afterGate'),unscalable:rows.filter(r=>r.error).map(r=>({name:r.name,error:r.error})),rows};
  report.gatePassed=report.afterGate.recall>=.8409;
  await writeFile(resolve(out,'report.json'),JSON.stringify(report,null,2)+'\n');console.log('REPORT '+JSON.stringify({datasetMatches:baselineDatasetMatches,raw:report.raw,scoreOnly:report.scoreOnly,afterGate:report.afterGate,gatePassed:report.gatePassed}));
@@ -58,6 +58,7 @@ try{
 
 async function evaluate(index){
  const {detectDoors}=await import('/door-detect.js'),{segmentWalls}=await import('/wall-onnx.js'),{geometryFromSegmentation}=await import('/floorplan-geometry.js'),{readPlanNumbers,estimateScale}=await import('/plan-ocr.js'),{doorsToHome}=await import('/opening-detection.js');
+ const {imageGrayFromImageData}=await import('/opening-location.js');
  const start=performance.now();
  const image=new Image();image.src=`/sample/${index}/image`;await image.decode();const canvas=document.createElement('canvas'),factor=Math.min(1,1200/Math.max(image.width,image.height));canvas.width=Math.round(image.width*factor);canvas.height=Math.round(image.height*factor);canvas.getContext('2d').drawImage(image,0,0,canvas.width,canvas.height);
  const annotation=new Image();annotation.src=`/sample/${index}/mask`;await annotation.decode();if(annotation.width!==image.width||annotation.height!==image.height)throw Error('Annotation size mismatch');
@@ -69,7 +70,7 @@ async function evaluate(index){
  const raw=match(rawDoors),scoreOnly=match(rawDoors.filter(b=>b.score>=.3));
  let scale=null,frame=null,dimensions=null,selection=[],selectedWindows=[],checks=[],kept=[],error=null,ocr=null;
  try{
-  const seg=await segmentWalls(canvas,{modelUrl:'/models/unet-int8.onnx'}),predicted=geometryFromSegmentation(seg,boxes);frame=predicted.frame;selection=predicted.doors;selectedWindows=predicted.windows;
+  const seg=await segmentWalls(canvas,{modelUrl:'/models/unet-int8.onnx'}),predicted=geometryFromSegmentation(seg,boxes,{imageGray:imageGrayFromImageData(canvas.getContext('2d').getImageData(0,0,seg.width,seg.height))});frame=predicted.frame;selection=predicted.doors;selectedWindows=predicted.windows;
   if(!frame?.w||!frame?.h||!predicted.polygons.length)throw Error('生产识别没有可用的房屋外框/房间');
   try{ocr=await readPlanNumbers(canvas);}catch(e){ocr={areas:[],error:e.message};}
   scale=estimateScale({totalPixelArea:predicted.polygons.reduce((n,p)=>n+(Number(p.area)||0),0),frameSpanPx:Math.max(frame.w,frame.h),areas:ocr.areas,doors:predicted.doors,assumedMeters:.02});

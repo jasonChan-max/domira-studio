@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from '../public/vendor/three.module.js';
 import {geometryFromSegmentation,homeFromRecognition} from '../public/floorplan-geometry.js';
-import {closeDetectedDoorFloors,selectHouseContours} from '../public/plan-selection.js';
+import {closeDetectedDoorFloors,selectHouseContours,selectSupportedWindows} from '../public/plan-selection.js';
 import {roomsFromMask} from '../public/room-polygon.js';
 import {buildHomeGeometry} from '../public/home-scene.js';
 
@@ -42,9 +42,9 @@ test('米制房间下限在数据层过滤，不在 UI 删除，也不伪造缺�
  assert.equal(home.rooms.length,4);assert.equal(home.selection.rooms.removedBelowMinimum.length,1);
  assert.throws(()=>homeFromRecognition({...result,polygons:result.polygons.slice(-1)},8,8),/0.6m/);
 });
-test('窗要同时有墙端支持和外墙两侧证据，尺寸链和内墙候选不能进入场景',()=>{
+test('窗选择器保留墙端支持规则，内部候选由位置分类转为门',()=>{
  const f=fixture(),r=geometryFromSegmentation(f,f.boxes),home=homeFromRecognition(r,8,8);
- assert.equal(r.selection.windows.raw,3);assert.equal(home.windows.length,1);assert.equal(r.selection.windows.rejected.length,2);
+ assert.equal(r.selection.windows.raw,3);assert.equal(home.windows.length,1);assert.equal(selectSupportedWindows(f.mask,f.width,f.height,f.boxes.filter(b=>b.cls==='window'),r.frame).rejected.length,2);assert.ok(r.doors.some(b=>b.originalClass==='window'&&b.classification==='interior-door'));
  assert.ok(home.windows[0].wallFootprint);
  const group=buildHomeGeometry(home,false);group.updateMatrixWorld(true);
  assert.equal(group.children.filter(o=>o.userData.window).length,home.windows.length);

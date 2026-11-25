@@ -1,12 +1,27 @@
 import {doorsFromMask,windowsFromMask} from './room-polygon.js';
+import {classifyOpeningByLocation,analyzeDoorArc} from './opening-location.js';
+export {classifyOpeningByLocation,hasDoorArc} from './opening-location.js';
 
-// 平開門 0.45–1.2m，推拉門（陽台／客廳隔斷）1.2–3.0m。兩段區間不重疊，
-// 所以「門太寬」必須按類型分別判斷——2026-11-23 用戶指出推拉門被當假門刪掉了。
+export function classifyOpenings(openings,mask,width,height,imageGray){
+ const doors=[],windows=[],checks=[];
+ for(const box of [...openings.doors.map(b=>({...b,cls:'door'})),...openings.windows.map(b=>({...b,cls:'window'}))]){
+  const location=classifyOpeningByLocation(box,mask,width,height);
+  const arc=location.kind==='exterior-opening'?analyzeDoorArc(box,imageGray):null;
+  // Missing original pixels are uncertainty, not evidence that an arc is absent.
+  const classification=location.kind==='exterior-opening'&&!arc.available?'unknown':location.kind;
+  const isWindow=classification==='exterior-opening'&&!arc.found;
+  const candidate={...box,cls:isWindow?'window':'door',classification,location,arc,originalClass:box.cls};
+  (isWindow?windows:doors).push(candidate);
+  checks.push({box:{x:box.x,y:box.y,w:box.w,h:box.h},originalClass:box.cls,classification,adoptedClass:candidate.cls,location,arc});
+ }
+ return {doors,windows,checks};
+}
+
+// Width now labels sliding doors only; it never vetoes a location-classified opening.
 export const DOOR_LIMITS=Object.freeze({minWidth:.45,swingMaxWidth:1.2,slidingMinWidth:1.2,slidingMaxWidth:3,minThickness:.10,maxThickness:.40,minScore:.30});
 
 export function doorsToHome(openings,frame,width,depth){
  const doors=[],checks=[],rejected=[],candidates=[];
- const between=(value,min,max)=>value>=min-1e-9&&value<=max+1e-9;
  for(const [index,box] of (openings||[]).entries()){
   const source={...box,cx:box.cx??box.x+box.w/2,cy:box.cy??box.y+box.h/2},converted=openingsToHome([source],frame,width,depth)[0];
   const door=converted&&['x','z','w','d'].every(k=>Number.isFinite(converted[k]))?converted:null;
@@ -14,15 +29,12 @@ export function doorsToHome(openings,frame,width,depth){
   const isSliding=door?longSide>=DOOR_LIMITS.slidingMinWidth:false;
   const reasons=[];
   if(!door)reasons.push('门坐标或房屋比例尺无效');
-  else{
-   const maxWidth=isSliding?DOOR_LIMITS.slidingMaxWidth:DOOR_LIMITS.swingMaxWidth;
-   if(!between(longSide,DOOR_LIMITS.minWidth,maxWidth))reasons.push(isSliding?'推拉门宽不在 1.2–3.0m':'门宽不在 0.45–1.2m');
-   if(!between(shortSide,DOOR_LIMITS.minThickness,DOOR_LIMITS.maxThickness))reasons.push('门厚不在 0.10–0.40m');
-  }
+  else if(!(door.w>0&&door.d>0))reasons.push('门尺寸或房屋比例尺无效');
   // 分割回退没有检测置信度，不能伪造分数；有 score 的检测框则必须通过同一置信度闸。
   if(score!==null&&(!Number.isFinite(score)||score<DOOR_LIMITS.minScore))reasons.push('门检测置信度低于 0.30 或无效');
   const check={index,box:{x:box.x,y:box.y,w:box.w,h:box.h},score,longSide,shortSide,valid:reasons.length===0,reasons};checks.push(check);
-  check.kind=isSliding?'sliding':'swing';
+  check.classification=box.classification??'unknown';
+  check.kind=box.classification==='exterior-opening'&&box.arc?.found?'entrance':isSliding?'sliding':'swing';
   if(check.valid)candidates.push({door:{...door,...(score===null?{}:{score}),kind:check.kind,sourceIndex:index},check,score});
   else rejected.push(check);
  }
@@ -59,11 +71,8 @@ export function doorsToHome(openings,frame,width,depth){
 //   3FO3S6MHSB5A 真門（旁邊有窗）→ window **66%**（門和窗重疊，不是純窗）
 // 所以 window > 0.75 才拒。0.5 會砍掉那個真門（44 張召回 84.09%→83.77%）。
 //
-// ⚠️ 試過再加一條「框內 door 佔比 < 0.30 就拒」，**失敗，已刪**：
-//   R(2) 的假框 door = 0% / 0.3% / 2%
-//   被它誤刪的真門 door = 0% / 0% / 9.5% / 17% / 19.6% / 28.9%
-// 真門的 door 佔比可以低到 0（分割模型在門洞位置判成 floor/wall），和假框完全重疊，
-// 44 張召回因此掉到 82.14%。**要在門洞語義上做文章，得先解決分割模型在門口的準確度。**
+// 不使用框内 door 比例否决：真实门洞也可能被分割为 floor/wall。
+// R(2) 的旧“假门”结论已由用户纠正，外侧开口是有门扇与弧的入户门。
 //
 // 這條判據**只用來否決，不產生新框**——否決是保守的，生成會把模型的錯誤學進下一輪。
 export function filterDoorsByMaskClass(doors, mask, width, height, { minWindowRatio = .75, inset = 2 } = {}) {

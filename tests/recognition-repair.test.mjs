@@ -36,7 +36,7 @@ test('分割窗与外墙证据共同纠正被检成门的真窗，保留其他�
  const f=fixture(),window={x:23,y:10,w:14,h:4,cls:'window',score:.9},misclassified={x:10,y:40,w:4,h:15,cls:'door',score:.5},door={x:86,y:50,w:4,h:15,cls:'door',score:.8};
  for(let y=40;y<55;y++)for(let x=10;x<14;x++)f.mask[y*100+x]=3;
  const before=f.mask.slice(),recognized=geometryFromSegmentation(f,[window,misclassified,door]);
- assert.equal(recognized.windows.length,2);assert.equal(recognized.windowSource,'yolo+segmentation');assert.deepEqual(recognized.doors.map(d=>d.score),[.8]);assert.equal(recognized.selection.windows.reclassifiedDoors.length,1);assert.deepEqual(f.mask,before);
+ assert.equal(recognized.windows.length,2);assert.equal(recognized.windowSource,'yolo+segmentation');assert.deepEqual(recognized.doors.map(d=>d.score),[.8]);assert.equal(recognized.selection.maskClassDoors.rejected.filter(b=>b.originalClass==='door').length,1);assert.deepEqual(f.mask,before);
  const again=selectSupportedWindows(f.mask,100,100,recognized.windows,recognized.frame,{recoverFromSegmentation:true,doors:recognized.doors});assert.equal(again.windows.length,2);assert.equal(again.recovered.length,0);
  const switched=geometryFromSegmentation(f,[window,misclassified,door],{orthogonalize:false});assert.equal(switched.selection.contours.orthogonalize,false);
 });

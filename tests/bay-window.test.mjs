@@ -12,9 +12,11 @@ import {homePlanSVG,validateHome} from '../public/home-domain.js';
 import {wallMaskFidelity} from '../public/wall-contours.js';
 import {roomsFromMask} from '../public/room-polygon.js';
 import {openingsToHome} from '../public/opening-detection.js';
+const symbols=JSON.parse(readFileSync(new URL('./fixtures/opening-symbols.json',import.meta.url)));
+const imageGray=name=>({...symbols[name],data:new Uint8Array(gunzipSync(Buffer.from(symbols[name].gray,'base64')))});
 const fixtures=JSON.parse(readFileSync(new URL('./fixtures/wall-repair-round4.json',import.meta.url)));
 function load(name){const d=fixtures.cases[name];return {...d,mask:new Uint8Array(gunzipSync(Buffer.from(d.mask,'base64')))};}
-function recognize(name){const data=load(name),result=geometryFromSegmentation(data,data.boxes);return {data,result,home:homeFromRecognition(result,10,10*result.frame.h/result.frame.w)};}
+function recognize(name){const data=load(name),result=geometryFromSegmentation(data,data.boxes,{imageGray:imageGray(name)});return {data,result,home:homeFromRecognition(result,10,10*result.frame.h/result.frame.w)};}
 function auditPanels(home){
  const group=buildHomeGeometry(home,false);group.updateMatrixWorld(true);
  const walls=group.children.filter(m=>m.userData.wall),glass=group.children.filter(m=>m.userData.window);
@@ -64,8 +66,8 @@ test('内缘被模型涂成连续地板时，四向飘窗仍须由两端墙垛�
 });
 
 test('R(2) 的两个飘窗与两个大假框明确区分，14门原始数据不被删除',()=>{
- const {data,result,home}=recognize('r2'),checks=result.selection.windows.checks;
- assert.equal(home.windows.length,12);assert.equal(home.windows.filter(w=>w.bay).length,2);assert.equal(home.doors.length,10);
+ const {data,result,home}=recognize('r2'),checks=selectSupportedWindows(data.mask,data.width,data.height,data.boxes.filter(b=>b.cls==='window'),result.frame).checks;
+ assert.equal(home.windows.length,12);assert.equal(home.windows.filter(w=>w.bay).length,2);assert.equal(home.doors.length,11);
  for(const index of [2,7]){assert.equal(checks[index].valid,true);assert.ok(checks[index].bay);assert.ok(checks[index].aspectRatio>=2);assert.ok(checks[index].nearestWall.ratio<5);}
  for(const index of [9,10]){assert.equal(checks[index].valid,false);assert.ok(checks[index].aspectRatio<2);}
  assert.equal(result.doors.length,data.boxes.filter(b=>b.cls==='door').length);

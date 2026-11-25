@@ -1,7 +1,7 @@
 import {wallLinesFromMask,wallBlocksFromMask} from './wall-onnx.js';
 import {roomsFromMask} from './room-polygon.js';
 import {wallContoursFromMask} from './wall-contours.js';
-import {selectOpenings,openingsToHome,doorsToHome,filterDoorsByMaskClass} from './opening-detection.js';
+import {selectOpenings,classifyOpenings,openingsToHome,doorsToHome,filterDoorsByMaskClass} from './opening-detection.js';
 import {roomsFromPolygons} from './home-domain.js';
 import {closeDetectedDoorFloors,selectHouseContours,roomsWithinHouse,mergeRoomFragments,selectSupportedWindows} from './plan-selection.js';
 import {clipBayFloorPolygons} from './bay-window.js';
@@ -10,17 +10,21 @@ import {clipBayFloorPolygons} from './bay-window.js';
 export function geometryFromSegmentation(result,boxes,options={}){
  const {mask,width,height}=result,minLength=Math.max(18,Math.round(Math.max(width,height)*.03));
  const openings=selectOpenings(boxes,mask,width,height);
+ const classified=classifyOpenings(openings,mask,width,height,options.imageGray);
+ const doorClass=filterDoorsByMaskClass(classified.doors,mask,width,height);
+ const vetoedWindows=doorClass.rejected.filter(b=>b.originalClass==='window');
  const lines=wallLinesFromMask(mask,width,height,{minLenH:minLength,minLenV:minLength,gap:8});
  const blocks=wallBlocksFromMask(mask,width,height),rawContours=wallContoursFromMask(mask,width,height,options);
  const initialRooms=roomsFromMask(mask,width,height),selection=selectHouseContours(rawContours,initialRooms),{contours,frame}=selection;
- const supported=selectSupportedWindows(mask,width,height,openings.windows,frame,{blocks,recoverFromSegmentation:openings.windowSource==='yolo',doors:openings.doors});
+ // Protect location-classified doors from the older segmentation recovery reclassification.
+ const supported=selectSupportedWindows(mask,width,height,[...classified.windows,...vetoedWindows],frame,{blocks,recoverFromSegmentation:openings.windowSource==='yolo'});
  // 框內是「窗」類的候選不是門：分割模型已經判對，是 YOLO 框錯了。
  // 放在封門之前，封的也是篩過的門（否則會把假門的位置也填成地板）。
- const doorClass=filterDoorsByMaskClass(supported.doors,mask,width,height),solidDoors=doorClass.doors;
+ const solidDoors=doorClass.doors;
  const closedMask=closeDetectedDoorFloors(mask,width,height,solidDoors),roomCandidates=roomsFromMask(closedMask,width,height);
  const inside=roomsWithinHouse(roomCandidates,frame),merged=mergeRoomFragments(inside,closedMask,width,height),bayFloors=clipBayFloorPolygons(merged.rooms,supported.windows),polygons=bayFloors.polygons;
  return {...openings,doors:solidDoors,windows:supported.windows,windowSource:supported.recovered.length?'yolo+segmentation':openings.windowSource,polygons,lines:{...lines,blocks,contours},frame,segWidth:width,segHeight:height,
-  selection:{contours:{raw:rawContours.length,kept:contours.length,rejected:selection.removed,orthogonalize:options.orthogonalize!==false,postprocessing:rawContours.diagnostics},rooms:{candidates:roomCandidates.length,insideHouse:inside.length,merged:merged.merged,bayFloorChanges:bayFloors.changes},windows:{raw:openings.windows.length,kept:supported.windows.length,checks:supported.checks,rejected:supported.rejected,recovered:supported.recovered,reclassifiedDoors:supported.reclassifiedDoors},maskClassDoors:{raw:supported.doors.length,kept:solidDoors.length,rejected:doorClass.rejected}}};
+  selection:{openingClassification:classified.checks,contours:{raw:rawContours.length,kept:contours.length,rejected:selection.removed,orthogonalize:options.orthogonalize!==false,postprocessing:rawContours.diagnostics},rooms:{candidates:roomCandidates.length,insideHouse:inside.length,merged:merged.merged,bayFloorChanges:bayFloors.changes},windows:{raw:openings.windows.length,kept:supported.windows.length,checks:supported.checks,rejected:supported.rejected,recovered:supported.recovered,reclassifiedDoors:supported.reclassifiedDoors},maskClassDoors:{raw:classified.doors.length,kept:solidDoors.length,rejected:doorClass.rejected}}};
 }
 
 export function homeFromRecognition(result,width,depth,options={}){

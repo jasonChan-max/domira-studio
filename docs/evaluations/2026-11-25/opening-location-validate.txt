@@ -1,0 +1,5 @@
+
+> domira-spatial-studio@2.1.1 validate
+> node scripts/validate-artifact.mjs
+
+Artifact is valid ESM and exports default.fetch
