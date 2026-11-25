@@ -53,6 +53,40 @@ export function doorsToHome(openings,frame,width,depth){
  return {doors,raw:checks.length,kept:doors.length,checks,rejected};
 }
 
+// 框內如果是「窗」類，這個框就不是門——分割模型已經判對那里是窗，YOLO 框錯了。
+// 2026-11-25 實測四個樣本定出這條線：
+//   46.03 的假框（窗帶上）→ window **95.5%**
+//   3FO3S6MHSB5A 真門（旁邊有窗）→ window **66%**（門和窗重疊，不是純窗）
+// 所以 window > 0.75 才拒。0.5 會砍掉那個真門（44 張召回 84.09%→83.77%）。
+//
+// ⚠️ 試過再加一條「框內 door 佔比 < 0.30 就拒」，**失敗，已刪**：
+//   R(2) 的假框 door = 0% / 0.3% / 2%
+//   被它誤刪的真門 door = 0% / 0% / 9.5% / 17% / 19.6% / 28.9%
+// 真門的 door 佔比可以低到 0（分割模型在門洞位置判成 floor/wall），和假框完全重疊，
+// 44 張召回因此掉到 82.14%。**要在門洞語義上做文章，得先解決分割模型在門口的準確度。**
+//
+// 這條判據**只用來否決，不產生新框**——否決是保守的，生成會把模型的錯誤學進下一輪。
+export function filterDoorsByMaskClass(doors, mask, width, height, { minWindowRatio = .75, inset = 2 } = {}) {
+ if (!mask || !(width > 0) || !(height > 0)) return { doors: doors || [], rejected: [] };
+ const WINDOW_CLASS = 3;
+ const kept = [], rejected = [];
+ for (const d of doors || []) {
+  const x0 = Math.max(0, Math.round(d.x) + inset), y0 = Math.max(0, Math.round(d.y) + inset);
+  const x1 = Math.min(width - 1, Math.round(d.x + d.w) - inset), y1 = Math.min(height - 1, Math.round(d.y + d.h) - inset);
+  // 框太小（縮邊後取不到內部）就放行：不為了砍假框去冒誤刪真門的風險。
+  if (x1 < x0 || y1 < y0) { kept.push(d); continue; }
+  let n = 0, win = 0;
+  for (let y = y0; y <= y1; y++) {
+   const row = y * width;
+   for (let x = x0; x <= x1; x++) { n++; if (mask[row + x] === WINDOW_CLASS) win++; }
+  }
+  const winRatio = n ? win / n : 0;
+  if (winRatio > minWindowRatio) rejected.push({ ...d, windowRatio: +winRatio.toFixed(3), rejectReason: '框內是窗，不是門洞' });
+  else kept.push(d);
+ }
+ return { doors: kept, rejected };
+}
+
 // Keep both sources available for reproducible comparison. Empty or failed
 // detector results fall back independently for doors and windows.
 export function selectOpenings(boxes,mask,width,height,{windowSource='yolo'}={}){
