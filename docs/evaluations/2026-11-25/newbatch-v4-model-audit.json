@@ -1,0 +1,32 @@
+{
+  "bytes": 3505264,
+  "sha256": "58c8a43346166e1b0eb0b6077895e1fb8ce0027c59d7f9e3822e9921d0776477",
+  "onnxCheckerPassed": true,
+  "types": {
+    "INT8": 251,
+    "FLOAT": 250,
+    "INT32": 126
+  },
+  "ops": {
+    "Constant": 22,
+    "QuantizeLinear": 123,
+    "DequantizeLinear": 250,
+    "Conv": 64,
+    "Sigmoid": 58,
+    "Mul": 60,
+    "Split": 8,
+    "Add": 9,
+    "Concat": 17,
+    "MaxPool": 3,
+    "Resize": 2,
+    "Reshape": 8,
+    "Transpose": 2,
+    "Softmax": 1,
+    "Shape": 1,
+    "Gather": 1,
+    "Div": 2,
+    "Slice": 2,
+    "Sub": 2
+  },
+  "sourceImageAndLabelHashesUnchanged": true
+}

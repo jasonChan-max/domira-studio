@@ -1,0 +1,1447 @@
+{
+  "baseCheckpoint": "C:\\Users\\20744\\Documents\\deepseek-harness\\default-workspace\\runs\\yolo-n-v2-confusers\\weights\\best.pt",
+  "baseSha256": "097220d243bd712c8d804fd75f3e5920f881b5fc886b2d3047ce1caee604e6cd",
+  "data": "C:\\Users\\20744\\Documents\\deepseek-harness\\default-workspace\\temp\\yolo-dataset-v2\\data.yaml",
+  "dataYamlSha256": "b3d88951a499bbfcea7ed510ca766a201505d31c41acefd5f305ab96246a6607",
+  "epochsRequested": 50,
+  "batch": 8,
+  "imgsz": 640,
+  "warmupEpochs": 3,
+  "seed": 0,
+  "splits": {
+    "train": [
+      {
+        "image": "cf-图外尺寸线-图外尺寸线-01.jpg",
+        "imageSha256": "36880246741e5e453c77c781cc0c89a11a3a9a1406dc2401cc0c9e79068421e4",
+        "labelSha256": "ef29c15f79ac59aea26b1f19c9bed0d4adada13b4597de16d41fd6f79964fa77",
+        "size": [
+          160,
+          160
+        ]
+      },
+      {
+        "image": "cf-图外尺寸线-图外尺寸线-02.jpg",
+        "imageSha256": "8e525ad4f2c625b765b60116b377e338a6f43b13f2667ec3af3deaeb56b3801d",
+        "labelSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size": [
+          160,
+          160
+        ]
+      },
+      {
+        "image": "cf-图外尺寸线-图外尺寸线-03.jpg",
+        "imageSha256": "8705e50c8bb61e2594ab0e407e87f695d2e7281109c54690e02cdccff15b3dab",
+        "labelSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size": [
+          160,
+          160
+        ]
+      },
+      {
+        "image": "cf-图外尺寸线-图外尺寸线-04.jpg",
+        "imageSha256": "17358767a69fefde0a4290b8c33581f05cf675b931516ea658060a7ef81e905c",
+        "labelSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size": [
+          160,
+          160
+        ]
+      },
+      {
+        "image": "cf-图外尺寸线-图外尺寸线-05.jpg",
+        "imageSha256": "889e6f3d57fde92db660f406eb5f416211964186b218660ac88c5a63e9fc1ab5",
+        "labelSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size": [
+          160,
+          160
+        ]
+      },
+      {
+        "image": "cf-图外尺寸线-图外尺寸线-06.jpg",
+        "imageSha256": "96ea8b1734a9bf067409b561c1d3319bf971bcfa921cb0be9fb327ad72053c69",
+        "labelSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size": [
+          160,
+          160
+        ]
+      },
+      {
+        "image": "cf-图外尺寸线-图外尺寸线-07.jpg",
+        "imageSha256": "4a374af23fc5deb348b5489d339daf343b86299c1804b34755755da95bff1d54",
+        "labelSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size": [
+          160,
+          160
+        ]
+      },
+      {
+        "image": "cf-图外尺寸线-图外尺寸线-08.jpg",
+        "imageSha256": "35ba9fb9168ec3a79077c1d069a889bcbc39f3405a358afad2e569cd5ed29fe3",
+        "labelSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size": [
+          160,
+          160
+        ]
+      },
+      {
+        "image": "cf-图外尺寸线-图外尺寸线-09.jpg",
+        "imageSha256": "64d1b6e62e57ad539f5897697e94fccbeb44163df6dc73696abf161172410b19",
+        "labelSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size": [
+          160,
+          160
+        ]
+      },
+      {
+        "image": "cf-图外尺寸线-图外尺寸线-10.jpg",
+        "imageSha256": "2ae26d7dd25d56a14f1f207b367e06bc28a69e3f81ae71b94c8e157a4b4aa769",
+        "labelSha256": "e7583c8674e70611e54ad1e50b72e0e53123df6663e3c726005433d26f560b9c",
+        "size": [
+          160,
+          160
+        ]
+      },
+      {
+        "image": "cf-图外尺寸线-图外尺寸线-11.jpg",
+        "imageSha256": "077dd98046c36be4293c2227bd428194d229bb55089f1960c050790f28c34f00",
+        "labelSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size": [
+          160,
+          160
+        ]
+      },
+      {
+        "image": "cf-图外尺寸线-图外尺寸线-12.jpg",
+        "imageSha256": "81f03b32b1df65dc8f73f928ddf8c3dc03d89f46b5e0a57bec48db1b724e0870",
+        "labelSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size": [
+          160,
+          160
+        ]
+      },
+      {
+        "image": "cf-外牆灰牆-01.jpg",
+        "imageSha256": "41005d0f702f18ba0f34a1aa05c294fbdadd788b8f5d146ed8175a3bb716f51d",
+        "labelSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size": [
+          160,
+          160
+        ]
+      },
+      {
+        "image": "cf-外牆灰牆-02.jpg",
+        "imageSha256": "90afb44aa0833c01581e0ea685a9638de1d10867fb856cf0ceddefd3cb82e15d",
+        "labelSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size": [
+          160,
+          160
+        ]
+      },
+      {
+        "image": "cf-外牆灰牆-03.jpg",
+        "imageSha256": "fc23a4fe9fcb4416ec5e6d25536c656bbd2863840b8a7a3dc4c892b0137b1230",
+        "labelSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size": [
+          160,
+          160
+        ]
+      },
+      {
+        "image": "cf-大片地板-大片地板-01.jpg",
+        "imageSha256": "fd34927fba049c9c5879e2113ad5207d0dd3dd0ff922ac157fa57ead82d3e906",
+        "labelSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size": [
+          160,
+          160
+        ]
+      },
+      {
+        "image": "cf-大片地板-大片地板-02.jpg",
+        "imageSha256": "0f85531100efdd60ef952fcc8d0993d3e9b0ebd92a413d2d80585138b3f185b3",
+        "labelSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size": [
+          160,
+          160
+        ]
+      },
+      {
+        "image": "cf-大片地板-大片地板-03.jpg",
+        "imageSha256": "4aef99d98709c2ddc65363f817c3caeb6de6c347e3ad36adc1f49f9c45e0d2d7",
+        "labelSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size": [
+          160,
+          160
+        ]
+      },
+      {
+        "image": "cf-大片地板-大片地板-04.jpg",
+        "imageSha256": "0838cf1246fe74f1026e1d1525429a7453e7c04fc5908fbb8b4396603860af2c",
+        "labelSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size": [
+          160,
+          160
+        ]
+      },
+      {
+        "image": "cf-大片地板-大片地板-05.jpg",
+        "imageSha256": "a5619359c32d68a8ee1ea92d3d1253fd7edd66c666e6812ddfcf16c79aeeff55",
+        "labelSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size": [
+          160,
+          160
+        ]
+      },
+      {
+        "image": "cf-大片地板-大片地板-06.jpg",
+        "imageSha256": "30acf5b600c276be7256c79b1ba06d161ccbe28843452c3414bde4bd276bfc98",
+        "labelSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size": [
+          160,
+          160
+        ]
+      },
+      {
+        "image": "cf-大片地板-大片地板-07.jpg",
+        "imageSha256": "01836463a7273b29fb26c16e9e3ff56accac829cfde228364ee850e1875e5adc",
+        "labelSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size": [
+          160,
+          160
+        ]
+      },
+      {
+        "image": "cf-大片地板-大片地板-08.jpg",
+        "imageSha256": "54fd7960d48e41b836973351716c4f75d81621423f0bffc7f86d48f603e12087",
+        "labelSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size": [
+          160,
+          160
+        ]
+      },
+      {
+        "image": "cf-大片地板-大片地板-10.jpg",
+        "imageSha256": "b0ed7ab41894cc0b89193a797782b9402257278f1d13b4079b4992d68891fec9",
+        "labelSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size": [
+          160,
+          160
+        ]
+      },
+      {
+        "image": "cf-大片地板-大片地板-11.jpg",
+        "imageSha256": "fd5eb2828ca1284ce6d93ebb4e6843941b24c0754d9fefaa3c4dcf2ce1ab4fb3",
+        "labelSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size": [
+          160,
+          160
+        ]
+      },
+      {
+        "image": "cf-大片地板-大片地板-12.jpg",
+        "imageSha256": "0e5cd142a113798eb98961a0704baab6b691f2efeb870d171063c613830d00cd",
+        "labelSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size": [
+          160,
+          160
+        ]
+      },
+      {
+        "image": "cf-推拉門-01.jpg",
+        "imageSha256": "67d1277a9c7a840966fb121a45693a60ed61bacc5475460e6eedf1db1fd03fac",
+        "labelSha256": "5da9e6b7f192f6104977617221d4705043d840fa43a37b275a603afd7ca76e8b",
+        "size": [
+          160,
+          160
+        ]
+      },
+      {
+        "image": "cf-推拉門-02.jpg",
+        "imageSha256": "46dd4b624a9e7f90eb8b95c73c4f8d4bdf284f6514a7bdb86afe28d437e53dc8",
+        "labelSha256": "5da9e6b7f192f6104977617221d4705043d840fa43a37b275a603afd7ca76e8b",
+        "size": [
+          160,
+          160
+        ]
+      },
+      {
+        "image": "cf-煙台固定窗-01.jpg",
+        "imageSha256": "039fab521a18daad1aef1654038604402019d9296d99f1409a07552095b5289b",
+        "labelSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size": [
+          160,
+          160
+        ]
+      },
+      {
+        "image": "cf-煙台固定窗-02.jpg",
+        "imageSha256": "2136f39e41b3dd0ea7271179e096d238b1e0cfa21056a5e04d7a4a55472797d4",
+        "labelSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size": [
+          160,
+          160
+        ]
+      },
+      {
+        "image": "cf-煙台固定窗-03.jpg",
+        "imageSha256": "6f9875a9751c8f80782d517447d234ef18122d2583e3b289b7c5e6563fc2d79c",
+        "labelSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size": [
+          160,
+          160
+        ]
+      },
+      {
+        "image": "cf-真平開門-01.jpg",
+        "imageSha256": "d081e1360e03f73324e833fd26a07104b3d555e360afd6474b0a6c053549e50f",
+        "labelSha256": "0de6a3f87594c77727b16d598cdde6aece70cb249dc457a6038c723cca924be4",
+        "size": [
+          160,
+          160
+        ]
+      },
+      {
+        "image": "cf-真平開門-02.jpg",
+        "imageSha256": "844efad7cb1a765fbbb3995db10908ce336990836345d5a3cc1fb5dc76089b81",
+        "labelSha256": "3700013c9d2644597372ce1d9b3644bf4f397ff7c366008c7acd42a888b3bf71",
+        "size": [
+          160,
+          160
+        ]
+      },
+      {
+        "image": "cf-真窗-真窗-01.jpg",
+        "imageSha256": "e38f65aa2c27b8d9f2d53e0d409dca60dd37b7e55dbbbaec7f48fe34f5784898",
+        "labelSha256": "03e88b17d452020b08580b838ce3786d4933b94ac920b9f5f71798ee4bb551e4",
+        "size": [
+          160,
+          160
+        ]
+      },
+      {
+        "image": "cf-真窗-真窗-02.jpg",
+        "imageSha256": "73f3453c78aac4e54ef2a3a244efd0c141b7f6f408e82e603cab4546701e0d5b",
+        "labelSha256": "457a1babf1eac67144806fa2feb7096f65eccec17f6f1ca899c0f4b3f9f207da",
+        "size": [
+          160,
+          160
+        ]
+      },
+      {
+        "image": "cf-真窗-真窗-03.jpg",
+        "imageSha256": "a6f8437470fa44a4a4795fae9bf49937da6036769b55b039c7f1c35c15224e49",
+        "labelSha256": "7962069613d14254e56478453b56b435e7cc3c7b30ed3e241ce9c71b66253e17",
+        "size": [
+          160,
+          160
+        ]
+      },
+      {
+        "image": "cf-真窗-真窗-04.jpg",
+        "imageSha256": "a18fe2a2f5d798d87343cf9797985ab9e1f3897502930944b3c89c28d8e71c02",
+        "labelSha256": "432779eccfb84e399c1dc66c58ee295e5d42d28f97915e9991c7c80461fb9bd0",
+        "size": [
+          160,
+          160
+        ]
+      },
+      {
+        "image": "cf-真窗-真窗-06.jpg",
+        "imageSha256": "ccd17a22e950906f3c8c2cd2ecab9272ccd85f0e0b7ff81e00556754cd7a413b",
+        "labelSha256": "8e4e9703030583279a415ebf58346be51fb21fd9c575aba4eb8b6b9f650dcfd1",
+        "size": [
+          160,
+          160
+        ]
+      },
+      {
+        "image": "cf-真窗-真窗-07.jpg",
+        "imageSha256": "ebbc6ccd956ced9cadd32e0843a5c54c481e32c022d93481687380ef8b2fb308",
+        "labelSha256": "4e4f4519a8f1f32e1730efd189953a3471afac7c727e9aac6e42a066dd141be4",
+        "size": [
+          160,
+          160
+        ]
+      },
+      {
+        "image": "cf-真窗-真窗-08.jpg",
+        "imageSha256": "88bafc97c18930059cde5a910984b743a27bb9d7c20864aeb456e2885c4ce7a7",
+        "labelSha256": "c630e615cb92b07029c72833f9f710d768b9496c1ee81afff8eac40c30961be6",
+        "size": [
+          160,
+          160
+        ]
+      },
+      {
+        "image": "cf-真窗-真窗-09.jpg",
+        "imageSha256": "1c2c77fce5513c493eb3524303a685cf0e495933a7b23271d7dfa1fc4fb69308",
+        "labelSha256": "d197900f2b24143dd04e60ecfaa885d7f46ddb82d5c6949cf500a517f6d0690e",
+        "size": [
+          160,
+          160
+        ]
+      },
+      {
+        "image": "cf-真窗-真窗-10.jpg",
+        "imageSha256": "db1f203ce505fef4480d4ca5d4489e22bfbb88dbd8a4bc12e26aba7dc22b7df8",
+        "labelSha256": "2f3651265c18d61178a7f6a5bf6fe07a3d2df21256495651ee5d8761a2cf3e57",
+        "size": [
+          160,
+          160
+        ]
+      },
+      {
+        "image": "cf-真窗-真窗-11.jpg",
+        "imageSha256": "a4b801cb7fb9b6e2e668c4e692f78e06aa17b4f70e73dbbec50b4eddd8f36819",
+        "labelSha256": "40e696ba8a46ef477b0c88365e58a02a80b5ab5247923ae9fc57da7ec2cbf60e",
+        "size": [
+          160,
+          160
+        ]
+      },
+      {
+        "image": "cf-真窗-真窗-12.jpg",
+        "imageSha256": "b04607784b9653cd914bf9179507fd3b68533d10f3b5484c8e0c4c176878e605",
+        "labelSha256": "812323a7631510c8542f170ac8edf469b7ba84ba50814340a4880c100ca8b251",
+        "size": [
+          160,
+          160
+        ]
+      },
+      {
+        "image": "cf-门洞-门洞-02.jpg",
+        "imageSha256": "bb2125feca189753ad31217604a7349527f3de511f814acf2e602ba542343e6f",
+        "labelSha256": "f6b542c53af90f6f350643fa2a8a31b1054ae6649c123da15ffe8d980013cf4b",
+        "size": [
+          160,
+          160
+        ]
+      },
+      {
+        "image": "cf-门洞-门洞-03.jpg",
+        "imageSha256": "e4506acfa0da9cbdec93eee7d1434d36669a5b8c538643fc6e864b17f486d5f2",
+        "labelSha256": "8caca2088a9ecf2c5738997e424eb7b5b7a14641c3cc74ce1573d90dbb4ab740",
+        "size": [
+          160,
+          160
+        ]
+      },
+      {
+        "image": "cf-门洞-门洞-04.jpg",
+        "imageSha256": "3969240efb4e468ed3f2d1f412fba6ff7a2c54bff2b19805473c8e1fa1d77d51",
+        "labelSha256": "affe35a5f849c18e84122aa2ac3db17db9ae5447b4b899d144288abf935a24b8",
+        "size": [
+          160,
+          160
+        ]
+      },
+      {
+        "image": "cf-门洞-门洞-06.jpg",
+        "imageSha256": "bb065afebc5bc68b2556d30c66730a16f6903b99546a1b562305282500557d39",
+        "labelSha256": "67ee6e6960d0d6beed2a2e55ce1775e2fdc64f9fc85b88b8557c359d8724c1c1",
+        "size": [
+          160,
+          160
+        ]
+      },
+      {
+        "image": "cf-门洞-门洞-09.jpg",
+        "imageSha256": "4e2c69319c00f87c7ac34451e40269001c469b101fb6149815e2dac6c631dfed",
+        "labelSha256": "b4e092cf3b0fab95cc7222502317deedff0e9db2afced5f0e595a8c416c42a7f",
+        "size": [
+          160,
+          160
+        ]
+      },
+      {
+        "image": "cf-门洞-门洞-11.jpg",
+        "imageSha256": "b24933de024afdd1cb12e636e77011ff89e70ece2ccdc2ad0eec3b5e71a54342",
+        "labelSha256": "840ee4d079230a3523eafeb0d7e9f9b9980b0ad58dc0f0c78a733432cd0eb5ba",
+        "size": [
+          160,
+          160
+        ]
+      },
+      {
+        "image": "cf-门洞-门洞-12.jpg",
+        "imageSha256": "30bd12d459f58c87b86798e3b709bf2d67ad17f99df8e4188313777d054a5d41",
+        "labelSha256": "8fc1009f99df39aca2b8e45476a953ed8699f346aedcaf5928c0ef323f9ab0dd",
+        "size": [
+          160,
+          160
+        ]
+      },
+      {
+        "image": "cf-飄窗結構-01.jpg",
+        "imageSha256": "b7cda5020867c291de359c0d593f7d9241065733325a19838b1ed40e178624da",
+        "labelSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size": [
+          160,
+          160
+        ]
+      },
+      {
+        "image": "cn-3FO37HYXYMEA.jpg",
+        "imageSha256": "f3d4b48dc4255bb388db10e221e45c5486f16f558d637ced66bd1ab016dfb9b3",
+        "labelSha256": "17f40d8808dcef88ac653c36988c4447a288d6a79d472036cdfcdea4d5ec7464",
+        "size": [
+          800,
+          600
+        ]
+      },
+      {
+        "image": "cn-3FO37IM6G4BH.jpg",
+        "imageSha256": "cf3b1871fb7e8d534722ec27a7a7174d5894201e2079c6327fcb4a91eedfb750",
+        "labelSha256": "47e821119f8a2eb9cd3bf6d14dc4edaa0a2073534e136ed025689cfc1a85d9d1",
+        "size": [
+          800,
+          600
+        ]
+      },
+      {
+        "image": "cn-3FO37IREGCL4.jpg",
+        "imageSha256": "7e106488406d7e9be3fb050d96e8548c2b064f85362cbf4354f1fe297996cfd5",
+        "labelSha256": "2cee4818cf5deb8a1c8642c82ce6ddb97f017c096499fbb91142755c84038ea3",
+        "size": [
+          800,
+          600
+        ]
+      },
+      {
+        "image": "cn-3FO37J3EX685.jpg",
+        "imageSha256": "ecf8f22c3cc8edd2481e32bf7c3ec4898c3c0d4e92f0ea6b4ebd434a7a0e8b95",
+        "labelSha256": "139870fae577f0557463d4d25760a61b4800a4167eacecda6175c24f9bf4066f",
+        "size": [
+          800,
+          600
+        ]
+      },
+      {
+        "image": "cn-3FO37J83UW95.jpg",
+        "imageSha256": "006d015432ccee50d0ab5c70691f7936e746a5a1dac832703ec8df079aa0d3de",
+        "labelSha256": "03f677717514fb60ec9fda832e602675e8a9f6f8f95d13290ee9ca2161ad0691",
+        "size": [
+          800,
+          600
+        ]
+      },
+      {
+        "image": "cn-3FO37JW05XN0.jpg",
+        "imageSha256": "4dd20fbadd0e2543dfcc7c83e63ecd3710968381a9dde1d659385599531a996c",
+        "labelSha256": "53ded07108d8254cc610aaca88afe9940b97cbda785770cf0f15ae76761e300b",
+        "size": [
+          800,
+          600
+        ]
+      },
+      {
+        "image": "cn-3FO37K4DVH49.jpg",
+        "imageSha256": "0648a81e15ce00911c5fb280eda6cd0da1b44b44bfee9869bb899f701450c51b",
+        "labelSha256": "42a07eb98f82d1ca1615a530036400df4a7dea5e2dde7b605f3c7d27aee075b0",
+        "size": [
+          800,
+          600
+        ]
+      },
+      {
+        "image": "cn-3FO37KITXO7H.jpg",
+        "imageSha256": "a6bb9c60cb34f890039c0174da7cc2da9369ad76bb9f8fe9934c28f59777ccf1",
+        "labelSha256": "3ee204af82d7e88261c18cb25d8694e1f4fc4b052cbde60740c8dde0115236eb",
+        "size": [
+          800,
+          600
+        ]
+      },
+      {
+        "image": "cn-3FO37MFTCFCH.jpg",
+        "imageSha256": "e343cba0ab15d05d1478d21c5b600bd9d72ec851f5220ff07c9da157db1ab769",
+        "labelSha256": "14a9ba68099fd0fdfede60eefe531ea8fe23e19b2680c707db3d3b750700b8ac",
+        "size": [
+          800,
+          600
+        ]
+      },
+      {
+        "image": "cn-3FO37OTR7GCL.jpg",
+        "imageSha256": "1695da81c83b4fa481b2cb45b09f0df1885fd77c5d3edb5d7eed4382479061e8",
+        "labelSha256": "772bd39fd5089fbe92eedc68c952e0282823124a62ba6d990e4b3f58a47c23d1",
+        "size": [
+          800,
+          600
+        ]
+      },
+      {
+        "image": "cn-3FO37P0VUB6H.jpg",
+        "imageSha256": "d3f9fdb79ec5310a540989d6b86456b1a2e37dd8a2a311d8e7fffa5ce59864a0",
+        "labelSha256": "5ef264e3e6340209b8c774884816acbfb8d1d0e4a1390dba9ea6352e4d0ce859",
+        "size": [
+          800,
+          600
+        ]
+      },
+      {
+        "image": "cn-3FO37U83XJ6V.jpg",
+        "imageSha256": "dddffe0dcb81ad061c736fd227f576f2634d0de8002b3bb1a81164c686a057df",
+        "labelSha256": "6e70b7de178fb288d20346428904370557c07d1ecc6a5ff78596c7c4a39c7bd2",
+        "size": [
+          800,
+          600
+        ]
+      },
+      {
+        "image": "cn-3FO37UDX89P6.jpg",
+        "imageSha256": "b1c390dcb53e7d176bdf24098d25c0a8a250ae02c234ff63572c3d47cd52f47b",
+        "labelSha256": "8b5a614b6131b60ca25f5c4e39abf0088d194c691a3e9d5bd754b4832ffc2217",
+        "size": [
+          800,
+          600
+        ]
+      },
+      {
+        "image": "cn-3FO37USXD5Q3.jpg",
+        "imageSha256": "f8293974c3b2837333850d216b8434c9730be1baf61f3798d31e468d5bd13752",
+        "labelSha256": "750f0970071ad0fb28e02dc373fd887f5103e6299691a1901050084188c1705a",
+        "size": [
+          800,
+          600
+        ]
+      },
+      {
+        "image": "cn-3FO37UTIUP2O.jpg",
+        "imageSha256": "634287b64867aed9050226da6f4f24d5b510be1b49faadf37ea7cf8f6a462a12",
+        "labelSha256": "9620be58ff46fff6a78e48b9f3d43e2ef59b55f1eb46c59167cb06cfc517d141",
+        "size": [
+          800,
+          600
+        ]
+      },
+      {
+        "image": "cn-3FO37V1SQMAO.jpg",
+        "imageSha256": "b79cab1172f93c3491973b05cb0a795a42bf6473ff6c459c7d3b2c149dadd53f",
+        "labelSha256": "42c9037a24b69f4248e0996f1bae0b10336b3f71836408eefe99b93031530541",
+        "size": [
+          800,
+          600
+        ]
+      },
+      {
+        "image": "cn-3FO37VJV0J3T.jpg",
+        "imageSha256": "5626a4e63910dc4f622c31d35c72c3c8353a0182203bef85aa2ada5363f227ab",
+        "labelSha256": "24135b47886ac703e904c62bb4730fb192b1bd6859524673bdf6e36501812b87",
+        "size": [
+          800,
+          600
+        ]
+      },
+      {
+        "image": "cn-3FO37VKP1PQQ.jpg",
+        "imageSha256": "7ebbedc120348f75025396cac2b188459bf57d1580d1834e15185b18d7447334",
+        "labelSha256": "e2cbfd83183405e13924ce7748b658aa773a1a02296ee3bc071eb3c5377d0d03",
+        "size": [
+          800,
+          600
+        ]
+      },
+      {
+        "image": "cn-3FO37VL8RGPU.jpg",
+        "imageSha256": "6026268c8b9292d660486911237f02cd9dac863a941acab3c1dcb0092333a833",
+        "labelSha256": "3c7d51eaa7396d4d2f4395477f9a40fd37ca59baff7d22923404024cf1d972eb",
+        "size": [
+          800,
+          600
+        ]
+      },
+      {
+        "image": "cn-3FO37VN5Y4L6.jpg",
+        "imageSha256": "a7f1acfb824e1c7ed6ad9675c23e514fecd9e10f96a7546acd06166890ca51b4",
+        "labelSha256": "395ba94e5743c986b091595d255a6ab91beb0e58fa2d637c97c24b0fce5d9763",
+        "size": [
+          800,
+          600
+        ]
+      },
+      {
+        "image": "cn-3FO37VVB8584.jpg",
+        "imageSha256": "7580502718523d0b55b16ab4263524f8964b46b2e533ede2003f77f4dd8a3119",
+        "labelSha256": "e91fbf68c8bf09e78e06eb7637e10f9ccf20abb55104f93b7ea91f6a721d5de4",
+        "size": [
+          800,
+          600
+        ]
+      },
+      {
+        "image": "cn-3FO37VVDMV2G.jpg",
+        "imageSha256": "9db11fe7979cd2f36a1bd7ec16c4e406cbc820a5a2f6d66ed517231ddc8690ae",
+        "labelSha256": "d5482837008e6967c90c31e47fad4caf2be1e2d2b758719f5cc2df255a6166bb",
+        "size": [
+          800,
+          600
+        ]
+      },
+      {
+        "image": "cn-3FO37VXQ7UIR.jpg",
+        "imageSha256": "27a91d14c1d1b326a9e17b432c8afdb2971450681b231b8797be7c7d964b36e0",
+        "labelSha256": "d5a8132e951d1340ad194168909aa04d4e3e8a92c5c596c98cd519205a0de448",
+        "size": [
+          800,
+          600
+        ]
+      },
+      {
+        "image": "cn-3FO37W1YGJJ7.jpg",
+        "imageSha256": "1b9d38cdcfbdbf1431e5e12b665b8c6d5d9e656fb73f52366b285d980fa9328d",
+        "labelSha256": "fd988cf5f179eca059e4bf33ebf55c23309cef5b3aad13c7187deaf1a897976c",
+        "size": [
+          800,
+          600
+        ]
+      },
+      {
+        "image": "cn-3FO37W3U5GOQ.jpg",
+        "imageSha256": "56e351f7ffffbb895d44888ac0674d10e31ee5867b1753c17222e8e55b58feea",
+        "labelSha256": "af0a46e788c116b45ffa42a0124305232a23cb085bd0e2b6c339e990f15dbdab",
+        "size": [
+          800,
+          600
+        ]
+      },
+      {
+        "image": "cn-3FO3810A2F9A.jpg",
+        "imageSha256": "a371cee8fefc45fc0c23ecbf111f41764059952d0e8d757ffc851b0ace52716a",
+        "labelSha256": "a1839067f3bbd6f89a76518d7fbb4c010f57a25c75b2e5a0d3391acedce2e7ec",
+        "size": [
+          800,
+          600
+        ]
+      },
+      {
+        "image": "cn-3FO386BP9L12.jpg",
+        "imageSha256": "26f58bd8981d8d3a7d391e55a00a83a9894419fbe451697b4293a9d2022e8097",
+        "labelSha256": "42bbda70dcdec233667067d58e59ab92fe7a478c3b68c630d5392a26e111bbb6",
+        "size": [
+          800,
+          600
+        ]
+      },
+      {
+        "image": "cn-3FO386E7XLIW.jpg",
+        "imageSha256": "74cdac15adca80f09f979fb3e9f142eb2b481ffed57af17d535912c917906982",
+        "labelSha256": "fb73a599e4d766cbb831b394e9a786c31563034d689282982cc3c423415cf861",
+        "size": [
+          800,
+          600
+        ]
+      },
+      {
+        "image": "cn-3FO3885P15RS.jpg",
+        "imageSha256": "fd5b6d842206e542bbe203891aea8abc728ec64a223459ff180a3dac656c06a0",
+        "labelSha256": "3603e2778c4e56fa4dea973b81030a89815fc62d1c83029feed7b2d31ad58733",
+        "size": [
+          800,
+          600
+        ]
+      },
+      {
+        "image": "cn-3FO3896F267I.jpg",
+        "imageSha256": "39f1721b35ad1ae385d269302c5f77fe41995aafee0b69ba529adf3774086992",
+        "labelSha256": "3890a25bd6027b78bf72d967e144a1a60c45c638db29414dc4f092e528f50034",
+        "size": [
+          800,
+          600
+        ]
+      },
+      {
+        "image": "cn-3FO38A6P9PI6.jpg",
+        "imageSha256": "388c660b21e7bb55b9df4a632e207e2ee09df0f8b11b3a83bb4b40859ca880d9",
+        "labelSha256": "6f652923633623682298eb7defb1130e3c4288814cb08f5d6a16ca232c096f61",
+        "size": [
+          800,
+          600
+        ]
+      },
+      {
+        "image": "cn-3FO38DASBT9T.jpg",
+        "imageSha256": "49fb735fd7d96f207f42a43757ce9493c47740b07976aec2f06f0b21a0bfb7ef",
+        "labelSha256": "e2c7e955f071a44ce8be79a7a040714e174ed56f52193d58d69284fcc1b7fc29",
+        "size": [
+          800,
+          600
+        ]
+      },
+      {
+        "image": "cn-3FO38F2FA0BQ.jpg",
+        "imageSha256": "63e3f16f38dfbdc3e3bf01ce428552604a854716d6726250026c479a48180646",
+        "labelSha256": "2a07817179af0368e3c7cb6c0fc0a9d6310a0abbb290d03ca4a42ca18bf2cc0f",
+        "size": [
+          800,
+          600
+        ]
+      },
+      {
+        "image": "cn-3FO38FMGVLJX.jpg",
+        "imageSha256": "7eb916ea24d75cdac3b4e91039ececacdbfa4648896bc7fcf0800623f3bd857a",
+        "labelSha256": "3e3c8983c756bd11a55307ec8825320dc940a23120b8a09dbdbc2f9dada97251",
+        "size": [
+          800,
+          600
+        ]
+      },
+      {
+        "image": "cn-3FO38FS8DYV4.jpg",
+        "imageSha256": "0ca2cbe0d961a2195eeaa93a2aa2d0b360573a0ecfa813a8978b125068862639",
+        "labelSha256": "72ae88869ca79c90ef9b424cbe4b458a16fb5cf27afabb0b592cafa9a138820f",
+        "size": [
+          800,
+          600
+        ]
+      },
+      {
+        "image": "cn-3FO38GGI6OTY.jpg",
+        "imageSha256": "540c8765e75e0494036a0414c8a9a72b5d6550277b0a8809618b45a2e1c9743b",
+        "labelSha256": "ddb734e6332fdf6c9942ec99b9742b00745eb909f435a1e95f7e90c40e5222b0",
+        "size": [
+          800,
+          600
+        ]
+      },
+      {
+        "image": "cn-3FO38I6YBQBR.jpg",
+        "imageSha256": "32eb8546c20656384fd664e16a55ea28c3bda6fd042a5a4e00c235703e228cc5",
+        "labelSha256": "a8f3495095c84d7473a3b7ba02ad4ba840b437d6e30b88170dbfc469e8d84b81",
+        "size": [
+          800,
+          600
+        ]
+      },
+      {
+        "image": "cn-3FO3CTXFFAX0.jpg",
+        "imageSha256": "6583366fd0b52d2fcf9967b0241874d1f8925836db0457cd8474d797e22b0ad5",
+        "labelSha256": "5127db4df391124325df1fa5c05ba2fc5142eefbb74b9859c0bd2e4beb8340fb",
+        "size": [
+          800,
+          600
+        ]
+      },
+      {
+        "image": "cn-3FO3DC5KFNBA.jpg",
+        "imageSha256": "c1f954c6224c486c64879004d3cee94275dfccafce462eec45138e4f8eee1cd0",
+        "labelSha256": "2d7278e3f32fb9373ad466b71c7ace74122d946817b3786aea418833546190c9",
+        "size": [
+          800,
+          600
+        ]
+      },
+      {
+        "image": "hk-3FO3ATDMDOTV-3.jpg",
+        "imageSha256": "97bdfcf9963b569717040f385af577d4fc5b829c8482f1293d2b3f3ade0916a7",
+        "labelSha256": "44428b31aadbd831a0302f51643dfc8024663d30ea9ec7a765a9151bc3d7c93e",
+        "size": [
+          620,
+          462
+        ]
+      },
+      {
+        "image": "hk-3FO3BP3LLYSO-3.jpg",
+        "imageSha256": "c98e06a6a370561b26b0e53f8062d4c617178d8d6deaa31f624410b252bb65b6",
+        "labelSha256": "b84d09af930b65e61b16189ca560e3e4b55eecdf48ca6b6b3169897bd3502bf7",
+        "size": [
+          620,
+          580
+        ]
+      },
+      {
+        "image": "hk-3FO3DV2AUT4S-3.jpg",
+        "imageSha256": "024ce453d6b2a723d45eb3ce06d6c36b39836502816f70c443895b00a09911fb",
+        "labelSha256": "270ca788d8540e92c578222a1929fda0e03c74b9c7e38b95c9e2ad684e8d3695",
+        "size": [
+          612,
+          600
+        ]
+      },
+      {
+        "image": "hk-3FO3E6LDDPJ8-3.jpg",
+        "imageSha256": "a3d7759d9859732a560adce05ea74978b78c04c7f3ae42b6fa982875ea35aee2",
+        "labelSha256": "c06a84227ca399259e90c16d7e3ef6331377ff7590846621db57fa8d0febf56a",
+        "size": [
+          620,
+          505
+        ]
+      },
+      {
+        "image": "hk-3FO3ELQQN9HT-3.jpg",
+        "imageSha256": "96a559a56848c37725ffbe055a68ff6111a950e6fbff9167d4f1890ce9ecb7d0",
+        "labelSha256": "3162d176e8bc520002da20e9fa41a7bec8b97801908399148a44dd668eb04e10",
+        "size": [
+          623,
+          419
+        ]
+      },
+      {
+        "image": "hk-3FO3ETA40SSS-3.jpg",
+        "imageSha256": "ae34639db670d215608a6b55fc6c972f5f8d98d50e4257e7d74e2186ab9d13b9",
+        "labelSha256": "dab2330d0e84a9aae96f2c86cec65999360418cccc5606a732c5513a3e702d33",
+        "size": [
+          420,
+          600
+        ]
+      },
+      {
+        "image": "hk-3FO3GJQNCI3E-3.jpg",
+        "imageSha256": "db0a3aa6f90e581f36d9a4b54dea03fab4b44d1efdbf82b56178ae7b0be36fd1",
+        "labelSha256": "a6f986315203d4a47f97c3783d4bb7ef336c890dacf0b3138e8820c49c7fce0f",
+        "size": [
+          620,
+          600
+        ]
+      },
+      {
+        "image": "hk-3FO3GYYPV7GO-3.jpg",
+        "imageSha256": "c519928db0284d9010593710cb1cd7798d515798c322906165fb78bbdf664c89",
+        "labelSha256": "256bde9556afe6bc92e745ff8cb7b25af0c1698539f8573eb46551e3c28fa55b",
+        "size": [
+          625,
+          588
+        ]
+      },
+      {
+        "image": "hk-3FO3HLAR68IC-3.jpg",
+        "imageSha256": "50f5f5b76705c47c4ecce7617266f6aa43109b32573f1f0791bfb29324d84194",
+        "labelSha256": "46f712fb0a487de7aa1ba69327b0debafb84a1adf4726cc7be13d2032f054159",
+        "size": [
+          494,
+          600
+        ]
+      },
+      {
+        "image": "hk-3FO3JGQGJKO1-3.jpg",
+        "imageSha256": "62e85c617fafdda91fe2d035755955b1c6280dfd6222b1363fb17775d0eede71",
+        "labelSha256": "b17703ae9ea51ea98efe9d6ae5de5c826ba6f99264b934a0cfaf02482813f854",
+        "size": [
+          620,
+          600
+        ]
+      },
+      {
+        "image": "hk-3FO3JUKVQB60-3.jpg",
+        "imageSha256": "d1e7c9027f41631c7888ac89121190aaee45e86f86f3564924672dab9e49eb0d",
+        "labelSha256": "6c90402553dd47f56770fbb32e633689409b3fbbc4bab21d4034eb0a6d3f2279",
+        "size": [
+          303,
+          600
+        ]
+      },
+      {
+        "image": "hk-3FO3MXF4YW69-3.jpg",
+        "imageSha256": "57a878a944e045c4a4c8539886bb863886b766e9421484b6cef72234abe67eed",
+        "labelSha256": "3bc9945ab39144eb687a6286ff85c1b4d9b901ce1669f6e6aa40a9c228b40420",
+        "size": [
+          612,
+          600
+        ]
+      },
+      {
+        "image": "hk-3FO3N742YBHN-3.jpg",
+        "imageSha256": "1cdc15db10b3ec63a30da07d482abbe068a8cc207ec6ebac7a3cedb1720831cd",
+        "labelSha256": "b6509762be42552594eb833689b98608adab29735e0674f771d409f5837644be",
+        "size": [
+          506,
+          600
+        ]
+      },
+      {
+        "image": "hk-3FO3RB9M9YMP-3.jpg",
+        "imageSha256": "c32b862faf7ed819430b79319d0dcc726274341d11d73f52c1aee4dc50785bdc",
+        "labelSha256": "1e4a7a465defbabb53b080daea93a9bfb41c95809a3b7e3c9840bbeea247d2cb",
+        "size": [
+          647,
+          428
+        ]
+      },
+      {
+        "image": "hk-3FO3REKPEK4N-3.jpg",
+        "imageSha256": "87f33fa20580c68d40ab1a40da59ab7416792de9651a8a0382cab0bac6c30a49",
+        "labelSha256": "5a96a37e4a7ff401fe8dac2c7c03c49a3046624a300620ee876eac28ab37d2a8",
+        "size": [
+          578,
+          600
+        ]
+      },
+      {
+        "image": "hk-3FO3RGKECV5G-3.jpg",
+        "imageSha256": "5516e45735eed24e7d4a90ffeab9145369a1dd68e806ad9c1e8b1fa1658332d2",
+        "labelSha256": "41f39c15662fea923e7c4231e4d897bf0bdcb548a01525bca2045d8cda9c8798",
+        "size": [
+          620,
+          517
+        ]
+      },
+      {
+        "image": "hk-3FO3RN3GPBY0-3.jpg",
+        "imageSha256": "ac1d86ac80cac225ce3d76ad0abd6515bb36e0c27e407f9a5a3a708439d8ed31",
+        "labelSha256": "22b8933f8ac45ffcb3f4c559af6bd3c785c354c6080c6a5012c3c75dc3b5f565",
+        "size": [
+          625,
+          428
+        ]
+      },
+      {
+        "image": "hk-3FO3RO2J13PI-3.jpg",
+        "imageSha256": "c69f64ea5e83054fcb88bf6aca432e479e6bd97f537106087b59d0216ac1225b",
+        "labelSha256": "2b0e41a2f665a1ad4fed92e2a0a33b3724eee275d9c02f1a59720596dad58005",
+        "size": [
+          435,
+          600
+        ]
+      },
+      {
+        "image": "hk-3FO3S5V3NSMX-3.jpg",
+        "imageSha256": "72f6661101f7e60f329cfe2c00c66e274fdf0ea59e9c1aacaf9245e4d3f34bef",
+        "labelSha256": "8dbb7a002286fb7c4b3880ef4da3ebc065cac79eb261fcac0c228cf237c31944",
+        "size": [
+          656,
+          590
+        ]
+      },
+      {
+        "image": "hk-3FO3S6IRR074-3.jpg",
+        "imageSha256": "7ac5352c0c7dac5e8d82d0ab13a414079e4937e5f2fddd17892d8bf64cbb3e01",
+        "labelSha256": "c61b8e64f2e88151c04e93fbf2d21a92f4e2b374881cd26c48341de929888326",
+        "size": [
+          621,
+          402
+        ]
+      },
+      {
+        "image": "hk-3FO3SDXT7W3U-3.jpg",
+        "imageSha256": "c23f05d0cc2bcce1e0a3d8b319039f27ee55cf00026b5baa91ae2418bd2cfbdc",
+        "labelSha256": "be38a12ad893c08e626c55933271b2125081fe591ec815741821392bcbc67eb5",
+        "size": [
+          620,
+          600
+        ]
+      },
+      {
+        "image": "hk-3FO3SIA03UAC-3.jpg",
+        "imageSha256": "5ba3522baef8bab63f8231980c7e173fa49e884d0240283d4863bb1aad4df264",
+        "labelSha256": "e3ef999302b00cbcbe0f7e2f0aafb66a1c68e26676db4904ec98cf9b1ddfb54e",
+        "size": [
+          753,
+          506
+        ]
+      },
+      {
+        "image": "hk-3FO3SLHBSL8L-3.jpg",
+        "imageSha256": "25ef433c8f23f8d51160005ebd1dcad1e8b787aa86f939f095bd9dcece804dba",
+        "labelSha256": "45cdd74f526d2f4907fb9692ef880df932504b580e05a8e8998700c258e3ccb4",
+        "size": [
+          528,
+          600
+        ]
+      },
+      {
+        "image": "hk-3FO3SV8DNOD1-3.jpg",
+        "imageSha256": "fe108c44002656a94946150b8a58653eb0145c6f3ba33d5cf88245afa0754419",
+        "labelSha256": "49dbbbb8eb1f80a699e1ccbcc71545452ad80e7a275bafcc3ec6a084c5d82974",
+        "size": [
+          277,
+          600
+        ]
+      },
+      {
+        "image": "hk-3FO3UXJKUBXD-3.jpg",
+        "imageSha256": "e0be07588d116870cd92a0d56304c4c845c9a4fa8b7f42b9046579d1ff18289f",
+        "labelSha256": "09b4b5ed46e638c23300de38fd69b800ebeee36c87b78be5d1b28f94a9e42a10",
+        "size": [
+          535,
+          600
+        ]
+      },
+      {
+        "image": "hk-3FO3VNMHYPLG-3.jpg",
+        "imageSha256": "9c66d906521586bb7ee61045c3f52b120e9454cfc5f04141ab827a2201c929e0",
+        "labelSha256": "840dbf8fa7b7673ceb6023935db8a96730e0b56e6fd3f11330f8732f7cec3f22",
+        "size": [
+          661,
+          366
+        ]
+      },
+      {
+        "image": "hk-3FO3VYPVGB2J-3.jpg",
+        "imageSha256": "2e81928fb66449f986578f540429a487394bf6a51f878307cbba1f475fbd6ca7",
+        "labelSha256": "ead46a2849c5c3f9401989951d8407ed41fc6f03fb843a6bd7e624b13bb5d878",
+        "size": [
+          412,
+          600
+        ]
+      },
+      {
+        "image": "hk-3FO3W4Q0VUWO-3.jpg",
+        "imageSha256": "3df80687266493dcc1701a6adac21968ea0b6b63e3459a7c4ba0ab694954abf5",
+        "labelSha256": "a1f21a1a73d5a9f680cb1214ce4e5b840cbf2c972f7253bc4b64c742e03d10ec",
+        "size": [
+          621,
+          341
+        ]
+      },
+      {
+        "image": "hk-3FO3YDD288DY-3.jpg",
+        "imageSha256": "b3e3bd4a602cc8722beecee6e3482a2380a787d6ec4f78986867bb38d8f4b93e",
+        "labelSha256": "18ef037f18fa3d7348e6248ea442ba0d594b375d40e01a6de8df1df6f2198217",
+        "size": [
+          515,
+          600
+        ]
+      },
+      {
+        "image": "hk-3FO3YJ49Q0HM-3.jpg",
+        "imageSha256": "c7541e77260383eb361ee78406409c0785fe5ef1d9cac81e5211e1d3d13c5bdb",
+        "labelSha256": "2b4c8685058b862cc1551b8afec50ca8b5fc52a304c40400ef6d5250fbecc9ef",
+        "size": [
+          604,
+          600
+        ]
+      },
+      {
+        "image": "hk-3FO3YP2T0W03-3.jpg",
+        "imageSha256": "a7b036e32f291a2ca4cf816724b495317a2d51afe5cbf30acbc2296da83901b1",
+        "labelSha256": "b0ec11aa1d42d8145449b026bc1f18248e20ba6360434289d01e2a8f3ab6166a",
+        "size": [
+          446,
+          600
+        ]
+      },
+      {
+        "image": "hk-3FO40589XB0G-3.jpg",
+        "imageSha256": "dbd3e01502b8fe40fbedf55be951f884a5be8010ac308deb6f49ac0f618c0192",
+        "labelSha256": "98dc5370d9064f72b8161fb9ba3f9f258c9afec149a2921216c0b8ccb7528f27",
+        "size": [
+          643,
+          568
+        ]
+      },
+      {
+        "image": "hk-3FO40IQGCBDE-3.jpg",
+        "imageSha256": "fa2cf7b4c7bf348a07d1f788ee274094cfc3fdffbcc552d1e76c7baa1467218f",
+        "labelSha256": "639cf0ddff161eb6ed7c44d65d324ad26705b4d017892959f8c9c64dbb45fab7",
+        "size": [
+          620,
+          551
+        ]
+      },
+      {
+        "image": "hk-3FO40S0F95YR-3.jpg",
+        "imageSha256": "bd4650ca83e9871a6fb8cf3f6cbf3d7b9bc39b25c7dcf8ee75196bf330477f7f",
+        "labelSha256": "b460ccb576adeb49eb43a48dd1fcdf94df78a1fc252a7ded5a0391b893e6a139",
+        "size": [
+          645,
+          600
+        ]
+      },
+      {
+        "image": "hk-3FO42Y97XJ8K-3.jpg",
+        "imageSha256": "a322949cc2453302b8ac02c87441ea84f47846931ea4923c6fa80347c69ec933",
+        "labelSha256": "ccadec1f632c318928dbbe63331fb3940cff4e44d8642d36dc2a4e5ec11c2e4b",
+        "size": [
+          610,
+          600
+        ]
+      },
+      {
+        "image": "hk-3FO43K77UN46-3.jpg",
+        "imageSha256": "d9b9999cffe78655d7a0ac15ef2cfb44702760f1bd5aec482dac9da60a3b3fbc",
+        "labelSha256": "684c4192bf87e6780dcc26d1ad1b40d357d113147ec3ea1043cd5f0f69dc2036",
+        "size": [
+          667,
+          510
+        ]
+      },
+      {
+        "image": "hk-3FO44SRKCOU9-3.jpg",
+        "imageSha256": "c62e6f28bd69d9984b2b8f223826f5be67c08cdc16f90f66b8dbf1af4e88953a",
+        "labelSha256": "b03aceb3682e3ec22f2336dcf8f42c3ffe8311bb6e84c3df1232931df3750b34",
+        "size": [
+          621,
+          477
+        ]
+      },
+      {
+        "image": "hk-3FO47WC6WB0Y-3.jpg",
+        "imageSha256": "ebcba07e2ad7d1c7261b0a8696886cb55279b5914fd8c6ac05693a5d3b6a0ce1",
+        "labelSha256": "b1923a7020f53ae78aeaf4d572f01a8dafc893658e507f5587de836a923f32ce",
+        "size": [
+          625,
+          312
+        ]
+      },
+      {
+        "image": "hk-3FO498AT2FVC-3.jpg",
+        "imageSha256": "a239cb534c9ddf958b95f78e5e994d76b2657e87af5b955bf44922d241d1ea84",
+        "labelSha256": "e1de951abe4774083389b6459a032d1ec1c8c3a42116cc8995e94003cb6dbc14",
+        "size": [
+          626,
+          590
+        ]
+      },
+      {
+        "image": "nb-3FO37JVX8S1W.jpg",
+        "imageSha256": "3f939c9ac1dfb120d14ecca6a78f3d3b4e7e740052ccf2bb8939c57a542be7ce",
+        "labelSha256": "6be00c50134bab4c535103c924b5e145ac2f267282757ad043e65853ff07a94c",
+        "size": [
+          577,
+          376
+        ]
+      },
+      {
+        "image": "nb-3FO37MURR1ID.jpg",
+        "imageSha256": "e8032ab9e9280be474e19e60bd25e417fa83076a518f1fd756ae45c7e93378c4",
+        "labelSha256": "818dc836d9d8c0a78f346c2f6dd4576767039475d878e22db6d7699bf253c37d",
+        "size": [
+          583,
+          576
+        ]
+      },
+      {
+        "image": "nb-3FO37NQ43SRX.jpg",
+        "imageSha256": "c18306eb78de732cd4d962b4fa3b75116de7f45147237d8a6f42c56649f85231",
+        "labelSha256": "37586d5bdb8ba92e1b2e4c228eb84c3d451196318806372e336d933d8661fea1",
+        "size": [
+          481,
+          587
+        ]
+      },
+      {
+        "image": "nb-3FO37PKHPYFW.jpg",
+        "imageSha256": "f6e9aa91a763ddc07a7723fb66bbec560d1204e9d6e2303d46af3f347bc2dbe9",
+        "labelSha256": "03e4d117e60c681dc464297ae4fbdaecb1804735c6cbea416909ec5af963012b",
+        "size": [
+          507,
+          586
+        ]
+      },
+      {
+        "image": "nb-3FO37Q7HN7R3.jpg",
+        "imageSha256": "05cf857ec8e9566d7efb44ecae59ee5d607406e54a2da7f44a3bdb64262367b7",
+        "labelSha256": "0a4468e03555d5f57c754168bbe3edecbd08d2b681ba96f955d4909ae2128d8f",
+        "size": [
+          525,
+          579
+        ]
+      },
+      {
+        "image": "nb-3FO37QJ4L4CQ.jpg",
+        "imageSha256": "e0144ec6fc4237e6d2fe038d8014c54f212389c20585484dbe11f8d16322297b",
+        "labelSha256": "31c4ab73b767735c96d53127c4ed70d41d66b734d2fe9b7a88ac696aa789dbf9",
+        "size": [
+          561,
+          586
+        ]
+      },
+      {
+        "image": "nb-3FO37RHK8PPI.jpg",
+        "imageSha256": "6332ada10e78b4a46a7a1688ec6eb9b12cd505d6f3b5d1e9f5696b787385c4c4",
+        "labelSha256": "ede0c122c3678d4d8911ebd7af69c531b9b56870d98db1b2f54e6bd03b6400b3",
+        "size": [
+          542,
+          584
+        ]
+      },
+      {
+        "image": "nb-3FO37W9DD70A.jpg",
+        "imageSha256": "1c3c075200f1ec38b1c03ee19c5f01616a58759e1db0f2bc4e92b99557554053",
+        "labelSha256": "e6af9f3f9614a1359bd072890f515e3385665c28640b42772dc41257d2e08f63",
+        "size": [
+          577,
+          447
+        ]
+      },
+      {
+        "image": "nb-3FO37YYE9JN7.jpg",
+        "imageSha256": "02e87d7b876d8f6746f448c413ec66d49a8848df17dd326fb17f216477386d8d",
+        "labelSha256": "d6bf397420b8485a983cbc2037f1c9038b1dbb30570e7ee6ae460ef9ac35bf2a",
+        "size": [
+          578,
+          556
+        ]
+      },
+      {
+        "image": "nb-3FO386EVCSIW.jpg",
+        "imageSha256": "0a0b21547454cb91550eca6eb115ce94e9ed514f5ddf645eb3474108c0da3e6d",
+        "labelSha256": "5354c7c35fab0b8e318d6fed9c0765cb747bef63f9e517f7a072b888e8798ed0",
+        "size": [
+          551,
+          462
+        ]
+      },
+      {
+        "image": "nb-3FO386IFKPS9.jpg",
+        "imageSha256": "f83a1a71309e26ded58e18b677eef1e0556378d3909f4aa8e59eb305a0c1161e",
+        "labelSha256": "93cdb4f2a072955519433ddeec2b180f1b6b38870462abab3270f690ab332e0c",
+        "size": [
+          581,
+          472
+        ]
+      },
+      {
+        "image": "nb-3FO389LB61Y9.jpg",
+        "imageSha256": "a128a9d16b91d159bbc5adea31444aab769fb7d6c8807aa8817a646211465093",
+        "labelSha256": "1d2707c38251134fc3669d6b70483fb463a1afcbe776108e9fce4c29b315e852",
+        "size": [
+          435,
+          584
+        ]
+      },
+      {
+        "image": "nb-3FO38GQO71TI.jpg",
+        "imageSha256": "267280b641d893ffd7cdf9547937a8dd473b1368bb3a81d7ff68a5498260fef9",
+        "labelSha256": "8606571567e67a83d3e0c7c5a35ec63d4386f6bd1cb057dd3b819da918175a6e",
+        "size": [
+          537,
+          584
+        ]
+      },
+      {
+        "image": "nb-3FO3AX5A8PJR.jpg",
+        "imageSha256": "be55940abb6a0cc9a3b0d3491fbdd30f50abf7824941a5bf14934fc933a451dd",
+        "labelSha256": "6ac1ddf0600b8d6a8e85ac65606431ef050b7c1182047d3c9cd8a431cad2b7f5",
+        "size": [
+          521,
+          585
+        ]
+      },
+      {
+        "image": "nb-3FO3BMHP0C20.jpg",
+        "imageSha256": "61949a9271449ac97346f3b025f381465d470bcf53198cb04ec23fa35d0636c4",
+        "labelSha256": "0c6b05aedb3a7e83d8fa7331b0fc79122883aea81ba1839760dbbbaf6096689e",
+        "size": [
+          342,
+          586
+        ]
+      }
+    ],
+    "val": [
+      {
+        "image": "cf-大片地板-大片地板-09.jpg",
+        "imageSha256": "6a867028cf402c4d20fc2cd2111df0a4210cdd087a7e11fdefa872d446d19e3b",
+        "labelSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size": [
+          160,
+          160
+        ]
+      },
+      {
+        "image": "cf-真窗-真窗-05.jpg",
+        "imageSha256": "ffd25700e785105e6dfb8f8588aabec22f3be942f8a63bd9d3b10632cfb1e8bf",
+        "labelSha256": "bc9b4ddd56b1e3316d3e40da3f4ba7da62bf0d56e0c78edefb53b7692d4be06c",
+        "size": [
+          160,
+          160
+        ]
+      },
+      {
+        "image": "cf-门洞-门洞-01.jpg",
+        "imageSha256": "268b4844f0f04916d762bc0e7bd43c6690431df2b6b00d1dc40f333d534f3356",
+        "labelSha256": "78f0c6c5d33219d268d12ee41d089bb0567f0989fd95d34ae8aaa449b0b17bdc",
+        "size": [
+          160,
+          160
+        ]
+      },
+      {
+        "image": "cf-门洞-门洞-05.jpg",
+        "imageSha256": "6edc9936a249748460527b4026b4517f52d928aaedb60226bec0f4e1fbb2d773",
+        "labelSha256": "8fa3ca71758e32e1ee62b12ef6f1f04078e9a130624b6c1802beb0ffa179fc46",
+        "size": [
+          160,
+          160
+        ]
+      },
+      {
+        "image": "cf-门洞-门洞-07.jpg",
+        "imageSha256": "3905b22354d1aa88b49f8e696f418fd1798cadea989a134084727da840faeb13",
+        "labelSha256": "362f31c2a2044bf9e35195410f5ad016efb78c50070b1b9b125f069f931e1004",
+        "size": [
+          160,
+          160
+        ]
+      },
+      {
+        "image": "cf-门洞-门洞-08.jpg",
+        "imageSha256": "9db0469bba1cd5ca8c3a41f7d5b1bb648663a561e189fbaaa79963b7107524d1",
+        "labelSha256": "1cdc19ce8927b96d081648972d4b9952d497b212768cc0aacd369b4e2d6bc1ba",
+        "size": [
+          160,
+          160
+        ]
+      },
+      {
+        "image": "cf-门洞-门洞-10.jpg",
+        "imageSha256": "e73987731fd84093194d27b33d82654b4dbc7824c81a33fc1a60b5bf6d9c086f",
+        "labelSha256": "d833705e93944c332ee3bebe73048e7e7cecfc0bf1385eb01237673e4a737d8d",
+        "size": [
+          160,
+          160
+        ]
+      },
+      {
+        "image": "cn-3FO37VNNGKVC.jpg",
+        "imageSha256": "ba95fc56964f0e6b404f7ce9cbac48ad69ce4ced074b1aa138f14c73c86feebf",
+        "labelSha256": "36aba1cb48327916a238ec36ecefb0e6b929be2f6c5ba798baae91370af175de",
+        "size": [
+          800,
+          600
+        ]
+      },
+      {
+        "image": "hk-3FO3CE4W1OPH-3.jpg",
+        "imageSha256": "1baeaffe792ed202069e47ccf950a428745a16d2fb5d0ab98e1fbe49d9279bda",
+        "labelSha256": "bafd4ef6a064efa9851e9222a41e016eb13493ee5443529754235cae1c2e7772",
+        "size": [
+          560,
+          600
+        ]
+      },
+      {
+        "image": "hk-3FO3H003Q9IA-3.jpg",
+        "imageSha256": "60b87c6fb1f15842366db97ac4de131dd5a40c0fccb11003ca81894c888c4c6b",
+        "labelSha256": "005fde1b4cec7b55eff6c71219c81046420fc0a2bfdecbf16f4a17b785f6a462",
+        "size": [
+          620,
+          600
+        ]
+      },
+      {
+        "image": "hk-3FO3S6MHSB5A-3.jpg",
+        "imageSha256": "99ea387fd0f4cefd6ef6601394675249162798f33903cb221a38a46bab3c1255",
+        "labelSha256": "b25faf6337567d4c331fa10010b1cbafd120367b6d7eb0db338cb8428e46d612",
+        "size": [
+          620,
+          600
+        ]
+      },
+      {
+        "image": "hk-3FO3UONGHR0O-3.jpg",
+        "imageSha256": "93bf22bd97af6f194b3a984ac5d2b4efccfc5c3ca5849fa3a9190d0fb8e5b39a",
+        "labelSha256": "a304bbb33059a4b55b9418460f4e6f88b059232589543d5625654e8f7ac8e558",
+        "size": [
+          621,
+          522
+        ]
+      },
+      {
+        "image": "hk-3FO3UWRG1XT7-3.jpg",
+        "imageSha256": "272f942a59ea8126ba834f78851791b95de1d1a2551c6d1df0af72b128f968ee",
+        "labelSha256": "6c6c7fe9e2b9a29eb883be6bd169d8788cef9498869524bb1673ae5d094adf09",
+        "size": [
+          536,
+          600
+        ]
+      }
+    ]
+  },
+  "newClassCounts": {
+    "door": 117,
+    "window": 116
+  },
+  "runDirectory": "C:\\Users\\20744\\Desktop\\domira-studio\\.screenshots\\newbatch-v4\\runs\\yolo-n-v4-newbatch",
+  "bestCheckpoint": "C:\\Users\\20744\\Desktop\\domira-studio\\.screenshots\\newbatch-v4\\runs\\yolo-n-v4-newbatch\\weights\\best.pt",
+  "sourceFilesReadOnly": true,
+  "labelCacheMayBeRebuilt": true
+}

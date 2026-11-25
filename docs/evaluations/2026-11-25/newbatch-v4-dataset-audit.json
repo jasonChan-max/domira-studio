@@ -1,0 +1,160 @@
+{
+  "trainImages": 145,
+  "trainLabels": 145,
+  "validationImages": 13,
+  "newImages": 15,
+  "newDoorBoxes": 117,
+  "newWindowBoxes": 116,
+  "newRows": [
+    {
+      "name": "nb-3FO37JVX8S1W.jpg",
+      "size": [
+        577,
+        376
+      ],
+      "lines": 16,
+      "imageSha256": "3f939c9ac1dfb120d14ecca6a78f3d3b4e7e740052ccf2bb8939c57a542be7ce",
+      "labelSha256": "6be00c50134bab4c535103c924b5e145ac2f267282757ad043e65853ff07a94c"
+    },
+    {
+      "name": "nb-3FO37MURR1ID.jpg",
+      "size": [
+        583,
+        576
+      ],
+      "lines": 15,
+      "imageSha256": "e8032ab9e9280be474e19e60bd25e417fa83076a518f1fd756ae45c7e93378c4",
+      "labelSha256": "818dc836d9d8c0a78f346c2f6dd4576767039475d878e22db6d7699bf253c37d"
+    },
+    {
+      "name": "nb-3FO37NQ43SRX.jpg",
+      "size": [
+        481,
+        587
+      ],
+      "lines": 14,
+      "imageSha256": "c18306eb78de732cd4d962b4fa3b75116de7f45147237d8a6f42c56649f85231",
+      "labelSha256": "37586d5bdb8ba92e1b2e4c228eb84c3d451196318806372e336d933d8661fea1"
+    },
+    {
+      "name": "nb-3FO37PKHPYFW.jpg",
+      "size": [
+        507,
+        586
+      ],
+      "lines": 15,
+      "imageSha256": "f6e9aa91a763ddc07a7723fb66bbec560d1204e9d6e2303d46af3f347bc2dbe9",
+      "labelSha256": "03e4d117e60c681dc464297ae4fbdaecb1804735c6cbea416909ec5af963012b"
+    },
+    {
+      "name": "nb-3FO37Q7HN7R3.jpg",
+      "size": [
+        525,
+        579
+      ],
+      "lines": 15,
+      "imageSha256": "05cf857ec8e9566d7efb44ecae59ee5d607406e54a2da7f44a3bdb64262367b7",
+      "labelSha256": "0a4468e03555d5f57c754168bbe3edecbd08d2b681ba96f955d4909ae2128d8f"
+    },
+    {
+      "name": "nb-3FO37QJ4L4CQ.jpg",
+      "size": [
+        561,
+        586
+      ],
+      "lines": 15,
+      "imageSha256": "e0144ec6fc4237e6d2fe038d8014c54f212389c20585484dbe11f8d16322297b",
+      "labelSha256": "31c4ab73b767735c96d53127c4ed70d41d66b734d2fe9b7a88ac696aa789dbf9"
+    },
+    {
+      "name": "nb-3FO37RHK8PPI.jpg",
+      "size": [
+        542,
+        584
+      ],
+      "lines": 18,
+      "imageSha256": "6332ada10e78b4a46a7a1688ec6eb9b12cd505d6f3b5d1e9f5696b787385c4c4",
+      "labelSha256": "ede0c122c3678d4d8911ebd7af69c531b9b56870d98db1b2f54e6bd03b6400b3"
+    },
+    {
+      "name": "nb-3FO37W9DD70A.jpg",
+      "size": [
+        577,
+        447
+      ],
+      "lines": 14,
+      "imageSha256": "1c3c075200f1ec38b1c03ee19c5f01616a58759e1db0f2bc4e92b99557554053",
+      "labelSha256": "e6af9f3f9614a1359bd072890f515e3385665c28640b42772dc41257d2e08f63"
+    },
+    {
+      "name": "nb-3FO37YYE9JN7.jpg",
+      "size": [
+        578,
+        556
+      ],
+      "lines": 15,
+      "imageSha256": "02e87d7b876d8f6746f448c413ec66d49a8848df17dd326fb17f216477386d8d",
+      "labelSha256": "d6bf397420b8485a983cbc2037f1c9038b1dbb30570e7ee6ae460ef9ac35bf2a"
+    },
+    {
+      "name": "nb-3FO386EVCSIW.jpg",
+      "size": [
+        551,
+        462
+      ],
+      "lines": 19,
+      "imageSha256": "0a0b21547454cb91550eca6eb115ce94e9ed514f5ddf645eb3474108c0da3e6d",
+      "labelSha256": "5354c7c35fab0b8e318d6fed9c0765cb747bef63f9e517f7a072b888e8798ed0"
+    },
+    {
+      "name": "nb-3FO386IFKPS9.jpg",
+      "size": [
+        581,
+        472
+      ],
+      "lines": 19,
+      "imageSha256": "f83a1a71309e26ded58e18b677eef1e0556378d3909f4aa8e59eb305a0c1161e",
+      "labelSha256": "93cdb4f2a072955519433ddeec2b180f1b6b38870462abab3270f690ab332e0c"
+    },
+    {
+      "name": "nb-3FO389LB61Y9.jpg",
+      "size": [
+        435,
+        584
+      ],
+      "lines": 14,
+      "imageSha256": "a128a9d16b91d159bbc5adea31444aab769fb7d6c8807aa8817a646211465093",
+      "labelSha256": "1d2707c38251134fc3669d6b70483fb463a1afcbe776108e9fce4c29b315e852"
+    },
+    {
+      "name": "nb-3FO38GQO71TI.jpg",
+      "size": [
+        537,
+        584
+      ],
+      "lines": 15,
+      "imageSha256": "267280b641d893ffd7cdf9547937a8dd473b1368bb3a81d7ff68a5498260fef9",
+      "labelSha256": "8606571567e67a83d3e0c7c5a35ec63d4386f6bd1cb057dd3b819da918175a6e"
+    },
+    {
+      "name": "nb-3FO3AX5A8PJR.jpg",
+      "size": [
+        521,
+        585
+      ],
+      "lines": 15,
+      "imageSha256": "be55940abb6a0cc9a3b0d3491fbdd30f50abf7824941a5bf14934fc933a451dd",
+      "labelSha256": "6ac1ddf0600b8d6a8e85ac65606431ef050b7c1182047d3c9cd8a431cad2b7f5"
+    },
+    {
+      "name": "nb-3FO3BMHP0C20.jpg",
+      "size": [
+        342,
+        586
+      ],
+      "lines": 14,
+      "imageSha256": "61949a9271449ac97346f3b025f381465d470bcf53198cb04ec23fa35d0636c4",
+      "labelSha256": "0c6b05aedb3a7e83d8fa7331b0fc79122883aea81ba1839760dbbbaf6096689e"
+    }
+  ]
+}

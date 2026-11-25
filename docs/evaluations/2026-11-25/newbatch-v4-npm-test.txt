@@ -1,0 +1,471 @@
+
+> domira-spatial-studio@2.1.1 test
+> node --test tests/*.test.mjs
+
+✔ layout endpoint returns a real scene with explicit local engine (70.5801ms)
+✔ invalid room is a 400, unsupported method a 405 (1.2167ms)
+✔ reconstruction is explicit when no provider is configured (0.5917ms)
+✔ contact validates and never pretends an unconfigured message was sent (1.1126ms)
+✔ malformed and oversized payloads are rejected (3.4348ms)
+✔ 细长远墙飘窗有三面窗和地板/屋外证据才通过，方框与空白尺寸线被拒 (4.3629ms)
+✔ 飘窗识别支持四个朝向，不能只硬编码R(2)右边坐标 (6.1296ms)
+✔ 内缘被模型涂成连续地板时，四向飘窗仍须由两端墙垛和三面窗支持 (8.0932ms)
+✔ R(2) 的两个飘窗与两个大假框明确区分，14门原始数据不被删除 (1384.064ms)
+✔ 分割回收路径中的飘窗也将质心归到外沿，主窗与三面玻璃不能各用一个中心 (740.6447ms)
+✔ 两扇飘窗三面玻璃均有窗台/过梁且洞口贯通，保存重开与缩放后仍成立 (747.8642ms)
+✔ 空间9是封门形成的飘窗地板候选；裁为窗台后不再生成独立房间或外露地板 (590.5669ms)
+✔ 封门只修改分析副本，Node Buffer 也不能反向污染原始导出mask (3.7993ms)
+✔ 46 原有短窗和空间不因新增长宽比门槛退化 (268.5081ms)
+✔ r10 原有短窗和空间不因新增长宽比门槛退化 (559.2624ms)
+✔ all 59 options have honest HKD reference prices or nonzero bounded allowances without turning estimates into price snapshots (27.2676ms)
+✔ quote groups repeated products once, sums category quantities and adds cent-accurate fees and contingency to both bounds (8.1273ms)
+✔ quote reacts to replacements and removals, protects against stale imported prices and treats changed model dimensions as estimates (0.6666ms)
+✔ generic AI items and unknown product IDs use category estimates; all catalog alternatives are excluded from design totals (0.3537ms)
+✔ settings are bounded, bad input cannot produce NaN, and CSV retains quantities, estimate provenance, totals and safe spreadsheet strings (1.606ms)
+✔ candidate HTTP joint serves the intended decoder and window weights (341.8358ms)
+✔ candidate HTTP frozen serves the intended decoder and window weights (385.4728ms)
+✔ both original beds fit the Hong Kong example with real left-door access at original size (49.9408ms)
+✔ a shifted route is valid but a piece blocking the actual entry fails locally and in chat (20.5718ms)
+✔ known door sweep blocks furniture, while missing doors remain unverified (1.3432ms)
+✔ bed replacement keeps original intact, verifies the new position and preserves physical dimensions (16.8872ms)
+✔ customer selections expand exact products, quantities, dimensions and provenance (3.8935ms)
+✔ brief validation rejects missing confirmation, empty choices, unknown IDs, duplicate selections and bad dimensions (11.4738ms)
+✔ automatic planning uses selected products only without inserting generic furniture (58.8841ms)
+✔ all 16 aid models can be independently selected and automatically placed with exact envelopes (96.4286ms)
+✔ oversized selected products are kept in unplaced inventory without shrinking or substitution (1.9729ms)
+✔ remote AI receives selected preferences and cannot add, resize or rename a chosen item (2.7082ms)
+✔ AI outage falls back to selected product planning and explicitly reports it (3.2185ms)
+✔ review and exports derive missing requested items instead of trusting stale inventory (0.566ms)
+✔ import rejects changed selected dimensions, provenance and duplicate request keys (2.3069ms)
+✔ unknown or conflicting model identifiers are rejected before rendering (0.6088ms)
+✔ all sixteen workbook product rows map once to explicit concept envelopes with intact source fields (2.7361ms)
+✔ every category has a distinct finite mesh and follows supplied metre envelopes at different aspect ratios (360.3327ms)
+✔ wheelchairs, finishes, raiser and medical equipment retain identifying parts (83.9656ms)
+✔ source IDs recover distinct models for old projects and kind-only projects remain renderable (124.9892ms)
+✔ 1:1 bounds survive placement and rotation and home furniture retains the existing furniture API (888.3789ms)
+✔ invalid envelopes cannot create NaN or infinite models (1.1233ms)
+✔ precise Cantonese and Mandarin commands resolve named rooms and units (45.7535ms)
+✔ a legal preview preserves identity and exact dimensions, while locked and off-plan moves fail (30.2407ms)
+✔ missing text configuration returns a real 503, including an image-only render binding (59.2428ms)
+✔ default completion reuses rendering text model and key on the server, never the image model (3.4609ms)
+✔ compatible endpoints use explicit server credentials and do not receive DeepSeek-only options (9.5718ms)
+✔ existing server LLM configuration is a fallback while the render DeepSeek key retains default priority (6.4521ms)
+✔ invalid or incomplete provider configuration never leaks the render key to a custom origin (6.2257ms)
+✔ method, content type, malformed JSON and message roles are validated before provider calls (8.368ms)
+✔ conversation count, per-message and aggregate bounds remain separate (1.3531ms)
+✔ request and context limits count actual UTF-8 bytes rather than trusting Content-Length (2.4022ms)
+✔ provider failure is one bounded attempt and unfiltered provider error content never reaches the client (13.1958ms)
+✔ upstream rate limiting is explicit without fake replies or automatic retries (3.1952ms)
+✔ malformed, missing, truncated, oversized or secret-reflecting completions are not returned as assistant replies (10.0478ms)
+✔ a completion with tool calls is still advisory text only and never applies design actions (1.1323ms)
+✔ timeout aborts the provider request and returns a clear 504 without waiting in real time (1.6511ms)
+✔ client cancellation aborts provider work and pre-cancelled requests do not call a provider (3.6584ms)
+✔ wheelchair selection hides walking aids but keeps both wheelchair choices (0.2054ms)
+✔ DeepSeek layout chat only returns validated movement and keeps project furniture unchanged (8.0996ms)
+✔ Cantonese floor and save instructions keep room targets and version name (36.9107ms)
+✔ bed replacement keeps the requested room and transfer side, and asks about ambiguous rooms (22.8661ms)
+✔ all one-click templates carry a bed and place each chosen item with the actual room geometry (40.1954ms)
+✔ whole-home generation can shorten the actual night path without moving inventory across rooms (396.5589ms)
+✔ fixed furniture stays put and a missing crossing stays pending (129.4731ms)
+✔ HK demo is an explicitly illustrative 41 square metre whole home with exact tiling (2.1229ms)
+✔ whole home validates independent room care states and rejects size mismatches (25.5869ms)
+✔ manual whole home converts wall coordinates to room centers and rejects overlap or overflow (5.0932ms)
+✔ whole-home assignments recommend room purpose and honor valid user overrides (0.6021ms)
+✔ age prompts vary by age and specific design advice follows selected needs and room (2.0808ms)
+✔ daily needs are optional and validated without changing the existing furniture brief (80.393ms)
+✔ both templates trace a continuous bed-side to bathroom path through corresponding doors (109.4698ms)
+✔ a missing, shifted, or too narrow matching bathroom opening does not connect rooms (40.0998ms)
+✔ a cabinet blocking the room crossing or a polygon without a door on its actual boundary prevents the route (31.0974ms)
+✔ a valid route inside an L-shaped room avoids the cutout and flags imported walls for checking (35.6496ms)
+✔ a narrow unused branch does not stop a valid selected route (20.172ms)
+✔ a marked toilet changes the endpoint to the correct walking or wheelchair approach (77.408ms)
+✔ known overlaps with the toilet prevent drawing a misleading route (22.4533ms)
+✔ spoken confirmation only matches a standalone decision (1.4887ms)
+✔ Excel import preserves every source row and field in all four sheets (3.4287ms)
+✔ planner never changes dimensions and returns valid placements in small and large rooms (585.148ms)
+✔ central furniture is allowed when door positions are unknown, while physical limits still apply (1.1899ms)
+✔ import cannot bypass geometry with rug, surface or unknown renderer types (1.0099ms)
+✔ strict Care collision catches thin aids and millimeter penetration with rotated SAT envelopes (0.4607ms)
+✔ import rejects inherited profile names and conflicting measurement units (0.4053ms)
+✔ adding an instrument preserves edited furniture IDs and positions and can exceed ten items (1115.6424ms)
+✔ review records scope and pending evidence without issuing legal certification (23.5435ms)
+✔ all category illustrations have finite exact overall envelopes at supplied meter dimensions (95.1242ms)
+✔ care API returns a checked local plan and rejects invalid/malformed projects (60.086ms)
+✔ account registration hashes passwords and sessions, login/me/logout work against D1 SQL (60.4829ms)
+✔ unconfigured or unavailable account storage never reports a successful account (0.8637ms)
+✔ route connects entrance to furniture front without crossing rotated obstacles, including segment interiors (9.6628ms)
+✔ a blocked entrance, blocked target front and separated room return no invented path (8.4533ms)
+✔ wider mobility target rejects a gap that walking can traverse (10.9046ms)
+✔ rugs are passable but explicitly reported as a trip precaution (3.6362ms)
+✔ model changes invalidate planning and rendering but harmless save timestamps do not (26.4183ms)
+✔ render snapshot preserves measured architecture and isolates later mutations (1.3349ms)
+✔ walking interpolation clamps endpoints and planning rejects invalid inputs (0.8621ms)
+✔ 3D route animation retains full geometry at zero progress, reveals it and hides helpers during rendering (324.6417ms)
+✔ deployment metadata hashes exact asset bytes and excludes its own mutable manifest (62.7886ms)
+✔ source metadata identifies the Git checkout while the unbundled API reports no fabricated commit (450.8378ms)
+✔ layouts fit room and avoid furniture overlap across supported dimensions (426.5715ms)
+✔ invalid room is rejected (0.5893ms)
+✔ rotation clamps to room bounds and detects actual overlap (0.435ms)
+✔ green preference and reading use change layout (13.0876ms)
+✔ floorplan rooms down to 1.2 m are laid out without overlap or overflow (14.326ms)
+✔ standalone rooms keep the 2 m floor while floorplan rooms go lower (0.5911ms)
+✔ item size clamps to physical limits (0.36ms)
+✔ oversized furniture is centered instead of clamped past the wall (0.2277ms)
+✔ stretch patch mirrors the handle around the item centre (0.4989ms)
+✔ stretch patch works in the furniture local frame after rotation (0.3454ms)
+✔ fit mode shrinks overflow into the room and marks it desired (0.8588ms)
+✔ fit mode respects the wall segment left by a door (0.3171ms)
+✔ fit mode flags extreme shrinkage as custom-made and never leaves furniture outside (0.1866ms)
+✔ purpose picks the right furniture family (25.3889ms)
+✔ clearance rules separate accessibility from design conventions (11.181ms)
+✔ bed side clearance measures the usable side (1.512ms)
+✔ stretch keeps the opposite edge fixed when a side handle is dragged (0.3393ms)
+✔ stretch offset follows the furniture rotation (0.1934ms)
+✔ snapToWalls closes small gaps and leaves the middle alone (0.4824ms)
+✔ storage summary counts cabinets only and labels its basis as empirical (1.1765ms)
+✔ reachable storage shrinks for wheelchair users (0.1728ms)
+✔ door widths are checked against occupant mobility (0.5533ms)
+✔ kitchen layout forms a work triangle and reports what is missing (1.3191ms)
+✔ living and dining get a storage cabinet while tiny rooms skip it (25.2196ms)
+✔ clearance metrics report the widest free run (0.4844ms)
+✔ 同一门洞叠了两个框：只留分数高的那个 (2.1408ms)
+✔ 同一面墙上的相邻门不能合并 (0.4554ms)
+✔ 小门落在大门里不算同一门洞（分母用较长的框） (0.3364ms)
+✔ 不同方向的门即使位置重叠也不合并 (0.2678ms)
+✔ one 60px opening: bbox and location (284.8776ms)
+✔ 60px and 80px openings in one wall (111.1925ms)
+✔ unbroken wall has no doors (107.7824ms)
+✔ parallel walls with facing openings do not cross-pair (103.638ms)
+✔ 200px opening exceeds door width (125.9558ms)
+✔ a wall obstruction inside the gap rejects the pair without mutating input (126.3949ms)
+✔ vertical opening and class independence (174.0262ms)
+✔ 门只采用新模型，窗只采用冻结模型；新模型的窗和旧模型的假门不能混入 (36.2692ms)
+✔ 模型缓存按URL隔离，失败可重试，不能把窗会话复用成新门会话 (37.8405ms)
+✔ 真实入口默认分别加载门和冻结窗模型，只有门的入口不额外加载窗 (34.7712ms)
+✔ 冻结窗权重字节保持现役6f257e8，续训不能替换此文件 (13.4956ms)
+✔ 推拉门 1.2–3.0m 要保留，超长假框与 0.6m 厚的大框要拒绝 (5.5096ms)
+✔ 门宽、门厚和分数边界均含端点，任一闸失败都拒绝 (0.5451ms)
+✔ 无置信度的分割回退不伪造分数，非法坐标或显式无效分数不能绕过闸 (0.4476ms)
+✔ 尺寸使用米制和横纵独立比例，不能拿像素阈值误筛门 (0.3324ms)
+✔ R(2) 原始14候选采用10个（含2.59m推拉门），模型与AI接入共用闸；门高仍是2.05m (1346.1372ms)
+✔ 所有YOLO门被闸值拒绝时不重新塞入分割门，窗数据仍保留 (650.9042ms)
+✔ 46 所有既有门通过尺寸闸，不误删宽门和0.475m小门 (369.9664ms)
+✔ r10 所有既有门通过尺寸闸，不误删宽门和0.475m小门 (582.0945ms)
+✔ CV rejects empty images and invalid buffers instead of inventing walls (23.3589ms)
+✔ CV retains wall center coordinates and doorway gaps without absorbing isolated text (37.5134ms)
+✔ dimension-line detection requires crossing ticks, not only a long stroke (1.9114ms)
+✔ weighted Otsu separates gray wall ink from pale background (0.2741ms)
+✔ 主识别入口同时保留门窗、墙轮廓，保存后 2D 与 3D 都能读取窗 (100.1121ms)
+✔ YOLO 没有窗或检测失败时窗独立回退分割，已检出的门不丢失 (48.8118ms)
+✔ AI 路径仅接入识别门窗，不改变 AI 房间的位置、尺寸或自动修正策略 (12.7081ms)
+✔ 修改长宽时窗、门、墙轮廓与房间局部多边形按同轴缩放，保存后不漂移 (8.2138ms)
+✔ a single legible dimension axis can be recovered without guessing the other axis (3.7603ms)
+✔ conflicting opposite dimension lines block the reported total for that axis (0.6695ms)
+✔ calibrated wall classification can recover a missed wall without relabeling other classes as floor (0.3931ms)
+✔ wall snapping preserves the padding on the shorter side of the normalized plan (0.6969ms)
+✔ AI product suggestions are restricted to existing same-category models that fit at the item rotation (3.634ms)
+✔ missing AI advice is labeled catalog matching, and model prompts include only sourced priced candidates (5.4244ms)
+✔ feature comparison distinguishes material, care, shape, footprint and fit without fabricated maintenance claims (32.2259ms)
+✔ every studio product opens multiple compatible choices, including itself (2.0855ms)
+✔ every care product has a compatible alternative without changing workbook provenance (0.9616ms)
+✔ original care choices retain model and dimensions through planning (1.2915ms)
+✔ original care choices survive automatic placement, validation and export (291.5715ms)
+[floorplan] secondary source failed: AI 平面圖識別未完成（HTTP 503），請核對服務設定；原專案已保留。
+✔ labelled areas correct plausible gaps while implausible ones keep the rect (5.105ms)
+✔ rooms without area labels keep rect proportions untouched (0.5943ms)
+✔ floorplan output validates real room extents, filters malformed openings and requires user-calibrated meter geometry (1.4178ms)
+✔ whole home rejects overlapping, outside and duplicate rooms and room furniture, supports small service spaces without relaxing standalone scans (0.7795ms)
+✔ shared walls are partitioned once with actual door and window gaps, and all whole-home meshes are finite (8.3949ms)
+✔ room edits persist independently, overview translates local furniture, whole-home quote sums all rooms and JSON retains the complete home (3.8493ms)
+✔ whole-home SVG includes all room names and geometry with escaped labels (0.794ms)
+✔ vision backend sends a real image part in one bounded DeepSeek Flash call and returns validated room data (52.6663ms)
+✔ vision errors never return a fake house, and endpoint supports explicit capability and bounded request failures (11.4732ms)
+✔ AI image-page margins are removed before meter calibration so the house envelope uses the confirmed outer dimensions (0.9888ms)
+✔ room graph links only rooms that share a wall with a door (1.5478ms)
+✔ night route walks bedroom to bathroom and flags narrow doors or rooms (3.6473ms)
+✔ same-name adjacent room pieces merge into one box and keep outer doors (1.1885ms)
+✔ merge is skipped when the merged box would swallow another room (0.5725ms)
+✔ vision provider is configurable while defaults stay DeepSeek (2.9927ms)
+✔ shared walls are snapped and the result stays overlap-free (1.1097ms)
+✔ normalised output revalidates cleanly without float negative zero (1.6719ms)
+✔ open-plan living areas with different names merge by kind (0.8334ms)
+✔ room edges snap to accumulated dimension lines (0.816ms)
+✔ parallel walls split by a gap merge into one (0.7663ms)
+✔ overlapping rooms are forced apart so the home can always be built (0.6672ms)
+✔ adjacency from the AI is parsed and cross-checked against rects (1.6713ms)
+✔ grid solver packs rooms into columns without overlap or overflow (0.7094ms)
+✔ open boundaries produce no wall segment (1.4915ms)
+✔ slicing tree matches labelled areas without overlap (0.6275ms)
+✔ polygon area uses the shoelace formula (0.8516ms)
+✔ Google array-shaped invalid-key errors are classified without echoing credentials (2.257ms)
+✔ Qwen vision uses dedicated credentials and non-thinking multimodal JSON requests (1.0065ms)
+✔ merging takes area from primary and rect from secondary (0.6889ms)
+✔ second vision source reuses existing DeepSeek secret only on its official endpoint and discloses no keys (1.7456ms)
+✔ secondary outage preserves primary rooms and openly reports fallback (1.6835ms)
+✔ DeepSeek merge secret never falls back across providers or lookalike hosts (0.8359ms)
+✔ AI changes furniture combination, styles and positions from the model response (125.9666ms)
+✔ AI placements are bounded, overlapping furniture is repaired and invalid plans are rejected (10.2386ms)
+✔ provider failure and malformed JSON never produce a fabricated AI layout (1.398ms)
+✔ both dimension labels follow the room through camera orbit, zoom and root transform (2.6892ms)
+✔ optimization selects verified improvement and preserves catalog, dimensions, HKD price and every ID (61.3132ms)
+✔ malformed, invented, duplicate, resized, overlapping and out-of-room placements are rejected (0.6131ms)
+✔ locked items and kitchen plumbing/cooktop cannot be silently relocated (0.753ms)
+✔ door widths are checked in shared route geometry, and candidates cannot block other known doors (0.611ms)
+✔ no improvement or a new inaccessible furniture front preserves original layout (61.0092ms)
+✔ smoothed path includes exact endpoints and full rotated-segment clearance, with distance-based walking (5.6456ms)
+✔ LayoutAgent uses one bounded AI call with current geometry and requested width, no quote mock (64.8119ms)
+✔ AI failure, malformed output and missing credentials never become a fabricated optimization (17.7817ms)
+✔ API exposes optimization through current Worker and rejects bad input before calling AI (8.3876ms)
+✔ entrance boundary connector rejects a thin obstruction even when the interior grid is clear (2.8666ms)
+✔ shortcut path still reports rugs crossed between its endpoints (3.4568ms)
+=== 相鄰 10 條重疊牆線合併，並保留完整區間 ===
+  ok   水平牆只剩 1 條
+  ok   垂直牆只剩 1 條
+  ok   水平牆覆蓋全部 from/to
+  ok   垂直牆覆蓋全部 from/to
+  ok   合併牆位於厚度中線
+
+=== 相距 50px 的重疊牆線不合併 ===
+  ok   水平牆保留 2 條
+  ok   垂直牆保留 2 條
+
+7 passed, 0 failed
+✔ tests\merge-wall-runs.test.mjs (254.3599ms)
+✔ door and window detector fallbacks are independent; comparison preserves segmentation (1.7768ms)
+✔ window coordinates use the house frame and survive into both 2D and 3D (14.2717ms)
+✔ heading convention matches actual rendered model transforms for all quadrants and negative yaw (386.5407ms)
+✔ side seating and sofa face the coffee table instead of turning their backs on it (11.8419ms)
+✔ desk chair moves to the usable front side and faces the desktop (11.01ms)
+✔ dining chairs on opposite sides face each other across the table (24.3165ms)
+✔ bed head and storage backs align to a wall while fronts face into the room (15.6487ms)
+✔ known door clearance is preserved after turning wall furniture (8.8598ms)
+✔ large fixtures do not overlap a known window clear strip (3.7689ms)
+✔ a correctly facing conversational angle survives, rather than forcing all seating onto cardinal axes (7.0807ms)
+✔ rotation enlargement cannot push a corrected seat through the room boundary or its neighbor (3.1062ms)
+✔ impossible front clearances fail explicitly without changing the previous layout (1.8398ms)
+✔ validated opening data and exact rotation contract reach the AI; missing openings stay unknown (87.2158ms)
+✔ AI angle repair runs before returning the scene and keeps item/advice index ordering (7.5944ms)
+=== 測試 1：從圖上文字抽面積與尺寸 ===
+    面積候選：46.03
+    尺寸候選：3900, 3600, 2640, 2550, 2340, 2180, 1380
+  ok   抽出 46.03 當面積
+  ok   抽出 2640／3900 當尺寸
+  ok   面積按大小排序（最大的在最前）
+
+=== 測試 2：整數面積也要認 ===
+  ok   「46 m2」被當成面積
+
+=== 測試 2b：黏在一起的數字要擋掉 ===
+    面積候選：40.45
+  ok   22.8518（小數 4 位）被擋掉
+  ok   13.813（小數 3 位）被擋掉
+  ok   40.45 保留
+
+=== 測試 3：面積優先於門寬 ===
+    floor-area · 0.02205 m/px · 圖上標示 46.03 m²
+  ok   用圖上面積
+  ok   比例尺數值正確（√(46.03/94630)）
+  ok   三個候選都列出來（可比較）
+
+=== 測試 4：沒有面積就退回門寬 ===
+    door-width · 0.02931 m/px · 以門洞 29px ≈ 0.85 m 反推（3 個細長門）
+  ok   用門洞反推
+  ok   弧線方塊被排除（中位數取 29 不是 28）
+
+=== 測試 5：都沒有才用固定值 ===
+  ok   用固定比例尺
+  ok   固定值原樣帶出
+
+=== 測試 6：離譜的值要被擋掉 ===
+  ok   500 m² 被擋掉
+  ok   8 m 的房子通過
+  ok   40 m 的荒謬房子被擋
+
+=== 測試 7：完全沒有線索 ===
+  ok   回傳 none 而不是編一個數字
+  ok   metersPerPixel 是 0
+
+=== 測試 8：所有比例尺來源共用 15–300 m² 護欄 ===
+  ok   1069 m² 的門寬候選被擋掉
+  ok   門寬無效後降級為固定值
+  ok   無效門寬不留在候選清單
+  ok   固定值推算 14 m² 被擋掉
+  ok   固定值推算 301 m² 被擋掉
+  ok   固定值推算 1000 m² 被擋掉
+  ok   OCR 面積 15 m² 邊界仍可使用
+  ok   OCR 面積 300 m² 邊界仍可使用
+  ok   非有限像素面積不能繞過護欄
+
+=== 測試 9：偶數個門寬取中間兩個的平均 ===
+  ok   兩個細長門仍採用門寬來源
+  ok   20px 與 40px 的中位數為 30px
+
+=== 測試 10：面積與門寬矛盾時改用門寬 ===
+  ok   矛盾時改用門寬
+  ok   比例尺 ≈ 0.85/42
+  ok   衝突的面積候選仍留在清單裡說明原因
+  ok   差距不大時仍用面積
+
+34 passed, 0 failed
+✔ tests\plan-ocr.test.mjs (222.9692ms)
+✔ 封门恢复合法房间、去掉屋外窄缝，原始分割和门位置不变 (60.7504ms)
+✔ 主体轮廓筛选移除外部分离墙，保留内圈和小面积合法短墙 (23.1125ms)
+✔ 米制房间下限在数据层过滤，不在 UI 删除，也不伪造缺失房间 (8.8721ms)
+✔ 窗要同时有墙端支持和外墙两侧证据，尺寸链和内墙候选不能进入场景 (53.0575ms)
+✔ 没有门候选时不会凭空封墙、编造房间 (9.8907ms)
+✔ catalog provides 48 distinct concepts across sixteen categories and 23 sourced branded options (1.8912ms)
+✔ weighted editorial score and star conversion match disclosed method (6.0242ms)
+✔ HKD price provenance survives project JSON roundtrip, unverified prices stay null (0.5632ms)
+✔ all high-detail model variants have finite geometry and correct physical footprints (1942.3075ms)
+✔ 報價結果含總額、工期與材料人工 (22.829ms)
+✔ 三套方案、法規紅線、適老化措施都在 (0.4983ms)
+✔ 缺金額時給明確錯誤，不假裝成功 (0.1911ms)
+✔ standard：總額與小計一致 (2.5873ms)
+✔ standard：分項逐筆一致 (1.4492ms)
+✔ economy：總額與小計一致 (0.3994ms)
+✔ economy：分項逐筆一致 (0.4386ms)
+✔ essential：總額與小計一致 (0.2758ms)
+✔ essential：分項逐筆一致 (0.4313ms)
+✔ retrofit：總額與小計一致 (0.1938ms)
+✔ retrofit：分項逐筆一致 (0.2242ms)
+✔ 改造模式逐項勾選單價一致 (0.3883ms)
+✔ 兩種模式比較一致 (0.7499ms)
+✔ 三套方案比較一致 (0.4873ms)
+✔ 排程：五種條件下工期與關鍵路徑一致 (3.5819ms)
+✔ 法規查詢：數量與欄位一致 (4.6242ms)
+✔ schema 校驗：壞輸入的處理與 Python 一致 (1.0851ms)
+✔ 沒有 key 時仍完成三階段，且全部降級為 mock (20.6034ms)
+✔ mock 模式的金額與工期仍由規則層算出 (4.9475ms)
+✔ 舊屋改造模式：金額變 13,998，工期 2 週，8 項加裝 (5.9752ms)
+✔ 沒有長者時適老化整段跳過 (3.5355ms)
+✔ API 層：room 公尺會換算成平方呎 (66.7356ms)
+✔ API 層：缺面積回 400 (0.5921ms)
+✔ 知識庫端點有內容 (1.3596ms)
+✔ 只合并分界无墙门支持的小矩形碎片，真实门和实体隔墙阻止合并 (2.6791ms)
+✔ 房间多边形在数据层裁到主体外框，小比例尺建房也不会越界 (64.7592ms)
+✔ 检测框中心略超出外框仍可吸附真实墙带，远处尺寸线不能成为窗 (18.3016ms)
+✔ 分割窗与外墙证据共同纠正被检成门的真窗，保留其他真实门且不重复已有窗 (26.3469ms)
+✔ daily image cap is removed while persistent idempotency remains (43.2366ms)
+✔ Cloudflare image edit uses 1K, references, persistent idempotency and one bounded DeepSeek call per batch (162.2959ms)
+✔ failures are recorded, cannot auto-repeat, and storage outages fail closed (51.101ms)
+✔ exactly five distinct valid cameras are required (34.7358ms)
+✔ render request preserves design, camera and user settings, rejects remote image URLs (61.2747ms)
+✔ unconfigured service and wrong render access code never invoke AI (71.0568ms)
+✔ client decodes split NDJSON chunks and requires the correct batch, shot and design (5.1238ms)
+✔ render archive contains valid ZIP structure, UTF-8 names and CRC (1.3004ms)
+✔ interrupted in-flight renders recover without automatically resubmitting paid jobs (0.3131ms)
+=== 整合測試：analysis.polygon → home.room.polygon ===
+
+  ok   切出 2 間房
+    客廳中心 (-2.059, 0) 尺寸 5.882×10
+  ok   客廳保留 polygon
+  ok   客廳是 L 形（≥6 點）
+  ok   臥室是矩形（4 點）
+    客廳 polygon x 範圍 -1.94 … 3.06 m
+    客廳 polygon z 範圍 -6.80 … 1.70 m
+  ok   x 偏移在 ±5 m 內
+  ok   z 偏移在 ±10 m 內
+    polygon 形心 (0.73, -2.27) — L 形不對稱，偏離原點屬正常
+  ok   形心在 x 範圍內
+  ok   形心在 z 範圍內
+    L 形多邊形面積 35.70 m²，外接矩形 58.82 m²
+  ok   L 形面積小於外接矩形
+  ok   L 形面積大於外接矩形的一半（切掉 100×100 只少一成多）
+  ok   L 形面積大於 0
+  ok   沒有 polygon 時給空陣列（不編造）
+
+12 passed, 0 failed
+✔ tests\room-polygon-integration.test.mjs (314.9349ms)
+✔ 1px floor bridge splits into two rooms and preserves floor pixels (15.5164ms)
+✔ 2px floor bridge splits into two rooms and preserves floor pixels (41.1744ms)
+✔ intact wall keeps two rooms and counts only floor (105.8565ms)
+✔ 6px door opening is filled and stays between two rooms (4.0339ms)
+✔ erosion falls back when one original floor component disappears (4.5372ms)
+✔ all seeds disappearing falls back, including image edges (2.1281ms)
+✔ absorbWalls:false restores floor without filling the wall or door (3.249ms)
+✔ minAreaRatio uses restored floor area rather than seeds or absorbed walls (10.8459ms)
+✔ windows stay unassigned like outside pixels (3.351ms)
+=== 測試 1：基本建構（10 m × 10 m 全屋）===
+  ok   切出 2 間
+  ok   format 正確
+  ok   source 標記為模型
+    房間 1: 空間1, 面積 15.257 m², 尺寸 3.906×5.859
+    房間 2: 空間2, 面積 7.632 m², 尺寸 1.954×3.906
+  ok   大房間排前面
+  ok   房間 1 有 polygon
+  ok   房間 2 是矩形
+    房間 1 預期面積 15.26 m²
+  ok   房間 1 面積誤差 < 2%
+  ok   房間 2 面積誤差 < 2%
+
+=== 測試 2：polygon 是相對房間中心的座標 ===
+    空間1: polygon x 跨 3.91 m, 房間寬 3.906 m
+  ok   空間1 polygon 跨度和房間寬一致
+    空間2: polygon x 跨 1.95 m, 房間寬 1.954 m
+  ok   空間2 polygon 跨度和房間寬一致
+
+=== 測試 3：錯誤處理 ===
+  ok   空 polys 會報錯
+  ok   寬度 0 會報錯
+  ok   少於 3 點的 polygon 會報錯
+
+=== 測試 4：座標以房子中心為原點 ===
+    兩間總面積 22.89 m²
+  ok   總面積小於全屋（10×10=100）
+  ok   總面積大於 0
+
+=== 測試 5：沒有 frame 時，用房間聯集當房子外框 ===
+  ok   留白不改變房間面積
+  ok   留白不改變全屋寬高比
+
+=== 測試 6：frame 比房間聯集更穩 ===
+  ok   只剩一間房時，frame 仍撐住比例尺
+
+18 passed, 0 failed
+✔ tests\rooms-from-polygons.test.mjs (357.1299ms)
+✔ stable floor measurement requires time, enough samples and low positional jitter including high refresh rates (2.0136ms)
+✔ three adjacent floor corners produce meters, reject non-orthogonal, duplicate and inconsistent-floor picks (3.4602ms)
+✔ RoomPlan imports recompute wall-based dimensions and normalization, not untrusted claimed dimensions (3.3122ms)
+✔ project measurement normalization is rebuilt and inconsistent imported dimensions are rejected (2.2108ms)
+✔ native captured walls are rendered in normalized room coordinates without imaginary sample windows (6.4256ms)
+✔ iPad Safari is detected but a native RoomPlan bridge is never inferred from its user agent (0.3783ms)
+✔ XR scan frame rejects walls and lost tracking resets readiness (1.4136ms)
+✔ cancelled scan releases the hit source, animation, listeners, canvas and graphics exactly once (0.8034ms)
+✔ small measured rooms get safe local furniture without scaling oversized products (44.9321ms)
+✔ all pages share cover tokens and component CSS resolves tokens without private font or color literals (175.7049ms)
+✔ v2 preserves the repository renovation agent and knowledge routes (56.6276ms)
+✔ v2 renovation plan route remains runnable without a model secret (12.5866ms)
+✔ 墙块门洞保留两侧墙和过梁，门下方不残留墙体 (2.1059ms)
+✔ 墙块窗洞保留窗台、上墙和玻璃，重叠的门优先通行 (0.7054ms)
+✔ 竖墙也能开洞，离开墙厚范围、方向不符或无重叠的框不能切墙 (0.4456ms)
+✔ 真实 blocks 渲染分支会生成过梁并保留线分支 (15.8043ms)
+✔ 像素边界轮廓保留锯齿面积，不再把 100 个墙像素扩成 180 (9.1343ms)
+✔ 闭合外墙保留内部空洞，挤出后的房间中心没有实墙 (15.4279ms)
+✔ 轮廓保留 L 形凹角、斜墙台阶和仅顶点接触的独立墙岛 (10.2916ms)
+✔ 轮廓挤出真正切开门和窗，门上有过梁、窗下有窗台 (15.1233ms)
+✔ 轮廓坐标经房屋换算、JSON 保存和 SVG evenodd 后仍保留内部空洞 (3.5961ms)
+✔ 长墙台阶合并为直线，保留至少 95% 面积且不向房间增加墙体 (28.159ms)
+✔ 接近轴向的斜边吸附，明确的 40 度斜墙保留 (1.7633ms)
+✔ 窄通道与内孔正交化不会自交、封死空洞或侵入另一个轮廓 (9.0702ms)
+✔ 关闭正交化保留原始轮廓，保真预算不足时安全回退 (2.7217ms)
+✔ 整段台阶拟合保面积、保留真实 L 形转角和斜墙，不改写输入 (8.4037ms)
+✔ 噪声阈值随墙厚平方缩放，保留大墙段和正常房间空洞 (1.0091ms)
+✔ R(2) 冻结模型数据的长墙点数、短边占比与实际 mask 覆盖同时达标 (1011.078ms)
+✔ 46.03㎡ 保留原有保真水平，完整关闭后处理仍得到原始 260 点 (109.0305ms)
+✔ 分割窗质心偏离 bbox 中心时，沿墙洞口与玻璃仍同中心同长度 (2.1323ms)
+✔ 窄 footprint 不再留下堵窗的墙皮，洞的长度按玻璃而非旧框裁切 (24.1935ms)
+✔ r2 冻结原图可建房且逐窗三点下墙/洞口/上墙均通过 (1067.17ms)
+✔ 46 冻结原图可建房且逐窗三点下墙/洞口/上墙均通过 (319.7069ms)
+✔ r10 冻结原图可建房且逐窗三点下墙/洞口/上墙均通过 (539.2911ms)
+✔ XR capability checks handle secure context, unsupported devices and denied access (1.7486ms)
+✔ XR requests real hit testing and optional DOM overlay, with clear tracking states (1.5878ms)
+✔ failed XR hit-test setup ends session and restores 3D state (7.1046ms)
+✔ XR selects an upward floor instead of wall, places at meter scale, then cleans up (3.1984ms)
+ℹ tests 326
+ℹ suites 0
+ℹ pass 326
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4493.1348

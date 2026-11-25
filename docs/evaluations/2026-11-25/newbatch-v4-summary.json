@@ -1,0 +1,795 @@
+{
+  "date": "2026-11-25",
+  "sourceBase": "77faf1bba15bf69a927ad0e5437153df3e8f9d25",
+  "adopted": false,
+  "productionModelChanged": false,
+  "productionModelSha256": "6f257e8060d025f233a1e525067b6a12c8807c6b3a371f989447a42fc57d82c9",
+  "sourceFilesUnchanged": {
+    "public/door-detect.js": true,
+    "public/opening-detection.js": true,
+    "public/plan-selection.js": true,
+    "public/home-scene.js": true
+  },
+  "dataset": {
+    "train": 145,
+    "val": 13,
+    "newImages": 15,
+    "newDoors": 117,
+    "newWindows": 116
+  },
+  "training": {
+    "baseCheckpointSha256": "097220d243bd712c8d804fd75f3e5920f881b5fc886b2d3047ce1caee604e6cd",
+    "epochs": 50,
+    "batch": 8,
+    "imgsz": 640,
+    "warmup": 3,
+    "seed": 0
+  },
+  "model": {
+    "bytes": 3505264,
+    "sha256": "58c8a43346166e1b0eb0b6077895e1fb8ce0027c59d7f9e3822e9921d0776477",
+    "onnxCheckerPassed": true,
+    "types": {
+      "INT8": 251,
+      "FLOAT": 250,
+      "INT32": 126
+    },
+    "ops": {
+      "Constant": 22,
+      "QuantizeLinear": 123,
+      "DequantizeLinear": 250,
+      "Conv": 64,
+      "Sigmoid": 58,
+      "Mul": 60,
+      "Split": 8,
+      "Add": 9,
+      "Concat": 17,
+      "MaxPool": 3,
+      "Resize": 2,
+      "Reshape": 8,
+      "Transpose": 2,
+      "Softmax": 1,
+      "Shape": 1,
+      "Gather": 1,
+      "Div": 2,
+      "Slice": 2,
+      "Sub": 2
+    },
+    "sourceImageAndLabelHashesUnchanged": true
+  },
+  "cases": {
+    "candidate145": {
+      "46": {
+        "doors": 5,
+        "rawDoors": 6,
+        "rooms": 4,
+        "windows": 7,
+        "rawWindows": 10,
+        "windowMeshes": 7,
+        "windowsAllValid": true,
+        "noExposedBayFloors": true,
+        "precision": 1,
+        "vertices": 64,
+        "extraAdoptedVsIncumbent": [
+          {
+            "index": 4,
+            "box": {
+              "x": 543.1331634521484,
+              "y": 153.25143814086914,
+              "w": 177.61173248291016,
+              "h": 25.373096466064453
+            },
+            "score": 0.390440434217453,
+            "longSide": 2.2369235829081884,
+            "shortSide": 0.3195604088924994,
+            "valid": true,
+            "reasons": [],
+            "kind": "sliding"
+          }
+        ],
+        "lostAdoptedVsIncumbent": [],
+        "originalDoorsPreserved": [
+          {
+            "sourceIndex": 0,
+            "longSide": 0.9049271456240408,
+            "preserved": true
+          },
+          {
+            "sourceIndex": 1,
+            "longSide": 1.0139544604707424,
+            "preserved": true
+          },
+          {
+            "sourceIndex": 2,
+            "longSide": 1.8643679486714326,
+            "preserved": true
+          },
+          {
+            "sourceIndex": 3,
+            "longSide": 0.9703436786642002,
+            "preserved": true
+          }
+        ],
+        "savedDoors": 5,
+        "savedRooms": 4,
+        "savedWindows": 7
+      },
+      "r2": {
+        "doors": 11,
+        "rawDoors": 13,
+        "rooms": 8,
+        "windows": 11,
+        "rawWindows": 14,
+        "windowMeshes": 11,
+        "windowsAllValid": true,
+        "noExposedBayFloors": true,
+        "precision": 0.9497046378147388,
+        "vertices": 104,
+        "extraAdoptedVsIncumbent": [
+          {
+            "index": 7,
+            "box": {
+              "x": 671.500244140625,
+              "y": 516.1717987060547,
+              "w": 11.665802001953125,
+              "h": 171.48719787597656
+            },
+            "score": 0.5554535984992981,
+            "longSide": 2.5262240072665927,
+            "shortSide": 0.17185206503092057,
+            "valid": true,
+            "reasons": [],
+            "kind": "sliding"
+          },
+          {
+            "index": 8,
+            "box": {
+              "x": 640.3337478637695,
+              "y": 358.3367919921875,
+              "w": 13.998947143554688,
+              "h": 105.57548522949219
+            },
+            "score": 0.5,
+            "longSide": 1.5552608513578463,
+            "shortSide": 0.20622225325578147,
+            "valid": true,
+            "reasons": [],
+            "kind": "sliding"
+          }
+        ],
+        "lostAdoptedVsIncumbent": [
+          {
+            "index": 8,
+            "box": {
+              "x": 639.8059272766113,
+              "y": 122.0941162109375,
+              "w": 14.427909851074219,
+              "h": 176.0210418701172
+            },
+            "score": 0.38453537225723267,
+            "longSide": 2.593013281830884,
+            "shortSide": 0.21254141820441885,
+            "valid": true,
+            "reasons": [],
+            "kind": "sliding"
+          }
+        ],
+        "originalDoorsPreserved": [
+          {
+            "sourceIndex": 0,
+            "longSide": 0.8076598055760161,
+            "preserved": true
+          },
+          {
+            "sourceIndex": 1,
+            "longSide": 0.7226427325362713,
+            "preserved": true
+          },
+          {
+            "sourceIndex": 2,
+            "longSide": 1.0287037178190406,
+            "preserved": true
+          },
+          {
+            "sourceIndex": 3,
+            "longSide": 0.833164899390274,
+            "preserved": true
+          },
+          {
+            "sourceIndex": 4,
+            "longSide": 0.654629523667122,
+            "preserved": true
+          },
+          {
+            "sourceIndex": 5,
+            "longSide": 0.6716331068610634,
+            "preserved": true
+          },
+          {
+            "sourceIndex": 6,
+            "longSide": 0.6971379196986673,
+            "preserved": true
+          },
+          {
+            "sourceIndex": 7,
+            "longSide": 0.5441079187664273,
+            "preserved": true
+          },
+          {
+            "sourceIndex": 8,
+            "longSide": 2.593013281830884,
+            "preserved": false
+          },
+          {
+            "sourceIndex": 11,
+            "longSide": 1.3007575367139272,
+            "preserved": true
+          }
+        ],
+        "savedDoors": 11,
+        "savedRooms": 8,
+        "savedWindows": 11
+      }
+    },
+    "control130": {
+      "46": {
+        "doors": 5,
+        "rawDoors": 6,
+        "rooms": 4,
+        "windows": 7,
+        "rawWindows": 13,
+        "windowMeshes": 7,
+        "windowsAllValid": true,
+        "noExposedBayFloors": true,
+        "precision": 1,
+        "vertices": 64,
+        "extraAdoptedVsIncumbent": [
+          {
+            "index": 1,
+            "box": {
+              "x": 543.7284851074219,
+              "y": 154.2263889312744,
+              "w": 177.51514434814453,
+              "h": 24.36481475830078
+            },
+            "score": 0.610729455947876,
+            "longSide": 2.235707107659251,
+            "shortSide": 0.3068616468299847,
+            "valid": true,
+            "reasons": [],
+            "kind": "sliding"
+          }
+        ],
+        "lostAdoptedVsIncumbent": [],
+        "originalDoorsPreserved": [
+          {
+            "sourceIndex": 0,
+            "longSide": 0.9049271456240408,
+            "preserved": true
+          },
+          {
+            "sourceIndex": 1,
+            "longSide": 1.0139544604707424,
+            "preserved": true
+          },
+          {
+            "sourceIndex": 2,
+            "longSide": 1.8643679486714326,
+            "preserved": true
+          },
+          {
+            "sourceIndex": 3,
+            "longSide": 0.9703436786642002,
+            "preserved": true
+          }
+        ],
+        "savedDoors": 5,
+        "savedRooms": 4,
+        "savedWindows": 7
+      },
+      "r2": {
+        "doors": 10,
+        "rawDoors": 11,
+        "rooms": 8,
+        "windows": 14,
+        "rawWindows": 12,
+        "windowMeshes": 14,
+        "windowsAllValid": false,
+        "noExposedBayFloors": true,
+        "precision": 0.9497046378147388,
+        "vertices": 104,
+        "extraAdoptedVsIncumbent": [
+          {
+            "index": 6,
+            "box": {
+              "x": 640.3591537475586,
+              "y": 357.56860733032227,
+              "w": 11.602249145507812,
+              "h": 106.16100311279297
+            },
+            "score": 0.5281190276145935,
+            "longSide": 1.5638862726825804,
+            "shortSide": 0.17091585081976626,
+            "valid": true,
+            "reasons": [],
+            "kind": "sliding"
+          },
+          {
+            "index": 9,
+            "box": {
+              "x": 672.6794815063477,
+              "y": 594.3919563293457,
+              "w": 9.861984252929688,
+              "h": 99.19963836669922
+            },
+            "score": 0.4439392685890198,
+            "longSide": 1.4613365374093974,
+            "shortSide": 0.14527954090808656,
+            "valid": true,
+            "reasons": [],
+            "kind": "sliding"
+          }
+        ],
+        "lostAdoptedVsIncumbent": [
+          {
+            "index": 8,
+            "box": {
+              "x": 639.8059272766113,
+              "y": 122.0941162109375,
+              "w": 14.427909851074219,
+              "h": 176.0210418701172
+            },
+            "score": 0.38453537225723267,
+            "longSide": 2.593013281830884,
+            "shortSide": 0.21254141820441885,
+            "valid": true,
+            "reasons": [],
+            "kind": "sliding"
+          },
+          {
+            "index": 11,
+            "box": {
+              "x": 223.6263370513916,
+              "y": 288.6516857147217,
+              "w": 88.2990837097168,
+              "h": 14.427967071533203
+            },
+            "score": 0.32026663422584534,
+            "longSide": 1.3007575367139272,
+            "shortSide": 0.21254226113438088,
+            "valid": true,
+            "reasons": [],
+            "kind": "sliding"
+          }
+        ],
+        "originalDoorsPreserved": [
+          {
+            "sourceIndex": 0,
+            "longSide": 0.8076598055760161,
+            "preserved": true
+          },
+          {
+            "sourceIndex": 1,
+            "longSide": 0.7226427325362713,
+            "preserved": true
+          },
+          {
+            "sourceIndex": 2,
+            "longSide": 1.0287037178190406,
+            "preserved": true
+          },
+          {
+            "sourceIndex": 3,
+            "longSide": 0.833164899390274,
+            "preserved": true
+          },
+          {
+            "sourceIndex": 4,
+            "longSide": 0.654629523667122,
+            "preserved": true
+          },
+          {
+            "sourceIndex": 5,
+            "longSide": 0.6716331068610634,
+            "preserved": true
+          },
+          {
+            "sourceIndex": 6,
+            "longSide": 0.6971379196986673,
+            "preserved": true
+          },
+          {
+            "sourceIndex": 7,
+            "longSide": 0.5441079187664273,
+            "preserved": true
+          },
+          {
+            "sourceIndex": 8,
+            "longSide": 2.593013281830884,
+            "preserved": false
+          },
+          {
+            "sourceIndex": 11,
+            "longSide": 1.3007575367139272,
+            "preserved": false
+          }
+        ],
+        "savedDoors": 10,
+        "savedRooms": 8,
+        "savedWindows": 14
+      }
+    }
+  },
+  "recall": {
+    "incumbent": {
+      "truth": 308,
+      "matched": 259,
+      "count": 284,
+      "recall": 0.8409090909090909,
+      "precision": 0.9119718309859155
+    },
+    "control130": {
+      "truth": 308,
+      "matched": 265,
+      "count": 285,
+      "recall": 0.8603896103896104,
+      "precision": 0.9298245614035088
+    },
+    "candidate145": {
+      "truth": 308,
+      "matched": 270,
+      "count": 297,
+      "recall": 0.8766233766233766,
+      "precision": 0.9090909090909091
+    },
+    "vsBaseline": {
+      "oldMatched": 259,
+      "newMatched": 270,
+      "deltaPercentagePoints": 3.57142857142857,
+      "lost": [
+        {
+          "image": "3FO3UONGHR0O-3.jpg",
+          "truthIndex": 7,
+          "box": {
+            "x": 35,
+            "y": 221,
+            "w": 11,
+            "h": 40
+          },
+          "stage": "模型/框IoU未命中",
+          "rejected": []
+        },
+        {
+          "image": "3FO3W4Q0VUWO-3.jpg",
+          "truthIndex": 4,
+          "box": {
+            "x": 261,
+            "y": 154,
+            "w": 39,
+            "h": 6
+          },
+          "stage": "模型/框IoU未命中",
+          "rejected": []
+        },
+        {
+          "image": "3FO42Y97XJ8K-3.jpg",
+          "truthIndex": 3,
+          "box": {
+            "x": 26,
+            "y": 312,
+            "w": 25,
+            "h": 82
+          },
+          "stage": "既有尺寸/score/去重",
+          "rejected": [
+            {
+              "index": 2,
+              "box": {
+                "x": 25.417329609394073,
+                "y": 312.2448320388794,
+                "w": 28.464545249938965,
+                "h": 82.28033065795898
+              },
+              "score": 0.7090805172920227,
+              "longSide": 1.164317113338544,
+              "shortSide": 0.40302849651484746,
+              "valid": false,
+              "reasons": [
+                "门厚不在 0.10–0.40m"
+              ],
+              "kind": "swing"
+            }
+          ]
+        }
+      ],
+      "gained": [
+        {
+          "image": "3FO3ELQQN9HT-3.jpg",
+          "truthIndex": 7
+        },
+        {
+          "image": "3FO3ELQQN9HT-3.jpg",
+          "truthIndex": 6
+        },
+        {
+          "image": "3FO3ELQQN9HT-3.jpg",
+          "truthIndex": 5
+        },
+        {
+          "image": "3FO3ELQQN9HT-3.jpg",
+          "truthIndex": 4
+        },
+        {
+          "image": "3FO3ETA40SSS-3.jpg",
+          "truthIndex": 6
+        },
+        {
+          "image": "3FO3ETA40SSS-3.jpg",
+          "truthIndex": 3
+        },
+        {
+          "image": "3FO3HLAR68IC-3.jpg",
+          "truthIndex": 9
+        },
+        {
+          "image": "3FO3JUKVQB60-3.jpg",
+          "truthIndex": 1
+        },
+        {
+          "image": "3FO3S6IRR074-3.jpg",
+          "truthIndex": 8
+        },
+        {
+          "image": "3FO3SIA03UAC-3.jpg",
+          "truthIndex": 0
+        },
+        {
+          "image": "3FO3SV8DNOD1-3.jpg",
+          "truthIndex": 2
+        },
+        {
+          "image": "3FO3UWRG1XT7-3.jpg",
+          "truthIndex": 9
+        },
+        {
+          "image": "3FO44SRKCOU9-3.jpg",
+          "truthIndex": 0
+        },
+        {
+          "image": "3FO498AT2FVC-3.jpg",
+          "truthIndex": 6
+        }
+      ]
+    },
+    "vsControl": {
+      "oldMatched": 265,
+      "newMatched": 270,
+      "deltaPercentagePoints": 1.6233766233766267,
+      "lost": [
+        {
+          "image": "3FO3MXF4YW69-3.jpg",
+          "truthIndex": 4,
+          "box": {
+            "x": 75,
+            "y": 283,
+            "w": 47,
+            "h": 5
+          },
+          "stage": "模型/框IoU未命中",
+          "rejected": []
+        },
+        {
+          "image": "3FO3RO2J13PI-3.jpg",
+          "truthIndex": 0,
+          "box": {
+            "x": 207,
+            "y": 14,
+            "w": 49,
+            "h": 16
+          },
+          "stage": "既有门窗融合",
+          "rejected": []
+        },
+        {
+          "image": "3FO3W4Q0VUWO-3.jpg",
+          "truthIndex": 4,
+          "box": {
+            "x": 261,
+            "y": 154,
+            "w": 39,
+            "h": 6
+          },
+          "stage": "模型/框IoU未命中",
+          "rejected": []
+        },
+        {
+          "image": "3FO42Y97XJ8K-3.jpg",
+          "truthIndex": 3,
+          "box": {
+            "x": 26,
+            "y": 312,
+            "w": 25,
+            "h": 82
+          },
+          "stage": "既有尺寸/score/去重",
+          "rejected": [
+            {
+              "index": 2,
+              "box": {
+                "x": 25.417329609394073,
+                "y": 312.2448320388794,
+                "w": 28.464545249938965,
+                "h": 82.28033065795898
+              },
+              "score": 0.7090805172920227,
+              "longSide": 1.164317113338544,
+              "shortSide": 0.40302849651484746,
+              "valid": false,
+              "reasons": [
+                "门厚不在 0.10–0.40m"
+              ],
+              "kind": "swing"
+            }
+          ]
+        },
+        {
+          "image": "3FO42Y97XJ8K-3.jpg",
+          "truthIndex": 0,
+          "box": {
+            "x": 199,
+            "y": 76,
+            "w": 13,
+            "h": 52
+          },
+          "stage": "既有尺寸/score/去重",
+          "rejected": [
+            {
+              "index": 3,
+              "box": {
+                "x": 198.94920217990875,
+                "y": 74.66378045082092,
+                "w": 10.229441404342651,
+                "h": 52.9262592792511
+              },
+              "score": 0.26849183440208435,
+              "longSide": 0.7489390104664604,
+              "shortSide": 0.14483830158459282,
+              "valid": false,
+              "reasons": [
+                "门检测置信度低于 0.30 或无效"
+              ],
+              "kind": "swing"
+            }
+          ]
+        },
+        {
+          "image": "3FO498AT2FVC-3.jpg",
+          "truthIndex": 2,
+          "box": {
+            "x": 67,
+            "y": 226,
+            "w": 50,
+            "h": 31
+          },
+          "stage": "既有尺寸/score/去重",
+          "rejected": [
+            {
+              "index": 0,
+              "box": {
+                "x": 66.70985704660416,
+                "y": 225.8178558111191,
+                "w": 52.94521701335907,
+                "h": 31.03685727119446
+              },
+              "score": 0.8262262344360352,
+              "longSide": 1.0589043402671814,
+              "shortSide": 0.6207371454238892,
+              "valid": false,
+              "reasons": [
+                "门厚不在 0.10–0.40m"
+              ],
+              "kind": "swing"
+            }
+          ]
+        },
+        {
+          "image": "3FO498AT2FVC-3.jpg",
+          "truthIndex": 7,
+          "box": {
+            "x": 287,
+            "y": 368,
+            "w": 53,
+            "h": 34
+          },
+          "stage": "既有尺寸/score/去重",
+          "rejected": [
+            {
+              "index": 1,
+              "box": {
+                "x": 287.7013437271118,
+                "y": 367.5807063102722,
+                "w": 52.03238143920899,
+                "h": 33.77540130615235
+              },
+              "score": 0.8262262344360352,
+              "longSide": 1.0406476287841797,
+              "shortSide": 0.675508026123047,
+              "valid": false,
+              "reasons": [
+                "门厚不在 0.10–0.40m"
+              ],
+              "kind": "swing"
+            }
+          ]
+        }
+      ],
+      "gained": [
+        {
+          "image": "3FO3ELQQN9HT-3.jpg",
+          "truthIndex": 7
+        },
+        {
+          "image": "3FO3ELQQN9HT-3.jpg",
+          "truthIndex": 6
+        },
+        {
+          "image": "3FO3ELQQN9HT-3.jpg",
+          "truthIndex": 5
+        },
+        {
+          "image": "3FO3ELQQN9HT-3.jpg",
+          "truthIndex": 4
+        },
+        {
+          "image": "3FO3HLAR68IC-3.jpg",
+          "truthIndex": 9
+        },
+        {
+          "image": "3FO3JUKVQB60-3.jpg",
+          "truthIndex": 4
+        },
+        {
+          "image": "3FO3SV8DNOD1-3.jpg",
+          "truthIndex": 2
+        },
+        {
+          "image": "3FO3SV8DNOD1-3.jpg",
+          "truthIndex": 0
+        },
+        {
+          "image": "3FO3UONGHR0O-3.jpg",
+          "truthIndex": 10
+        },
+        {
+          "image": "3FO3VYPVGB2J-3.jpg",
+          "truthIndex": 0
+        },
+        {
+          "image": "3FO44SRKCOU9-3.jpg",
+          "truthIndex": 0
+        },
+        {
+          "image": "3FO498AT2FVC-3.jpg",
+          "truthIndex": 6
+        }
+      ]
+    }
+  },
+  "gates": {
+    "image46Doors4": false,
+    "image46Precision1": true,
+    "image46Vertices64": true,
+    "r2DoorsAtMost10": false,
+    "recallAtLeast8409": true
+  },
+  "allGatesPassed": false,
+  "verification": {
+    "tests": 326,
+    "failed": 0,
+    "build": true,
+    "validate": true,
+    "cloudflareBuild": true,
+    "bundles": true
+  },
+  "remaining30Annotated": false
+}

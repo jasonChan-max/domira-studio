@@ -1,0 +1,2147 @@
+{
+  "imgSize": [
+    1200,
+    900
+  ],
+  "segMs": 22929.69999999553,
+  "rooms": 4,
+  "roomAudit": [
+    {
+      "name": "空間1",
+      "bounds": {
+        "x0": -3.4379999999999997,
+        "x1": 2.0410000000000004,
+        "z0": -4.117999999999999,
+        "z1": 4.118
+      },
+      "withinHouse": true
+    },
+    {
+      "name": "空間2",
+      "bounds": {
+        "x0": 1.914,
+        "x1": 4.987,
+        "z0": 0.542,
+        "z1": 4.106
+      },
+      "withinHouse": true
+    },
+    {
+      "name": "空間3",
+      "bounds": {
+        "x0": -5,
+        "x1": -2.443,
+        "z0": 1.8010000000000002,
+        "z1": 4.118
+      },
+      "withinHouse": true
+    },
+    {
+      "name": "空間4",
+      "bounds": {
+        "x0": -3.6149999999999998,
+        "x1": -1.0449999999999997,
+        "z0": 0.11299999999999988,
+        "z1": 1.9899999999999998
+      },
+      "withinHouse": true
+    }
+  ],
+  "doors": 5,
+  "doorAudit": {
+    "raw": 5,
+    "kept": 5,
+    "checks": [
+      {
+        "index": 0,
+        "box": {
+          "x": 477.05790996551514,
+          "y": 717.0579528808594,
+          "w": 77.44534492492676,
+          "h": 23.494606018066406
+        },
+        "score": 0.7753103971481323,
+        "longSide": 0.975382177895803,
+        "shortSide": 0.2959018390184686,
+        "valid": true,
+        "reasons": [],
+        "kind": "swing"
+      },
+      {
+        "index": 1,
+        "box": {
+          "x": 543.7284851074219,
+          "y": 154.2263889312744,
+          "w": 177.51514434814453,
+          "h": 24.36481475830078
+        },
+        "score": 0.610729455947876,
+        "longSide": 2.235707107659251,
+        "shortSide": 0.3068616468299847,
+        "valid": true,
+        "reasons": [],
+        "kind": "sliding"
+      },
+      {
+        "index": 2,
+        "box": {
+          "x": 737.2789478302002,
+          "y": 492.0160388946533,
+          "w": 25.234966278076172,
+          "h": 145.3187370300293
+        },
+        "score": 0.5836522579193115,
+        "longSide": 1.8302107938290844,
+        "shortSide": 0.31782073398080823,
+        "valid": true,
+        "reasons": [],
+        "kind": "sliding"
+      },
+      {
+        "index": 3,
+        "box": {
+          "x": 396.8369150161743,
+          "y": 576.8368721008301,
+          "w": 20.884122848510742,
+          "h": 74.8348617553711
+        },
+        "score": 0.5836522579193115,
+        "longSide": 0.9425045561129862,
+        "shortSide": 0.26302421723565167,
+        "valid": true,
+        "reasons": [],
+        "kind": "swing"
+      },
+      {
+        "index": 4,
+        "box": {
+          "x": 434.0053367614746,
+          "y": 559.8894596099854,
+          "w": 76.57516479492188,
+          "h": 14.792919158935547
+        },
+        "score": 0.5560607314109802,
+        "longSide": 0.9644227304146332,
+        "shortSide": 0.1863088055281555,
+        "valid": true,
+        "reasons": [],
+        "kind": "swing"
+      }
+    ],
+    "rejected": [],
+    "maxWidth": 2.235707107659251,
+    "minThickness": 0.1863088055281555,
+    "maxThickness": 0.31782073398080823,
+    "height": {
+      "configuredHeight": 2.05,
+      "meshCount": 5,
+      "heights": [
+        2.049999952316284,
+        2.049999952316284,
+        2.049999952316284,
+        2.049999952316284,
+        2.049999952316284
+      ],
+      "changed": false
+    }
+  },
+  "doorDetections": [
+    {
+      "x": 359.1705322265625,
+      "y": 86.18775129318237,
+      "w": 157.50120162963867,
+      "h": 26.1051607131958,
+      "cls": "door",
+      "score": 0.7943156957626343
+    },
+    {
+      "x": 477.05790996551514,
+      "y": 717.0579528808594,
+      "w": 77.44534492492676,
+      "h": 23.494606018066406,
+      "cls": "door",
+      "score": 0.7753103971481323
+    },
+    {
+      "x": 543.7284851074219,
+      "y": 154.2263889312744,
+      "w": 177.51514434814453,
+      "h": 24.36481475830078,
+      "cls": "door",
+      "score": 0.610729455947876
+    },
+    {
+      "x": 737.2789478302002,
+      "y": 492.0160388946533,
+      "w": 25.234966278076172,
+      "h": 145.3187370300293,
+      "cls": "door",
+      "score": 0.5836522579193115
+    },
+    {
+      "x": 396.8369150161743,
+      "y": 576.8368721008301,
+      "w": 20.884122848510742,
+      "h": 74.8348617553711,
+      "cls": "door",
+      "score": 0.5836522579193115
+    },
+    {
+      "x": 434.0053367614746,
+      "y": 559.8894596099854,
+      "w": 76.57516479492188,
+      "h": 14.792919158935547,
+      "cls": "door",
+      "score": 0.5560607314109802
+    }
+  ],
+  "homeDoors": [
+    {
+      "x": -1.0732924127458625,
+      "z": 3.93961279458303,
+      "w": 0.975382177895803,
+      "d": 0.2959018390184686,
+      "horizontal": true,
+      "score": 0.7753103971481323,
+      "kind": "swing",
+      "sourceIndex": 0
+    },
+    {
+      "x": 0.39654983981730657,
+      "z": -3.1434660414304187,
+      "w": 2.235707107659251,
+      "d": 0.3068616468299847,
+      "horizontal": true,
+      "score": 0.610729455947876,
+      "kind": "sliding",
+      "sourceIndex": 1
+    },
+    {
+      "x": 1.8752699114513638,
+      "z": 1.8724862394164734,
+      "w": 0.31782073398080823,
+      "d": 1.8302107938290844,
+      "horizontal": false,
+      "score": 0.5836522579193115,
+      "kind": "sliding",
+      "sourceIndex": 2
+    },
+    {
+      "x": -2.4398113798434546,
+      "z": 2.4969055790745043,
+      "w": 0.26302421723565167,
+      "d": 0.9425045561129862,
+      "horizontal": false,
+      "score": 0.5836522579193115,
+      "kind": "swing",
+      "sourceIndex": 3
+    },
+    {
+      "x": -1.620995980366051,
+      "z": 1.9053642215296367,
+      "w": 0.9644227304146332,
+      "d": 0.1863088055281555,
+      "horizontal": true,
+      "score": 0.5560607314109802,
+      "kind": "swing",
+      "sourceIndex": 4
+    }
+  ],
+  "windowsRaw": [
+    {
+      "x": 222.92809009552002,
+      "y": 551.187744140625,
+      "w": 73.09447288513184,
+      "h": 24.36481475830078,
+      "cls": "window",
+      "score": 0.8440824747085571
+    },
+    {
+      "x": 780.0407123565674,
+      "y": 460.3175640106201,
+      "w": 174.03448104858398,
+      "h": 23.49466323852539,
+      "cls": "window",
+      "score": 0.8121030330657959
+    },
+    {
+      "x": 314.6684503555298,
+      "y": 300.5386161804199,
+      "w": 26.97535514831543,
+      "h": 44.378814697265625,
+      "cls": "window",
+      "score": 0.7336759567260742
+    },
+    {
+      "x": 542.4023151397705,
+      "y": 154.01930809020996,
+      "w": 178.38529586791992,
+      "h": 24.36481475830078,
+      "cls": "window",
+      "score": 0.6874369978904724
+    },
+    {
+      "x": 314.6684503555298,
+      "y": 433.79828453063965,
+      "w": 24.364843368530273,
+      "h": 40.0279426574707,
+      "cls": "window",
+      "score": 0.610729455947876
+    },
+    {
+      "x": 126.83690071105957,
+      "y": 577.707109451294,
+      "w": 24.36481475830078,
+      "h": 146.18894577026367,
+      "cls": "window",
+      "score": 0.5560607314109802
+    },
+    {
+      "x": 334.06002044677734,
+      "y": 15.414154529571533,
+      "w": 193.17821502685547,
+      "h": 67.87343502044678,
+      "cls": "window",
+      "score": 0.4475948214530945
+    },
+    {
+      "x": 543.9774227142334,
+      "y": 22.707059383392334,
+      "w": 100.06982803344727,
+      "h": 20.88413715362549,
+      "cls": "window",
+      "score": 0.4439392685890198
+    },
+    {
+      "x": 540.4548454284668,
+      "y": 20.96672773361206,
+      "w": 204.49047088623047,
+      "h": 20.88413715362549,
+      "cls": "window",
+      "score": 0.3372509479522705
+    },
+    {
+      "x": 610.938777923584,
+      "y": 791.187744140625,
+      "w": 123.56449127197266,
+      "h": 17.403488159179688,
+      "cls": "window",
+      "score": 0.3125630021095276
+    },
+    {
+      "x": 217.6651954650879,
+      "y": 783.1490993499756,
+      "w": 84.40670013427734,
+      "h": 12.18240737915039,
+      "cls": "window",
+      "score": 0.2888945937156677
+    },
+    {
+      "x": 1051.4087677001953,
+      "y": 497.4022579193115,
+      "w": 21.754302978515625,
+      "h": 230.59564590454102,
+      "cls": "window",
+      "score": 0.2663240432739258
+    },
+    {
+      "x": 214.80570316314697,
+      "y": 789.4474411010742,
+      "w": 179.2554759979248,
+      "h": 19.14379119873047,
+      "cls": "window",
+      "score": 0.2663240432739258
+    }
+  ],
+  "windows": 7,
+  "windowMeshCount": 7,
+  "windowAudit": [
+    {
+      "index": 0,
+      "x": -4.301318305565668,
+      "z": 1.8891687657430731,
+      "onExteriorWall": true,
+      "kind": "flat",
+      "wallFootprint": {
+        "x0": -4.761610955975819,
+        "x1": -3.841025655155518,
+        "y0": 1.7254408060453401,
+        "y1": 2.052896725440806
+      },
+      "glassLength": 0.9205853008203002,
+      "footprintLength": 0.9205853008203007,
+      "alongLengthDelta": 4.440892098500626e-16,
+      "alongCenterDelta": 0,
+      "samples": [
+        {
+          "offset": -0.25,
+          "lowerWall": true,
+          "openingClear": true,
+          "upperWall": true,
+          "glassPresent": true
+        },
+        {
+          "offset": 0,
+          "lowerWall": true,
+          "openingClear": true,
+          "upperWall": true,
+          "glassPresent": true
+        },
+        {
+          "offset": 0.25,
+          "lowerWall": true,
+          "openingClear": true,
+          "upperWall": true,
+          "glassPresent": true
+        }
+      ],
+      "panels": [
+        {
+          "horizontal": true,
+          "wallFootprint": {
+            "x0": -4.761610955975819,
+            "x1": -3.841025655155518,
+            "y0": 1.7254408060453401,
+            "y1": 2.052896725440806
+          },
+          "samples": [
+            {
+              "offset": -0.25,
+              "lowerWall": true,
+              "openingClear": true,
+              "upperWall": true,
+              "glassPresent": true
+            },
+            {
+              "offset": 0,
+              "lowerWall": true,
+              "openingClear": true,
+              "upperWall": true,
+              "glassPresent": true
+            },
+            {
+              "offset": 0.25,
+              "lowerWall": true,
+              "openingClear": true,
+              "upperWall": true,
+              "glassPresent": true
+            }
+          ]
+        }
+      ],
+      "valid": true
+    },
+    {
+      "index": 1,
+      "x": 3.3508558297337454,
+      "z": 0.7682619647355164,
+      "onExteriorWall": true,
+      "kind": "flat",
+      "wallFootprint": {
+        "x0": 2.254920810536113,
+        "x1": 4.446790848931378,
+        "y0": 0.6045340050377834,
+        "y1": 0.9319899244332495
+      },
+      "glassLength": 2.1918700383952645,
+      "footprintLength": 2.1918700383952645,
+      "alongLengthDelta": 0,
+      "alongCenterDelta": 0,
+      "samples": [
+        {
+          "offset": -0.25,
+          "lowerWall": true,
+          "openingClear": true,
+          "upperWall": true,
+          "glassPresent": true
+        },
+        {
+          "offset": 0,
+          "lowerWall": true,
+          "openingClear": true,
+          "upperWall": true,
+          "glassPresent": true
+        },
+        {
+          "offset": 0.25,
+          "lowerWall": true,
+          "openingClear": true,
+          "upperWall": true,
+          "glassPresent": true
+        }
+      ],
+      "panels": [
+        {
+          "horizontal": true,
+          "wallFootprint": {
+            "x0": 2.254920810536113,
+            "x1": 4.446790848931378,
+            "y0": 0.6045340050377834,
+            "y1": 0.9319899244332495
+          },
+          "samples": [
+            {
+              "offset": -0.25,
+              "lowerWall": true,
+              "openingClear": true,
+              "upperWall": true,
+              "glassPresent": true
+            },
+            {
+              "offset": 0,
+              "lowerWall": true,
+              "openingClear": true,
+              "upperWall": true,
+              "glassPresent": true
+            },
+            {
+              "offset": 0.25,
+              "lowerWall": true,
+              "openingClear": true,
+              "upperWall": true,
+              "glassPresent": true
+            }
+          ]
+        }
+      ],
+      "valid": true
+    },
+    {
+      "index": 2,
+      "x": -3.3438287153652393,
+      "z": -1.1747100311202427,
+      "onExteriorWall": true,
+      "kind": "flat",
+      "wallFootprint": {
+        "x0": -3.463476070528967,
+        "x1": -3.2241813602015115,
+        "y0": -1.4541735997428222,
+        "y1": -0.8952464624976633
+      },
+      "glassLength": 0.558927137245159,
+      "footprintLength": 0.558927137245159,
+      "alongLengthDelta": 0,
+      "alongCenterDelta": 0,
+      "samples": [
+        {
+          "offset": -0.25,
+          "lowerWall": true,
+          "openingClear": true,
+          "upperWall": true,
+          "glassPresent": true
+        },
+        {
+          "offset": 0,
+          "lowerWall": true,
+          "openingClear": true,
+          "upperWall": true,
+          "glassPresent": true
+        },
+        {
+          "offset": 0.25,
+          "lowerWall": true,
+          "openingClear": true,
+          "upperWall": true,
+          "glassPresent": true
+        }
+      ],
+      "panels": [
+        {
+          "horizontal": false,
+          "wallFootprint": {
+            "x0": -3.463476070528967,
+            "x1": -3.2241813602015115,
+            "y0": -1.4541735997428222,
+            "y1": -0.8952464624976633
+          },
+          "samples": [
+            {
+              "offset": -0.25,
+              "lowerWall": true,
+              "openingClear": true,
+              "upperWall": true,
+              "glassPresent": true
+            },
+            {
+              "offset": 0,
+              "lowerWall": true,
+              "openingClear": true,
+              "upperWall": true,
+              "glassPresent": true
+            },
+            {
+              "offset": 0.25,
+              "lowerWall": true,
+              "openingClear": true,
+              "upperWall": true,
+              "glassPresent": true
+            }
+          ]
+        }
+      ],
+      "valid": true
+    },
+    {
+      "index": 3,
+      "x": 0.3853269908530286,
+      "z": -3.129722921914358,
+      "onExteriorWall": true,
+      "kind": "flat",
+      "wallFootprint": {
+        "x0": -0.7380061065520087,
+        "x1": 1.5086600882580659,
+        "y0": -3.287153652392947,
+        "y1": -2.9722921914357685
+      },
+      "glassLength": 2.2466661948100746,
+      "footprintLength": 2.2466661948100746,
+      "alongLengthDelta": 0,
+      "alongCenterDelta": 0,
+      "samples": [
+        {
+          "offset": -0.25,
+          "lowerWall": true,
+          "openingClear": true,
+          "upperWall": true,
+          "glassPresent": true
+        },
+        {
+          "offset": 0,
+          "lowerWall": true,
+          "openingClear": true,
+          "upperWall": true,
+          "glassPresent": true
+        },
+        {
+          "offset": 0.25,
+          "lowerWall": true,
+          "openingClear": true,
+          "upperWall": true,
+          "glassPresent": true
+        }
+      ],
+      "panels": [
+        {
+          "horizontal": true,
+          "wallFootprint": {
+            "x0": -0.7380061065520087,
+            "x1": 1.5086600882580659,
+            "y0": -3.287153652392947,
+            "y1": -2.9722921914357685
+          },
+          "samples": [
+            {
+              "offset": -0.25,
+              "lowerWall": true,
+              "openingClear": true,
+              "upperWall": true,
+              "glassPresent": true
+            },
+            {
+              "offset": 0,
+              "lowerWall": true,
+              "openingClear": true,
+              "upperWall": true,
+              "glassPresent": true
+            },
+            {
+              "offset": 0.25,
+              "lowerWall": true,
+              "openingClear": true,
+              "upperWall": true,
+              "glassPresent": true
+            }
+          ]
+        }
+      ],
+      "valid": true
+    },
+    {
+      "index": 4,
+      "x": -3.3942065491183877,
+      "z": 0.4762248848787784,
+      "onExteriorWall": true,
+      "kind": "flat",
+      "wallFootprint": {
+        "x0": -3.463476070528967,
+        "x1": -3.3249370277078087,
+        "y0": 0.22415975479395028,
+        "y1": 0.7282900149636065
+      },
+      "glassLength": 0.5041302601696562,
+      "footprintLength": 0.5041302601696562,
+      "alongLengthDelta": 0,
+      "alongCenterDelta": -5.551115123125783e-17,
+      "samples": [
+        {
+          "offset": -0.25,
+          "lowerWall": true,
+          "openingClear": true,
+          "upperWall": true,
+          "glassPresent": true
+        },
+        {
+          "offset": 0,
+          "lowerWall": true,
+          "openingClear": true,
+          "upperWall": true,
+          "glassPresent": true
+        },
+        {
+          "offset": 0.25,
+          "lowerWall": true,
+          "openingClear": true,
+          "upperWall": true,
+          "glassPresent": true
+        }
+      ],
+      "panels": [
+        {
+          "horizontal": false,
+          "wallFootprint": {
+            "x0": -3.463476070528967,
+            "x1": -3.3249370277078087,
+            "y0": 0.22415975479395028,
+            "y1": 0.7282900149636065
+          },
+          "samples": [
+            {
+              "offset": -0.25,
+              "lowerWall": true,
+              "openingClear": true,
+              "upperWall": true,
+              "glassPresent": true
+            },
+            {
+              "offset": 0,
+              "lowerWall": true,
+              "openingClear": true,
+              "upperWall": true,
+              "glassPresent": true
+            },
+            {
+              "offset": 0.25,
+              "lowerWall": true,
+              "openingClear": true,
+              "upperWall": true,
+              "glassPresent": true
+            }
+          ]
+        }
+      ],
+      "valid": true
+    },
+    {
+      "index": 5,
+      "x": -4.296365925286819,
+      "z": 3.9420654911838797,
+      "onExteriorWall": true,
+      "kind": "flat",
+      "wallFootprint": {
+        "x0": -4.827894263663881,
+        "x1": -3.764837586909758,
+        "y0": 3.7657430730478594,
+        "y1": 4.1183879093199
+      },
+      "glassLength": 1.0630566767541227,
+      "footprintLength": 1.0630566767541225,
+      "alongLengthDelta": -2.220446049250313e-16,
+      "alongCenterDelta": 0,
+      "samples": [
+        {
+          "offset": -0.25,
+          "lowerWall": true,
+          "openingClear": true,
+          "upperWall": true,
+          "glassPresent": true
+        },
+        {
+          "offset": 0,
+          "lowerWall": true,
+          "openingClear": true,
+          "upperWall": true,
+          "glassPresent": true
+        },
+        {
+          "offset": 0.25,
+          "lowerWall": true,
+          "openingClear": true,
+          "upperWall": true,
+          "glassPresent": true
+        }
+      ],
+      "panels": [
+        {
+          "horizontal": true,
+          "wallFootprint": {
+            "x0": -4.827894263663881,
+            "x1": -3.764837586909758,
+            "y0": 3.7657430730478594,
+            "y1": 4.1183879093199
+          },
+          "samples": [
+            {
+              "offset": -0.25,
+              "lowerWall": true,
+              "openingClear": true,
+              "upperWall": true,
+              "glassPresent": true
+            },
+            {
+              "offset": 0,
+              "lowerWall": true,
+              "openingClear": true,
+              "upperWall": true,
+              "glassPresent": true
+            },
+            {
+              "offset": 0.25,
+              "lowerWall": true,
+              "openingClear": true,
+              "upperWall": true,
+              "glassPresent": true
+            }
+          ]
+        }
+      ],
+      "valid": true
+    },
+    {
+      "index": 6,
+      "x": -2.055080442024864,
+      "z": -3.8539042821158693,
+      "onExteriorWall": true,
+      "kind": "flat",
+      "wallFootprint": {
+        "x0": -3.0815288047452674,
+        "x1": -1.028632079304461,
+        "y0": -3.9168765743073046,
+        "y1": -3.790931989924434
+      },
+      "glassLength": 2.052896725440806,
+      "footprintLength": 2.0528967254408066,
+      "alongLengthDelta": 4.440892098500626e-16,
+      "alongCenterDelta": 0,
+      "samples": [
+        {
+          "offset": -0.25,
+          "lowerWall": true,
+          "openingClear": true,
+          "upperWall": true,
+          "glassPresent": true
+        },
+        {
+          "offset": 0,
+          "lowerWall": true,
+          "openingClear": true,
+          "upperWall": true,
+          "glassPresent": true
+        },
+        {
+          "offset": 0.25,
+          "lowerWall": true,
+          "openingClear": true,
+          "upperWall": true,
+          "glassPresent": true
+        }
+      ],
+      "panels": [
+        {
+          "horizontal": true,
+          "wallFootprint": {
+            "x0": -3.0815288047452674,
+            "x1": -1.028632079304461,
+            "y0": -3.9168765743073046,
+            "y1": -3.790931989924434
+          },
+          "samples": [
+            {
+              "offset": -0.25,
+              "lowerWall": true,
+              "openingClear": true,
+              "upperWall": true,
+              "glassPresent": true
+            },
+            {
+              "offset": 0,
+              "lowerWall": true,
+              "openingClear": true,
+              "upperWall": true,
+              "glassPresent": true
+            },
+            {
+              "offset": 0.25,
+              "lowerWall": true,
+              "openingClear": true,
+              "upperWall": true,
+              "glassPresent": true
+            }
+          ]
+        }
+      ],
+      "valid": true
+    }
+  ],
+  "windowsAllValid": true,
+  "bayWindows": [],
+  "bayFloorAudit": [],
+  "noExposedBayFloors": true,
+  "edges": {
+    "edges": 64,
+    "under3": 3,
+    "under6": 5,
+    "under8": 5,
+    "under8Ratio": 0.078125,
+    "under10": 6,
+    "min": 2,
+    "median": 47,
+    "max": 441
+  },
+  "contoursRaw": [
+    {
+      "outer": [
+        [
+          356,
+          89
+        ],
+        [
+          356,
+          115
+        ],
+        [
+          345,
+          115
+        ],
+        [
+          345,
+          302
+        ],
+        [
+          316,
+          302
+        ],
+        [
+          316,
+          89
+        ]
+      ],
+      "holes": []
+    },
+    {
+      "outer": [
+        [
+          544,
+          91
+        ],
+        [
+          544,
+          152
+        ],
+        [
+          539,
+          152
+        ],
+        [
+          539,
+          180
+        ],
+        [
+          518,
+          180
+        ],
+        [
+          518,
+          91
+        ]
+      ],
+      "holes": []
+    },
+    {
+      "outer": [
+        [
+          764,
+          157
+        ],
+        [
+          764,
+          464
+        ],
+        [
+          778,
+          464
+        ],
+        [
+          778,
+          490
+        ],
+        [
+          736,
+          490
+        ],
+        [
+          736,
+          180
+        ],
+        [
+          717,
+          180
+        ],
+        [
+          717,
+          157
+        ]
+      ],
+      "holes": []
+    },
+    {
+      "outer": [
+        [
+          345,
+          347
+        ],
+        [
+          345,
+          417
+        ],
+        [
+          527,
+          417
+        ],
+        [
+          527,
+          570
+        ],
+        [
+          511,
+          570
+        ],
+        [
+          511,
+          434
+        ],
+        [
+          424,
+          434
+        ],
+        [
+          424,
+          436
+        ],
+        [
+          316,
+          436
+        ],
+        [
+          316,
+          347
+        ]
+      ],
+      "holes": []
+    },
+    {
+      "outer": [
+        [
+          956,
+          462
+        ],
+        [
+          998,
+          462
+        ],
+        [
+          998,
+          741
+        ],
+        [
+          996,
+          741
+        ],
+        [
+          996,
+          743
+        ],
+        [
+          555,
+          743
+        ],
+        [
+          555,
+          715
+        ],
+        [
+          736,
+          715
+        ],
+        [
+          736,
+          645
+        ],
+        [
+          766,
+          645
+        ],
+        [
+          766,
+          715
+        ],
+        [
+          970,
+          715
+        ],
+        [
+          970,
+          490
+        ],
+        [
+          956,
+          490
+        ]
+      ],
+      "holes": []
+    },
+    {
+      "outer": [
+        [
+          345,
+          478
+        ],
+        [
+          345,
+          560
+        ],
+        [
+          436,
+          560
+        ],
+        [
+          436,
+          577
+        ],
+        [
+          295,
+          577
+        ],
+        [
+          295,
+          553
+        ],
+        [
+          319,
+          553
+        ],
+        [
+          319,
+          544
+        ],
+        [
+          316,
+          544
+        ],
+        [
+          316,
+          478
+        ]
+      ],
+      "holes": []
+    },
+    {
+      "outer": [
+        [
+          204,
+          553
+        ],
+        [
+          218,
+          553
+        ],
+        [
+          218,
+          715
+        ],
+        [
+          401,
+          715
+        ],
+        [
+          401,
+          659
+        ],
+        [
+          415,
+          659
+        ],
+        [
+          415,
+          715
+        ],
+        [
+          476,
+          715
+        ],
+        [
+          476,
+          743
+        ],
+        [
+          204,
+          743
+        ]
+      ],
+      "holes": []
+    }
+  ],
+  "selection": {
+    "contours": {
+      "raw": 7,
+      "kept": 7,
+      "rejected": [],
+      "orthogonalize": true,
+      "postprocessing": {
+        "medianThickness": 28,
+        "areaThreshold": 784,
+        "removed": [
+          {
+            "index": 6,
+            "area": 42,
+            "threshold": 784,
+            "bounds": [
+              823,
+              485,
+              844,
+              487
+            ]
+          }
+        ],
+        "filledHoles": [],
+        "mergeCollinear": true,
+        "fitApplied": false,
+        "baselineVertices": 64,
+        "fitFidelity": null
+      }
+    },
+    "rooms": {
+      "candidates": 5,
+      "insideHouse": 4,
+      "merged": [],
+      "bayFloorChanges": [],
+      "removedBelowMinimum": [],
+      "kept": 4
+    },
+    "windows": {
+      "raw": 13,
+      "kept": 7,
+      "checks": [
+        {
+          "index": 0,
+          "box": {
+            "x": 222.92809009552002,
+            "y": 551.187744140625,
+            "w": 73.09447288513184,
+            "h": 24.36481475830078,
+            "cls": "window",
+            "score": 0.8440824747085571,
+            "cx": 259.47532653808594,
+            "cy": 563.3701515197754,
+            "area": 1780.9332917018764,
+            "horizontal": true
+          },
+          "onExteriorWall": true,
+          "nearestWall": {
+            "distance": 0.12984848022460938,
+            "thickness": 7,
+            "ratio": 0.01854978288922991,
+            "centerLine": 563.5,
+            "bbox": {
+              "x0": 295,
+              "y0": 560,
+              "x1": 437,
+              "y1": 566
+            }
+          },
+          "aspectRatio": 3.00000117424367,
+          "withinWallDistance": true,
+          "valid": true,
+          "endA": true,
+          "endB": true,
+          "outsideSide": -1,
+          "sideA": 5,
+          "sideB": 0,
+          "footprint": {
+            "x0": 222.92809009552002,
+            "x1": 296.02256298065186,
+            "y0": 553,
+            "y1": 579
+          }
+        },
+        {
+          "index": 1,
+          "box": {
+            "x": 780.0407123565674,
+            "y": 460.3175640106201,
+            "w": 174.03448104858398,
+            "h": 23.49466323852539,
+            "cls": "window",
+            "score": 0.8121030330657959,
+            "cx": 867.0579528808594,
+            "cy": 472.0648956298828,
+            "area": 4088.88152412801,
+            "horizontal": true
+          },
+          "onExteriorWall": true,
+          "nearestWall": {
+            "distance": 0.0648956298828125,
+            "thickness": 26,
+            "ratio": 0.0024959857647235575,
+            "centerLine": 472,
+            "bbox": {
+              "x0": 952,
+              "y0": 459,
+              "x1": 997,
+              "y1": 484
+            }
+          },
+          "aspectRatio": 7.407404791536268,
+          "withinWallDistance": true,
+          "valid": true,
+          "endA": true,
+          "endB": true,
+          "outsideSide": -1,
+          "sideA": 5,
+          "sideB": 0,
+          "footprint": {
+            "x0": 780.0407123565674,
+            "x1": 954.0751934051514,
+            "y0": 464,
+            "y1": 490
+          }
+        },
+        {
+          "index": 2,
+          "box": {
+            "x": 314.6684503555298,
+            "y": 300.5386161804199,
+            "w": 26.97535514831543,
+            "h": 44.378814697265625,
+            "cls": "window",
+            "score": 0.7336759567260742,
+            "cx": 328.1561279296875,
+            "cy": 322.72802352905273,
+            "area": 1197.1342875200207,
+            "horizontal": false
+          },
+          "onExteriorWall": true,
+          "nearestWall": {
+            "distance": 3.3438720703125,
+            "thickness": 31,
+            "ratio": 0.10786684097782258,
+            "centerLine": 331.5,
+            "bbox": {
+              "x0": 316,
+              "y0": 117,
+              "x1": 346,
+              "y1": 301
+            }
+          },
+          "aspectRatio": 1.6451614613881003,
+          "withinWallDistance": true,
+          "valid": true,
+          "endA": true,
+          "endB": true,
+          "outsideSide": -1,
+          "sideA": 5,
+          "sideB": 0,
+          "footprint": {
+            "x0": 326,
+            "x1": 345,
+            "y0": 300.5386161804199,
+            "y1": 344.91743087768555
+          }
+        },
+        {
+          "index": 3,
+          "box": {
+            "x": 542.4023151397705,
+            "y": 154.01930809020996,
+            "w": 178.38529586791992,
+            "h": 24.36481475830078,
+            "cls": "window",
+            "score": 0.6874369978904724,
+            "cx": 631.5949630737305,
+            "cy": 166.20171546936035,
+            "area": 4346.324689426547,
+            "horizontal": true
+          },
+          "onExteriorWall": true,
+          "nearestWall": {
+            "distance": 2.2982845306396484,
+            "thickness": 23,
+            "ratio": 0.09992541437563689,
+            "centerLine": 168.5,
+            "bbox": {
+              "x0": 715,
+              "y0": 157,
+              "x1": 763,
+              "y1": 179
+            }
+          },
+          "aspectRatio": 7.3214304166686235,
+          "withinWallDistance": true,
+          "valid": true,
+          "endA": true,
+          "endB": true,
+          "outsideSide": -1,
+          "sideA": 5,
+          "sideB": 0,
+          "footprint": {
+            "x0": 542.4023151397705,
+            "x1": 720.7876110076904,
+            "y0": 155,
+            "y1": 180
+          }
+        },
+        {
+          "index": 4,
+          "box": {
+            "x": 314.6684503555298,
+            "y": 433.79828453063965,
+            "w": 24.364843368530273,
+            "h": 40.0279426574707,
+            "cls": "window",
+            "score": 0.610729455947876,
+            "cx": 326.8508720397949,
+            "cy": 453.812255859375,
+            "area": 975.2745532137851,
+            "horizontal": false
+          },
+          "onExteriorWall": true,
+          "nearestWall": {
+            "distance": 4.649127960205078,
+            "thickness": 31,
+            "ratio": 0.14997186968403478,
+            "centerLine": 331.5,
+            "bbox": {
+              "x0": 316,
+              "y0": 347,
+              "x1": 346,
+              "y1": 416
+            }
+          },
+          "aspectRatio": 1.6428565557359975,
+          "withinWallDistance": true,
+          "valid": true,
+          "endA": true,
+          "endB": true,
+          "outsideSide": -1,
+          "sideA": 5,
+          "sideB": 0,
+          "footprint": {
+            "x0": 326,
+            "x1": 337,
+            "y0": 433.79828453063965,
+            "y1": 473.82622718811035
+          }
+        },
+        {
+          "index": 5,
+          "box": {
+            "x": 126.83690071105957,
+            "y": 577.707109451294,
+            "w": 24.36481475830078,
+            "h": 146.18894577026367,
+            "cls": "window",
+            "score": 0.5560607314109802,
+            "cx": 139.01930809020996,
+            "cy": 650.8015823364258,
+            "area": 3561.866583403753,
+            "horizontal": false
+          },
+          "onExteriorWall": false,
+          "nearestWall": {
+            "distance": 74.48069190979004,
+            "thickness": 23,
+            "ratio": 3.238290952599567,
+            "centerLine": 213.5,
+            "bbox": {
+              "x0": 202,
+              "y0": 553,
+              "x1": 224,
+              "y1": 580
+            }
+          },
+          "aspectRatio": 6.00000234848734,
+          "withinWallDistance": true,
+          "valid": false,
+          "reason": "远墙候选缺少三面窗、凸出地板和屋外的共同证据"
+        },
+        {
+          "index": 6,
+          "box": {
+            "x": 334.06002044677734,
+            "y": 15.414154529571533,
+            "w": 193.17821502685547,
+            "h": 67.87343502044678,
+            "cls": "window",
+            "score": 0.4475948214530945,
+            "cx": 430.6491279602051,
+            "cy": 49.35087203979492,
+            "area": 13111.66902499117,
+            "horizontal": true
+          },
+          "onExteriorWall": false,
+          "nearestWall": {
+            "distance": 47.64912796020508,
+            "thickness": 16,
+            "ratio": 2.9780704975128174,
+            "centerLine": 97,
+            "bbox": {
+              "x0": 316,
+              "y0": 89,
+              "x1": 355,
+              "y1": 104
+            }
+          },
+          "aspectRatio": 2.8461535056927767,
+          "withinWallDistance": true,
+          "valid": false,
+          "reason": "远墙候选缺少三面窗、凸出地板和屋外的共同证据"
+        },
+        {
+          "index": 7,
+          "box": {
+            "x": 543.9774227142334,
+            "y": 22.707059383392334,
+            "w": 100.06982803344727,
+            "h": 20.88413715362549,
+            "cls": "window",
+            "score": 0.4439392685890198,
+            "cx": 594.012336730957,
+            "cy": 33.14912796020508,
+            "area": 2089.8720135902295,
+            "horizontal": true
+          },
+          "onExteriorWall": false,
+          "nearestWall": {
+            "distance": 108.35087203979492,
+            "thickness": 21,
+            "ratio": 5.159565335228329,
+            "centerLine": 141.5,
+            "bbox": {
+              "x0": 516,
+              "y0": 131,
+              "x1": 543,
+              "y1": 151
+            }
+          },
+          "aspectRatio": 4.791666866451082,
+          "withinWallDistance": false,
+          "valid": false,
+          "reason": "窗到墙中线距离超过墙厚的 5 倍"
+        },
+        {
+          "index": 8,
+          "box": {
+            "x": 540.4548454284668,
+            "y": 20.96672773361206,
+            "w": 204.49047088623047,
+            "h": 20.88413715362549,
+            "cls": "window",
+            "score": 0.3372509479522705,
+            "cx": 642.700080871582,
+            "cy": 31.408796310424805,
+            "area": 4270.607040597497,
+            "horizontal": true
+          },
+          "onExteriorWall": false,
+          "nearestWall": {
+            "distance": 110.0912036895752,
+            "thickness": 21,
+            "ratio": 5.242438270932152,
+            "centerLine": 141.5,
+            "bbox": {
+              "x0": 516,
+              "y0": 131,
+              "x1": 543,
+              "y1": 151
+            }
+          },
+          "aspectRatio": 9.791664811525665,
+          "withinWallDistance": false,
+          "valid": false,
+          "reason": "窗到墙中线距离超过墙厚的 5 倍"
+        },
+        {
+          "index": 9,
+          "box": {
+            "x": 610.938777923584,
+            "y": 791.187744140625,
+            "w": 123.56449127197266,
+            "h": 17.403488159179688,
+            "cls": "window",
+            "score": 0.3125630021095276,
+            "cx": 672.7210235595703,
+            "cy": 799.8894882202148,
+            "area": 2150.453160746838,
+            "horizontal": true
+          },
+          "onExteriorWall": false,
+          "nearestWall": {
+            "distance": 69.88948822021484,
+            "thickness": 26,
+            "ratio": 2.6880572392390323,
+            "centerLine": 730,
+            "bbox": {
+              "x0": 551,
+              "y0": 717,
+              "x1": 997,
+              "y1": 742
+            }
+          },
+          "aspectRatio": 7.099984218209556,
+          "withinWallDistance": true,
+          "valid": false,
+          "reason": "远墙候选缺少三面窗、凸出地板和屋外的共同证据"
+        },
+        {
+          "index": 10,
+          "box": {
+            "x": 217.6651954650879,
+            "y": 783.1490993499756,
+            "w": 84.40670013427734,
+            "h": 12.18240737915039,
+            "cls": "window",
+            "score": 0.2888945937156677,
+            "cx": 259.86854553222656,
+            "cy": 789.2403030395508,
+            "area": 1028.2768065655546,
+            "horizontal": true
+          },
+          "onExteriorWall": true,
+          "nearestWall": {
+            "distance": 60.24030303955078,
+            "thickness": 28,
+            "ratio": 2.1514393942696706,
+            "centerLine": 729,
+            "bbox": {
+              "x0": 204,
+              "y0": 715,
+              "x1": 477,
+              "y1": 742
+            }
+          },
+          "aspectRatio": 6.928573106062386,
+          "withinWallDistance": true,
+          "valid": true,
+          "endA": true,
+          "endB": true,
+          "outsideSide": 1,
+          "sideA": 0,
+          "sideB": 5,
+          "footprint": {
+            "x0": 217.6651954650879,
+            "x1": 302.07189559936523,
+            "y0": 715,
+            "y1": 743
+          }
+        },
+        {
+          "index": 11,
+          "box": {
+            "x": 1051.4087677001953,
+            "y": 497.4022579193115,
+            "w": 21.754302978515625,
+            "h": 230.59564590454102,
+            "cls": "window",
+            "score": 0.2663240432739258,
+            "cx": 1062.2859191894531,
+            "cy": 612.700080871582,
+            "area": 5016.447546533891,
+            "horizontal": false
+          },
+          "onExteriorWall": false,
+          "nearestWall": {
+            "distance": 78.28591918945312,
+            "thickness": 28,
+            "ratio": 2.7959256853376115,
+            "centerLine": 984,
+            "bbox": {
+              "x0": 970,
+              "y0": 490,
+              "x1": 997,
+              "y1": 714
+            }
+          },
+          "aspectRatio": 10.600001578183196,
+          "withinWallDistance": true,
+          "valid": false,
+          "reason": "远墙候选缺少三面窗、凸出地板和屋外的共同证据"
+        },
+        {
+          "index": 12,
+          "box": {
+            "x": 214.80570316314697,
+            "y": 789.4474411010742,
+            "w": 179.2554759979248,
+            "h": 19.14379119873047,
+            "cls": "window",
+            "score": 0.2663240432739258,
+            "cx": 304.4334411621094,
+            "cy": 799.0193367004395,
+            "area": 3431.6294037333137,
+            "horizontal": true
+          },
+          "onExteriorWall": false,
+          "nearestWall": {
+            "distance": 70.01933670043945,
+            "thickness": 28,
+            "ratio": 2.500690596444266,
+            "centerLine": 729,
+            "bbox": {
+              "x0": 204,
+              "y0": 715,
+              "x1": 477,
+              "y1": 742
+            }
+          },
+          "aspectRatio": 9.36363514087075,
+          "withinWallDistance": true,
+          "valid": false,
+          "reason": "远墙候选缺少三面窗、凸出地板和屋外的共同证据"
+        }
+      ],
+      "rejected": [
+        {
+          "index": 5,
+          "box": {
+            "x": 126.83690071105957,
+            "y": 577.707109451294,
+            "w": 24.36481475830078,
+            "h": 146.18894577026367,
+            "cls": "window",
+            "score": 0.5560607314109802,
+            "cx": 139.01930809020996,
+            "cy": 650.8015823364258,
+            "area": 3561.866583403753,
+            "horizontal": false
+          },
+          "onExteriorWall": false,
+          "nearestWall": {
+            "distance": 74.48069190979004,
+            "thickness": 23,
+            "ratio": 3.238290952599567,
+            "centerLine": 213.5,
+            "bbox": {
+              "x0": 202,
+              "y0": 553,
+              "x1": 224,
+              "y1": 580
+            }
+          },
+          "aspectRatio": 6.00000234848734,
+          "withinWallDistance": true,
+          "valid": false,
+          "reason": "远墙候选缺少三面窗、凸出地板和屋外的共同证据"
+        },
+        {
+          "index": 6,
+          "box": {
+            "x": 334.06002044677734,
+            "y": 15.414154529571533,
+            "w": 193.17821502685547,
+            "h": 67.87343502044678,
+            "cls": "window",
+            "score": 0.4475948214530945,
+            "cx": 430.6491279602051,
+            "cy": 49.35087203979492,
+            "area": 13111.66902499117,
+            "horizontal": true
+          },
+          "onExteriorWall": false,
+          "nearestWall": {
+            "distance": 47.64912796020508,
+            "thickness": 16,
+            "ratio": 2.9780704975128174,
+            "centerLine": 97,
+            "bbox": {
+              "x0": 316,
+              "y0": 89,
+              "x1": 355,
+              "y1": 104
+            }
+          },
+          "aspectRatio": 2.8461535056927767,
+          "withinWallDistance": true,
+          "valid": false,
+          "reason": "远墙候选缺少三面窗、凸出地板和屋外的共同证据"
+        },
+        {
+          "index": 7,
+          "box": {
+            "x": 543.9774227142334,
+            "y": 22.707059383392334,
+            "w": 100.06982803344727,
+            "h": 20.88413715362549,
+            "cls": "window",
+            "score": 0.4439392685890198,
+            "cx": 594.012336730957,
+            "cy": 33.14912796020508,
+            "area": 2089.8720135902295,
+            "horizontal": true
+          },
+          "onExteriorWall": false,
+          "nearestWall": {
+            "distance": 108.35087203979492,
+            "thickness": 21,
+            "ratio": 5.159565335228329,
+            "centerLine": 141.5,
+            "bbox": {
+              "x0": 516,
+              "y0": 131,
+              "x1": 543,
+              "y1": 151
+            }
+          },
+          "aspectRatio": 4.791666866451082,
+          "withinWallDistance": false,
+          "valid": false,
+          "reason": "窗到墙中线距离超过墙厚的 5 倍"
+        },
+        {
+          "index": 8,
+          "box": {
+            "x": 540.4548454284668,
+            "y": 20.96672773361206,
+            "w": 204.49047088623047,
+            "h": 20.88413715362549,
+            "cls": "window",
+            "score": 0.3372509479522705,
+            "cx": 642.700080871582,
+            "cy": 31.408796310424805,
+            "area": 4270.607040597497,
+            "horizontal": true
+          },
+          "onExteriorWall": false,
+          "nearestWall": {
+            "distance": 110.0912036895752,
+            "thickness": 21,
+            "ratio": 5.242438270932152,
+            "centerLine": 141.5,
+            "bbox": {
+              "x0": 516,
+              "y0": 131,
+              "x1": 543,
+              "y1": 151
+            }
+          },
+          "aspectRatio": 9.791664811525665,
+          "withinWallDistance": false,
+          "valid": false,
+          "reason": "窗到墙中线距离超过墙厚的 5 倍"
+        },
+        {
+          "index": 9,
+          "box": {
+            "x": 610.938777923584,
+            "y": 791.187744140625,
+            "w": 123.56449127197266,
+            "h": 17.403488159179688,
+            "cls": "window",
+            "score": 0.3125630021095276,
+            "cx": 672.7210235595703,
+            "cy": 799.8894882202148,
+            "area": 2150.453160746838,
+            "horizontal": true
+          },
+          "onExteriorWall": false,
+          "nearestWall": {
+            "distance": 69.88948822021484,
+            "thickness": 26,
+            "ratio": 2.6880572392390323,
+            "centerLine": 730,
+            "bbox": {
+              "x0": 551,
+              "y0": 717,
+              "x1": 997,
+              "y1": 742
+            }
+          },
+          "aspectRatio": 7.099984218209556,
+          "withinWallDistance": true,
+          "valid": false,
+          "reason": "远墙候选缺少三面窗、凸出地板和屋外的共同证据"
+        },
+        {
+          "index": 11,
+          "box": {
+            "x": 1051.4087677001953,
+            "y": 497.4022579193115,
+            "w": 21.754302978515625,
+            "h": 230.59564590454102,
+            "cls": "window",
+            "score": 0.2663240432739258,
+            "cx": 1062.2859191894531,
+            "cy": 612.700080871582,
+            "area": 5016.447546533891,
+            "horizontal": false
+          },
+          "onExteriorWall": false,
+          "nearestWall": {
+            "distance": 78.28591918945312,
+            "thickness": 28,
+            "ratio": 2.7959256853376115,
+            "centerLine": 984,
+            "bbox": {
+              "x0": 970,
+              "y0": 490,
+              "x1": 997,
+              "y1": 714
+            }
+          },
+          "aspectRatio": 10.600001578183196,
+          "withinWallDistance": true,
+          "valid": false,
+          "reason": "远墙候选缺少三面窗、凸出地板和屋外的共同证据"
+        },
+        {
+          "index": 12,
+          "box": {
+            "x": 214.80570316314697,
+            "y": 789.4474411010742,
+            "w": 179.2554759979248,
+            "h": 19.14379119873047,
+            "cls": "window",
+            "score": 0.2663240432739258,
+            "cx": 304.4334411621094,
+            "cy": 799.0193367004395,
+            "area": 3431.6294037333137,
+            "horizontal": true
+          },
+          "onExteriorWall": false,
+          "nearestWall": {
+            "distance": 70.01933670043945,
+            "thickness": 28,
+            "ratio": 2.500690596444266,
+            "centerLine": 729,
+            "bbox": {
+              "x0": 204,
+              "y0": 715,
+              "x1": 477,
+              "y1": 742
+            }
+          },
+          "aspectRatio": 9.36363514087075,
+          "withinWallDistance": true,
+          "valid": false,
+          "reason": "远墙候选缺少三面窗、凸出地板和屋外的共同证据"
+        }
+      ],
+      "recovered": [
+        {
+          "box": {
+            "cx": 437.8266129032258,
+            "cy": 100.46925403225806,
+            "x": 356,
+            "y": 87,
+            "w": 163,
+            "h": 27,
+            "area": 3968,
+            "horizontal": true
+          },
+          "onExteriorWall": true,
+          "nearestWall": {
+            "distance": 3.5,
+            "thickness": 16,
+            "ratio": 0.21875,
+            "centerLine": 97,
+            "bbox": {
+              "x0": 316,
+              "y0": 89,
+              "x1": 355,
+              "y1": 104
+            }
+          },
+          "aspectRatio": 6.037037037037037,
+          "withinWallDistance": true,
+          "valid": true,
+          "endA": true,
+          "endB": true,
+          "outsideSide": -1,
+          "sideA": 4,
+          "sideB": 0,
+          "footprint": {
+            "x0": 356,
+            "x1": 519,
+            "y0": 105,
+            "y1": 115
+          }
+        }
+      ],
+      "reclassifiedDoors": [
+        {
+          "x": 359.1705322265625,
+          "y": 86.18775129318237,
+          "w": 157.50120162963867,
+          "h": 26.1051607131958,
+          "cls": "door",
+          "score": 0.7943156957626343,
+          "cx": 437.92113304138184,
+          "cy": 99.24033164978027,
+          "area": 4111.594181063174,
+          "horizontal": true
+        }
+      ]
+    },
+    "doors": {
+      "raw": 5,
+      "kept": 5,
+      "checks": [
+        {
+          "index": 0,
+          "box": {
+            "x": 477.05790996551514,
+            "y": 717.0579528808594,
+            "w": 77.44534492492676,
+            "h": 23.494606018066406
+          },
+          "score": 0.7753103971481323,
+          "longSide": 0.975382177895803,
+          "shortSide": 0.2959018390184686,
+          "valid": true,
+          "reasons": [],
+          "kind": "swing"
+        },
+        {
+          "index": 1,
+          "box": {
+            "x": 543.7284851074219,
+            "y": 154.2263889312744,
+            "w": 177.51514434814453,
+            "h": 24.36481475830078
+          },
+          "score": 0.610729455947876,
+          "longSide": 2.235707107659251,
+          "shortSide": 0.3068616468299847,
+          "valid": true,
+          "reasons": [],
+          "kind": "sliding"
+        },
+        {
+          "index": 2,
+          "box": {
+            "x": 737.2789478302002,
+            "y": 492.0160388946533,
+            "w": 25.234966278076172,
+            "h": 145.3187370300293
+          },
+          "score": 0.5836522579193115,
+          "longSide": 1.8302107938290844,
+          "shortSide": 0.31782073398080823,
+          "valid": true,
+          "reasons": [],
+          "kind": "sliding"
+        },
+        {
+          "index": 3,
+          "box": {
+            "x": 396.8369150161743,
+            "y": 576.8368721008301,
+            "w": 20.884122848510742,
+            "h": 74.8348617553711
+          },
+          "score": 0.5836522579193115,
+          "longSide": 0.9425045561129862,
+          "shortSide": 0.26302421723565167,
+          "valid": true,
+          "reasons": [],
+          "kind": "swing"
+        },
+        {
+          "index": 4,
+          "box": {
+            "x": 434.0053367614746,
+            "y": 559.8894596099854,
+            "w": 76.57516479492188,
+            "h": 14.792919158935547
+          },
+          "score": 0.5560607314109802,
+          "longSide": 0.9644227304146332,
+          "shortSide": 0.1863088055281555,
+          "valid": true,
+          "reasons": [],
+          "kind": "swing"
+        }
+      ],
+      "rejected": []
+    }
+  },
+  "homeBlocks": 40,
+  "homeContours": 7,
+  "holes": 0,
+  "vertices": 64,
+  "orthogonalization": {
+    "enabled": true,
+    "originalVertices": 260,
+    "originalArea": 67571
+  },
+  "geometryMs": 303.59999999403954,
+  "contourArea": 64310,
+  "maskFidelity": {
+    "precision": 1,
+    "recall": 0.9517396516256974,
+    "extraPixels": 0,
+    "missedPixels": 3261
+  },
+  "thickness": {
+    "min": 0.02499999999999991,
+    "median": 0.1890000000000005,
+    "max": 0.3769999999999998
+  },
+  "current": {
+    "buildMs": 2.399999998509884,
+    "buildSamples": [
+      3.2999999970197678,
+      2.600000001490116,
+      2.2000000029802322,
+      2.399999998509884,
+      2.2999999970197678,
+      2.2000000029802322,
+      2.600000001490116
+    ],
+    "frameMs": 0.3999999985098839,
+    "frameSamples": [
+      0.3999999985098839,
+      0.3999999985098839,
+      0.4000000059604645,
+      0.3999999985098839,
+      0.29999999701976776,
+      0.3999999985098839,
+      0.4000000059604645,
+      0.3999999985098839,
+      0.29999999701976776,
+      0.5,
+      0.3999999985098839,
+      0.4000000059604645
+    ],
+    "meshCount": 20,
+    "wallMeshes": 3,
+    "drawCalls": 31,
+    "triangles": 1334
+  },
+  "baseline": null,
+  "uiFlow": {
+    "initialBuildError": "",
+    "resizedBuildError": "",
+    "initialRooms": 4,
+    "initialWidth": 10,
+    "reviewedRooms": [],
+    "doors": 5,
+    "rooms": 4,
+    "windows": 7,
+    "windowSource": "yolo+segmentation",
+    "svgWindowCount": 7,
+    "windowsMatchData": true,
+    "svgWindowsMatchData": true,
+    "savedContours": 7,
+    "savedWidth": 12,
+    "savedBayWindows": []
+  }
+}
