@@ -5,9 +5,19 @@ import {windowsFromMask} from './room-polygon.js';
 import {assessBayWindowSupport} from './bay-window.js';
 
 // 飘窗约 58cm 的凸出场景中，玻璃在凸出外沿，主墙中线的 2.5 倍墙厚不足以覆盖它。
-export const MAX_WINDOW_WALL_RATIO=5;
+// 2026-11-26：R(7) 底部阳台窗实测 ratio 7.14（距离 92.8px / 墙厚 13px），5 倍還是不夠，
+// 放寬到 8。放進來的必須靠下面的長寬比閘（方形假框 1.16 會被擋）和 bay 檢查兜住。
+export const MAX_WINDOW_WALL_RATIO=8;
 export const LEGACY_WINDOW_WALL_RATIO=2.5;
-export const MIN_BAY_WINDOW_ASPECT=2;
+// 2026-11-26：由 2 提到 3。放寬遠牆判定後，3FO3UONGHR0O 放進了兩個 88x44 / 86x43 的框
+// （長寬比 2.02 / 2.00）——那是「窗 + 牆」的粗框，不是窗。而真正要救的底部凸窗
+// 長寬比是 9.33 / 8.04。3 這個分界兩邊都乾淨。
+export const MIN_BAY_WINDOW_ASPECT=3;
+// 2026-11-26：框內必須真的有窗像素。46.03 的 W6/W7/W8 是尺寸標註（「1591」「1934」「2304」），
+// 框內 window 佔比 0%（outside 100%），卻因為兩側恰好「一邊屋外一邊地板」而通過端點/兩側檢查。
+// 真窗的框內 window 佔比實測 87–98%（W1 87%、W4 90%、W2 98%），
+// 最差的凸窗（R(7) 底部陽台窗，框內混了 48% 地板）也有 37%。0.30 這個線兩邊都乾淨。
+export const MIN_WINDOW_CONTENT_RATIO=.3;
 
 // 筛选与轮廓转换分开；不能为了去除屋外噪声而改写忠实于 mask 的轮廓提取。
 export function contourBounds(contour){
@@ -106,6 +116,17 @@ export function assessWindowSupport(mask,width,height,box,frame,{blocks}={}){
  const nearestWall=windowWallDistance(box,blocks||wallBlocksFromMask(mask,width,height));
  const aspectRatio=Math.max(box.w,box.h)/Math.min(box.w,box.h),far=!!nearestWall&&nearestWall.ratio>=LEGACY_WINDOW_WALL_RATIO;
  const diagnostic={onExteriorWall:false,nearestWall,aspectRatio,withinWallDistance:!!nearestWall&&nearestWall.ratio<MAX_WINDOW_WALL_RATIO};
+ // 框內幾乎沒有 window 像素 → 不是窗（尺寸標註、文字、空白框）。
+ let contentCount=0,contentWin=0;
+ for(let yy=Math.max(0,Math.floor(box.y));yy<Math.min(height,Math.ceil(box.y+box.h));yy++){
+  const row=yy*width;
+  for(let xx=Math.max(0,Math.floor(box.x));xx<Math.min(width,Math.ceil(box.x+box.w));xx++){
+   contentCount++;if(mask[row+xx]===3)contentWin++;
+  }
+ }
+ const contentRatio=contentCount?contentWin/contentCount:0;
+ diagnostic.contentRatio=contentRatio;
+ if(contentRatio<MIN_WINDOW_CONTENT_RATIO)return {...diagnostic,valid:false,reason:'框內幾乎沒有窗像素（疑似尺寸標註或空白框）'};
  // 46.03 的短真窗原框长宽比可小于 2；细长约束用于新增的远墙路径，近墙仍需原来的墙端和屋外证据。
  if(far&&aspectRatio<MIN_BAY_WINDOW_ASPECT)return {...diagnostic,valid:false,reason:'远墙候选长宽比小于 2，疑似方形大假框'};
  if(!diagnostic.withinWallDistance)return {...diagnostic,valid:false,reason:'窗到墙中线距离超过墙厚的 5 倍'};
@@ -113,7 +134,12 @@ export function assessWindowSupport(mask,width,height,box,frame,{blocks}={}){
   const bay=assessBayWindowSupport(mask,width,height,box,nearestWall);
   if(bay)return {...diagnostic,...bay};
  }
- if(far)return {...diagnostic,valid:false,reason:'远墙候选缺少三面窗、凸出地板和屋外的共同证据'};
+ // 2026-11-26：原本這裡是 `if(far)return 拒`——遠牆（ratio>=2.5）一票否決。
+ // 但普通外牆窗也會離牆中線遠：R(7) 底部陽台窗 ratio 7.14（距離 92.8px、牆厚 13px）、
+ // 主臥下窗 ratio 3.19，兩者長寬比 9.33／8.04 都是標準窗形，卻因為「不像飄窗」被拒。
+ // 改成讓它們繼續走下面的「兩端有牆 + 兩側屋外」檢查——那套檢查本身夠嚴：
+ // 方形大假框在上一行已被長寬比擋掉，兩端沒牆的會在 cap() 那步被拒。
+
  const at=(x,y)=>x>=0&&y>=0&&x<width&&y<height?mask[Math.floor(y)*width+Math.floor(x)]:4;
  const probe=Math.max(3,Math.round(Math.max(width,height)*.015));
  const short=horizontal?box.h:box.w,long=horizontal?box.w:box.h;
