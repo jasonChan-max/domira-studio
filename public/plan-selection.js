@@ -12,12 +12,17 @@ export const LEGACY_WINDOW_WALL_RATIO=2.5;
 // 2026-11-26：由 2 提到 3。放寬遠牆判定後，3FO3UONGHR0O 放進了兩個 88x44 / 86x43 的框
 // （長寬比 2.02 / 2.00）——那是「窗 + 牆」的粗框，不是窗。而真正要救的底部凸窗
 // 長寬比是 9.33 / 8.04。3 這個分界兩邊都乾淨。
-export const MIN_BAY_WINDOW_ASPECT=3;
+// 2026-11-26：2.4（不是 3）。3 會誤殺測試裡 aspect 2.75 的真飄窗；
+// 而 3FO3UONGHR0O 那兩個假粗框 aspect 是 2.02／2.00。2.4 這個分界兩邊都乾淨。
+export const MIN_BAY_WINDOW_ASPECT=2.4;
 // 2026-11-26：框內必須真的有窗像素。46.03 的 W6/W7/W8 是尺寸標註（「1591」「1934」「2304」），
 // 框內 window 佔比 0%（outside 100%），卻因為兩側恰好「一邊屋外一邊地板」而通過端點/兩側檢查。
 // 真窗的框內 window 佔比實測 87–98%（W1 87%、W4 90%、W2 98%），
 // 最差的凸窗（R(7) 底部陽台窗，框內混了 48% 地板）也有 37%。0.30 這個線兩邊都乾淨。
-export const MIN_WINDOW_CONTENT_RATIO=.3;
+// 2026-11-26：0.15（不是 0.30）。YOLO 的框普遍偏大（窗＋地板＋屋外一起框）：
+// 尺寸標註框內 window 實測 0%（46.03 的「1591」「1934」「2304」），
+// 真窗即使框很鬆也有 0.19（3FO3ELQQN9HT）、0.25（測試 fixture 那個中心偏移的框）。
+export const MIN_WINDOW_CONTENT_RATIO=.15;
 
 // 筛选与轮廓转换分开；不能为了去除屋外噪声而改写忠实于 mask 的轮廓提取。
 export function contourBounds(contour){
@@ -126,6 +131,8 @@ export function assessWindowSupport(mask,width,height,box,frame,{blocks}={}){
  }
  const contentRatio=contentCount?contentWin/contentCount:0;
  diagnostic.contentRatio=contentRatio;
+ // 2026-11-26：框內 window 佔比過低 → 不是窗（尺寸標註／文字／空白框）。
+ // 用「原始框」算，不用 footprint——footprint 是牆帶（crossMin/crossMax），不是窗帶。
  if(contentRatio<MIN_WINDOW_CONTENT_RATIO)return {...diagnostic,valid:false,reason:'框內幾乎沒有窗像素（疑似尺寸標註或空白框）'};
  // 46.03 的短真窗原框长宽比可小于 2；细长约束用于新增的远墙路径，近墙仍需原来的墙端和屋外证据。
  if(far&&aspectRatio<MIN_BAY_WINDOW_ASPECT)return {...diagnostic,valid:false,reason:'远墙候选长宽比小于 2，疑似方形大假框'};

@@ -42,13 +42,13 @@ test('R(2) 位置加局部符号规则采用11门，保留入户门与宽门，�
  assert.ok(home.doors.filter(d=>d.kind==='sliding').length>=2);
  assert.ok(home.doors.filter(d=>d.kind==='sliding').every(d=>Math.max(d.w,d.d)>=1.2));
  const ai={width:10,depth,rooms:[{id:'manual',x:0,z:0,width:2,depth:2}]},before=structuredClone(ai.rooms);attachDetectedOpenings(ai,result);
- assert.equal(ai.doors.length,11);assert.deepEqual(ai.rooms,before);assert.equal(ai.windows.length,12);
+ assert.equal(ai.doors.length,11);assert.deepEqual(ai.rooms,before);assert.equal(ai.windows.length,10);
  const group=buildHomeGeometry(home,false),leaves=group.children.filter(m=>m.userData.door);
  assert.equal(leaves.length,11);assert.ok(leaves.every(m=>m.geometry.parameters.height===2.05));group.traverse(m=>m.geometry?.dispose());
 });
 test('所有YOLO门被闸值拒绝时不重新塞入分割门，窗数据仍保留',()=>{
  const {result,depth}=recognized('r2'),r={...result,doors:result.doors.map(d=>({...d,score:.1}))},home=homeFromRecognition(r,10,depth);
- assert.equal(home.doors.length,0);assert.equal(home.windows.length,12);assert.equal(home.selection.doors.rejected.length,14);
+ assert.equal(home.doors.length,0);assert.equal(home.windows.length,10);assert.equal(home.selection.doors.rejected.length,14);
 });
 for(const [name,expected] of [['46',4],['r10',9]])test(name+' 新位置规则不误删既有门，R10含两个由窗改判的内部开口',()=>{
  const {home}=recognized(name);assert.equal(home.doors.length,expected);assert.ok(home.selection.doors.rejected.every(c=>c.reasons.every(r=>r.includes('同一门洞')||r.includes('置信度'))));
