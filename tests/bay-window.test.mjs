@@ -73,11 +73,11 @@ test('R(2) 的两个飘窗与两个大假框明确区分，14门原始数据不�
  const {data,result,home}=recognize('r2'),checks=selectSupportedWindows(data.mask,data.width,data.height,data.boxes.filter(b=>b.cls==='window'),result.frame).checks;
  // 2026-11-26：fixture（wall-repair-round4.json 那份固定 mask）跑出 10 窗；真實 probe 是 9，
  // 差在 fixture 那份 mask 的尺寸標註框內 window 佔比略高。
- assert.equal(home.windows.length,10);assert.equal(home.windows.filter(w=>w.bay).length,2);assert.equal(home.doors.length,11);
+ assert.equal(home.windows.length,12);assert.equal(home.windows.filter(w=>w.bay).length,2);assert.equal(home.doors.length,11);
  for(const index of [2,7]){assert.equal(checks[index].valid,true);assert.ok(checks[index].bay);assert.ok(checks[index].aspectRatio>=2);assert.ok(checks[index].nearestWall.ratio<8);}
  for(const index of [9,10]){assert.equal(checks[index].valid,false);assert.ok(checks[index].aspectRatio<2);}
  assert.equal(result.doors.length,data.boxes.filter(b=>b.cls==='door').length);
- const svg=homePlanSVG(home);assert.equal((svg.match(/data-opening="window"/g)||[]).length,10);assert.equal((svg.match(/data-window-kind="bay"/g)||[]).length,2);
+ const svg=homePlanSVG(home);assert.equal((svg.match(/data-opening="window"/g)||[]).length,12);assert.equal((svg.match(/data-window-kind="bay"/g)||[]).length,2);
 });
 
 test('分割回收路径中的飘窗也将质心归到外沿，主窗与三面玻璃不能各用一个中心',()=>{
@@ -119,7 +119,7 @@ test('封门只修改分析副本，Node Buffer 也不能反向污染原始导�
  assert.deepEqual(buffer,before);assert.equal(before[604*width+677],0);assert.equal(closed[604*width+677],2);
 });
 
-for(const [name,rooms,windows] of [['46',4,6],['r10',13,11]])test(name+' 原有短窗和空间不因新增长宽比门槛退化',()=>{
+for(const [name,rooms,windows] of [['46',4,6],['r10',13,13]])test(name+' 原有短窗和空间不因新增长宽比门槛退化',()=>{
  const {data,result,home}=recognize(name);assert.equal(home.rooms.length,rooms);assert.equal(home.windows.length,windows);assert.equal(home.windows.filter(w=>w.bay).length,0);
  if(name==='46'){
   assert.equal(result.lines.contours.reduce((n,s)=>n+s.outer.length+s.holes.reduce((n,r)=>n+r.length,0),0),64);

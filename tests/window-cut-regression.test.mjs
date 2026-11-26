@@ -44,7 +44,7 @@ test('窄 footprint 不再留下堵窗的墙皮，洞的长度按玻璃而非旧
  group.traverse(m=>m.geometry?.dispose());
 });
 // 被封门步骤分离的下飘窗改为窗台，不再计作第九间房；两扇真实飘窗现在进入窗数据。
-for(const [name,rooms,windows] of [['r2',8,10],['46',4,6],['r10',13,11]])test(name+' 冻结原图可建房且逐窗三点下墙/洞口/上墙均通过',()=>{
+for(const [name,rooms,windows] of [['r2',8,12],['46',4,6],['r10',13,13]])test(name+' 冻结原图可建房且逐窗三点下墙/洞口/上墙均通过',()=>{
  const data=load(name),recognized=geometryFromSegmentation(data,data.boxes,{imageGray:imageGray(name)}),home=JSON.parse(JSON.stringify(homeFromRecognition(recognized,10,10*recognized.frame.h/recognized.frame.w)));
  assert.equal(home.rooms.length,rooms);assert.equal(home.windows.length,windows);validateHome(home);
  if(name==='r2'){

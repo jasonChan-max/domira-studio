@@ -131,9 +131,29 @@ export function assessWindowSupport(mask,width,height,box,frame,{blocks}={}){
  }
  const contentRatio=contentCount?contentWin/contentCount:0;
  diagnostic.contentRatio=contentRatio;
- // 2026-11-26：框內 window 佔比過低 → 不是窗（尺寸標註／文字／空白框）。
- // 用「原始框」算，不用 footprint——footprint 是牆帶（crossMin/crossMax），不是窗帶。
- if(contentRatio<MIN_WINDOW_CONTENT_RATIO)return {...diagnostic,valid:false,reason:'框內幾乎沒有窗像素（疑似尺寸標註或空白框）'};
+ // 2026-11-26（v25 HRNet 之後）：改用「一側屋外、一側室內」判外牆開口，不再單靠框內 window 佔比。
+ // 起因：v25 的牆／地板準（細內牆修好了），但它對 1–2px 窗帶不敏感，真窗框內 window 全是 0%，
+ // 內容閘把 46.03 的 4 個真窗全殺了（6 窗 → 2 窗）。
+ // 實測 v25 的 46.03：真窗「一側 outside、另一側 floor」；尺寸標註「兩側都是 outside」。
+ // 所以判據換成位置語義——這也正是用戶定的「外側窗、內側門」。
+ const hz=box.w>=box.h,ccx=box.x+box.w/2,ccy=box.y+box.h/2;
+ // 從「框的邊緣」往外探，不是從中心固定距離——46.03 的窗框厚 25px，
+ // 固定探 6–24px 全落在框內，採到的自然是 floor/wall 而不是屋外。
+ const halfThick=(hz?box.h:box.w)/2;
+ let outA=0,outB=0,sidesN=0;
+ for(let off=Math.ceil(halfThick)+3;off<=Math.ceil(halfThick)+18;off+=3){
+  const ax=hz?ccx:ccx-off,ay=hz?ccy-off:ccy;
+  const bx=hz?ccx:ccx+off,by2=hz?ccy+off:ccy;
+  if(ax>=0&&ay>=0&&ax<width&&ay<height){sidesN++;if(mask[Math.floor(ay)*width+Math.floor(ax)]===4)outA++;}
+  if(bx>=0&&by2>=0&&bx<width&&by2<height){if(mask[Math.floor(by2)*width+Math.floor(bx)]===4)outB++;}
+ }
+ const outRatioA=sidesN?outA/sidesN:0,outRatioB=sidesN?outB/sidesN:0;
+ diagnostic.outsideRatioA=outRatioA;diagnostic.outsideRatioB=outRatioB;
+ // 兩側都是屋外 → 框在屋外空白處（尺寸標註、文字），不是任何開口。
+ if(outRatioA>0.7&&outRatioB>0.7)return {...diagnostic,valid:false,reason:'框在屋外空白處（兩側都是屋外）'};
+ const oneSideOutdoor=(outRatioA>0.7&&outRatioB<0.3)||(outRatioB>0.7&&outRatioA<0.3);
+ // 只有「不是外牆開口」的框才用內容閘兜底；外牆開口靠位置確信，不看 window 像素。
+ if(!oneSideOutdoor&&contentRatio<MIN_WINDOW_CONTENT_RATIO)return {...diagnostic,valid:false,reason:'框內幾乎沒有窗像素（疑似尺寸標註或空白框）'};
  // 46.03 的短真窗原框长宽比可小于 2；细长约束用于新增的远墙路径，近墙仍需原来的墙端和屋外证据。
  if(far&&aspectRatio<MIN_BAY_WINDOW_ASPECT)return {...diagnostic,valid:false,reason:'远墙候选长宽比小于 2，疑似方形大假框'};
  if(!diagnostic.withinWallDistance)return {...diagnostic,valid:false,reason:'窗到墙中线距离超过墙厚的 5 倍'};
